@@ -1,11 +1,11 @@
-use lambda_http::Request;
+use http::StatusCode;
 use serde_json::json;
 
-use crate::api::APIRoutingResponse;
+use crate::api::{APIRoutingResponse, ParsedRequest};
 
-pub async fn index(_request: Request) -> APIRoutingResponse {
+pub async fn index(_request: ParsedRequest<'_>) -> APIRoutingResponse {
     return APIRoutingResponse {
-        status_code: 200,
+        status_code: StatusCode::OK,
         body: json!({
             "message": "Index".to_string(),
         }),
@@ -13,9 +13,9 @@ pub async fn index(_request: Request) -> APIRoutingResponse {
     };
 }
 
-pub async fn not_found(_request: Request) -> APIRoutingResponse {
+pub async fn not_found(_request: ParsedRequest<'_>) -> APIRoutingResponse {
     return APIRoutingResponse {
-        status_code: 404,
+        status_code: StatusCode::NOT_FOUND,
         body: json!({
             "message": "Not Found".to_string(),
         }),

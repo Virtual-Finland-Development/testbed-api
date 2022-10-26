@@ -1,14 +1,23 @@
 use http::header::HeaderMap;
-use http::Response;
-use lambda_http::Request;
+use http::{Response, StatusCode};
+use lambda_http::aws_lambda_events::query_map::QueryMap;
+use lambda_http::{Request, RequestExt};
 use serde_json::Value as JSONValue;
 
 mod routes;
 
 pub struct APIRoutingResponse {
-    pub status_code: u16, // http status code, e.g. 200, 404, 500
-    pub body: JSONValue,  // Only serde_json::Value - values are supported
+    pub status_code: StatusCode, // http status code, e.g. 200, 404, 500
+    pub body: JSONValue,         // Only serde_json::Value - values are supported
     pub headers: HeaderMap,
+}
+
+pub struct ParsedRequest<'a> {
+    pub path: &'a str,
+    pub method: &'a str,
+    pub query: QueryMap,
+    pub headers: HeaderMap,
+    pub body: String,
 }
 
 /**
@@ -30,21 +39,39 @@ pub async fn handler(
  * This is the router for the API.
  */
 async fn exec_router_request(request: Request) -> APIRoutingResponse {
-    let path = request.uri().path();
-    let method = request.method();
+    let parsedRequest = parse_router_request(request);
 
-    match (method, path) {
-        (&lambda_http::http::Method::GET, "/") => {
-            return routes::application::index(request).await;
+    match (parsedRequest.method, parsedRequest.path) {
+        ("GET", "/") => {
+            return routes::application::index(parsedRequest).await;
         }
-        (&lambda_http::http::Method::GET, "/getPopulation ") => {
-            return routes::figure::get_population(request).await;
+        ("GET", "/getPopulation ") => {
+            return routes::figure::get_population(parsedRequest).await;
         }
-        (&lambda_http::http::Method::GET, "/findJobPostings ") => {
-            return routes::job::find_job_postings(request).await;
+        ("GET", "/findJobPostings ") => {
+            return routes::job::find_job_postings(parsedRequest).await;
         }
         _ => {
-            return routes::application::not_found(request).await;
+            return routes::application::not_found(parsedRequest).await;
         }
     }
+}
+
+/**
+ * Convert the lambda_http::Request to a ParsedRequest.
+ */
+fn parse_router_request(request: Request) -> ParsedRequest<'static> {
+    let path = request.uri().path();
+    let method = request.method().as_str();
+    let query = request.query_string_parameters();
+    let headers = request.headers().clone();
+    let body = serde_json::from_slice(request.body()).unwrap(); // request.body().to_string();
+
+    return ParsedRequest {
+        path,
+        method,
+        query,
+        headers,
+        body,
+    };
 }

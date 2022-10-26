@@ -1,11 +1,11 @@
-use lambda_http::Request;
+use http::StatusCode;
 use serde_json::json;
 
-use crate::api::APIRoutingResponse;
+use crate::api::{APIRoutingResponse, ParsedRequest};
 
-pub async fn find_job_postings(_request: Request) -> APIRoutingResponse {
+pub async fn find_job_postings(_request: ParsedRequest<'_>) -> APIRoutingResponse {
     return APIRoutingResponse {
-        status_code: 404,
+        status_code: StatusCode::OK,
         body: json!({
             "message": "POP".to_string(),
         }),
