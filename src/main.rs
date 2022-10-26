@@ -2,7 +2,7 @@ use lambda_http::{service_fn, Error};
 use log::LevelFilter;
 use simple_logger::SimpleLogger;
 
-mod routes;
+mod api;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -11,7 +11,7 @@ async fn main() -> Result<(), Error> {
         .init()
         .unwrap();
 
-    let service = service_fn(routes::handler);
+    let service = service_fn(api::handler);
 
     lambda_http::run(service).await?;
     Ok(())
