@@ -1,25 +1,24 @@
-use http::Response;
 use lambda_http::Request;
 use serde_json::json;
 
-pub async fn index(
-    _request: Request,
-) -> Result<lambda_http::Response<String>, std::convert::Infallible> {
-    Ok(Response::builder()
-        .status(200)
-        .body("Index".to_string())
-        .unwrap())
+use crate::api::APIRoutingResponse;
+
+pub async fn index(_request: Request) -> APIRoutingResponse {
+    return APIRoutingResponse {
+        status_code: 200,
+        body: json!({
+            "message": "Index".to_string(),
+        }),
+        headers: Default::default(),
+    };
 }
 
-pub async fn not_found(
-    _request: Request,
-) -> Result<lambda_http::Response<String>, std::convert::Infallible> {
-    let response = json!({
-        "message": "Not Found".to_string(),
-    });
-
-    Ok(Response::builder()
-        .status(200)
-        .body(response.to_string())
-        .unwrap())
+pub async fn not_found(_request: Request) -> APIRoutingResponse {
+    return APIRoutingResponse {
+        status_code: 404,
+        body: json!({
+            "message": "Not Found".to_string(),
+        }),
+        headers: Default::default(),
+    };
 }

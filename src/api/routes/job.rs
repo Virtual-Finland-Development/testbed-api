@@ -1,11 +1,14 @@
-use http::Response;
 use lambda_http::Request;
+use serde_json::json;
 
-pub async fn find_job_postings(
-    _request: Request,
-) -> Result<lambda_http::Response<String>, std::convert::Infallible> {
-    Ok(Response::builder()
-        .status(200)
-        .body("Population".to_string())
-        .unwrap())
+use crate::api::APIRoutingResponse;
+
+pub async fn find_job_postings(_request: Request) -> APIRoutingResponse {
+    return APIRoutingResponse {
+        status_code: 404,
+        body: json!({
+            "message": "POP".to_string(),
+        }),
+        headers: Default::default(),
+    };
 }
