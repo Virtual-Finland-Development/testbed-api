@@ -9,6 +9,7 @@ serde = { version = "1.0.147", features = ["derive"] }
 tokio = { version = "1.21.2", features = ["full"] }
 log = "0.4.14"
 simple_logger = "3.0.0"
+http = "0.2.5"
 
 [[bin]]
 name = "bootstrap"

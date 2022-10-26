@@ -1,15 +1,11 @@
-use lambda_http::{IntoResponse, Request, RequestExt};
+use http::Response;
+use lambda_http::Request;
 
 pub async fn get_population(
-    request: Request,
-) -> Result<impl IntoResponse, std::convert::Infallible> {
-    let _context = request.lambda_context();
-
-    Ok(format!(
-        "hello {}",
-        request
-            .query_string_parameters()
-            .first("name")
-            .unwrap_or_else(|| "stranger")
-    ))
+    _request: Request,
+) -> Result<lambda_http::Response<String>, std::convert::Infallible> {
+    Ok(Response::builder()
+        .status(200)
+        .body("Population".to_string())
+        .unwrap())
 }

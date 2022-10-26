@@ -1,9 +1,20 @@
-use lambda_http::IntoResponse;
+use http::Response;
+use lambda_http::Request;
 
-pub async fn index() -> Result<impl IntoResponse, std::convert::Infallible> {
-    Ok("Root path")
+pub async fn index(
+    _request: Request,
+) -> Result<lambda_http::Response<String>, std::convert::Infallible> {
+    Ok(Response::builder()
+        .status(200)
+        .body("Index".to_string())
+        .unwrap())
 }
 
-pub async fn not_found() -> Result<impl IntoResponse, std::convert::Infallible> {
-    Ok("Not found")
+pub async fn not_found(
+    _request: Request,
+) -> Result<lambda_http::Response<String>, std::convert::Infallible> {
+    Ok(Response::builder()
+        .status(200)
+        .body("Not found".to_string())
+        .unwrap())
 }
