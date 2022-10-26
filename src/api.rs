@@ -1,13 +1,13 @@
 use http::header::HeaderMap;
 use http::Response;
 use lambda_http::Request;
-use serde_json::Value;
+use serde_json::Value as JSONValue;
 
 mod routes;
 
 pub struct APIRoutingResponse {
-    pub status_code: u16,
-    pub body: Value, // Only json values are supported
+    pub status_code: u16, // http status code, e.g. 200, 404, 500
+    pub body: JSONValue,  // Only serde_json::Value - values are supported
     pub headers: HeaderMap,
 }
 
