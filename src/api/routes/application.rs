@@ -1,5 +1,6 @@
 use http::Response;
 use lambda_http::Request;
+use serde_json::json;
 
 pub async fn index(
     _request: Request,
@@ -13,8 +14,12 @@ pub async fn index(
 pub async fn not_found(
     _request: Request,
 ) -> Result<lambda_http::Response<String>, std::convert::Infallible> {
+    let response = json!({
+        "message": "Not Found".to_string(),
+    });
+
     Ok(Response::builder()
         .status(200)
-        .body("Not found".to_string())
+        .body(response.to_string())
         .unwrap())
 }
