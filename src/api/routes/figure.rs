@@ -1,15 +1,15 @@
 use http::header::HeaderMap;
+use log;
 use reqwest;
-use serde_json::Value;
 
-use crate::api::{APIRoutingResponse, ParsedRequest};
+use crate::api::{get_cors_response_headers, APIRoutingResponse, ParsedRequest};
 use serde::{Deserialize, Serialize};
 
 /**
  * Population query parameters
  */
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 struct PopulationQuery {
     city: String,
     year: i8,
@@ -18,7 +18,7 @@ struct PopulationQuery {
 /**
  * Population response
  */
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize, Debug)]
 struct PopulationResponse {
     description: String,
     source_name: String,
@@ -26,36 +26,36 @@ struct PopulationResponse {
     updated_at: String,
 }
 
-pub async fn get_population(request: ParsedRequest<'_>) -> APIRoutingResponse {
-    let requestInput: PopulationQuery =
-        serde_json::from_str(request.body.as_str()).unwrap_or(PopulationQuery {
-            city: "New York".to_string(),
-            year: 2019,
-        });
+/**
+ * Get population figure
+ */
+pub async fn get_population(request: ParsedRequest) -> APIRoutingResponse {
+    let request_input: PopulationQuery = serde_json::from_str(request.body.as_str()).unwrap();
+    let request_headers = request.headers;
 
-    let requestHeaders = request.headers;
-
-    return fetch_population(requestInput, requestHeaders).await;
+    return fetch_population(request_input, request_headers).await;
 }
 
 async fn fetch_population(
-    requestInput: PopulationQuery,
-    requestHeaders: HeaderMap,
+    request_input: PopulationQuery,
+    request_headers: HeaderMap,
 ) -> APIRoutingResponse {
     let response = reqwest::Client::new()
         .post("https://gateway.testbed.fi/test/lsipii/Figure/Population?source=virtual_finland")
-        .json(&requestInput)
-        .headers(requestHeaders)
+        .json(&request_input)
+        .headers(request_headers)
         .send()
-        .await?;
-    println!("{:#?}", response);
+        .await
+        .unwrap();
+    println!();
+    log::debug!("{:#?}", response);
 
-    let responseStatus = response.status();
-    let responseOutput = response.json::<PopulationResponse>().await;
+    let response_status = response.status();
+    let response_output = response.json::<PopulationResponse>().await.unwrap();
 
     return APIRoutingResponse {
-        status_code: responseStatus,
-        body: responseOutput,
-        headers: Default::default(),
+        status_code: response_status,
+        body: serde_json::to_string(&response_output).unwrap(),
+        headers: get_cors_response_headers(),
     };
 }
