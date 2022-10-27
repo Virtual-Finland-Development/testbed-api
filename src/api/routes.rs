@@ -27,10 +27,10 @@ pub async fn exec_router_request(request: Request) -> APIRoutingResponse {
         ("POST", "/testbed/reverse-proxy") => {
             return testbed::engage_reverse_proxy_request(parsed_request).await;
         }
-        ("POST", "/testbed/get-population") => {
+        ("POST", "/testbed/productizers/get-population") => {
             return testbed::productizers::figure::get_population(parsed_request).await;
         }
-        ("POST", "/testbed/find-job-postings") => {
+        ("POST", "/testbed/productizers/find-job-postings") => {
             return testbed::productizers::job::find_job_postings(parsed_request).await;
         }
         _ => {
