@@ -10,6 +10,7 @@ use crate::api::{
 };
 
 pub mod productizers;
+mod testbed_request_utils;
 
 #[derive(Deserialize, Serialize, Debug)]
 struct ProxyRequestInput {

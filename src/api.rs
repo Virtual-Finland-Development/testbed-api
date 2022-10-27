@@ -5,7 +5,6 @@ use log;
 use crate::api::utils::parse_router_request;
 
 mod routes;
-mod testbed_requests;
 mod utils;
 
 /**
