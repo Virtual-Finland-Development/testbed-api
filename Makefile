@@ -8,6 +8,6 @@ build: build-builder clean
 	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} cargo build --release --target-dir /builder/infra/build/target
 	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} zip -j infra/build/rust.zip ./infra/build/target/release/bootstrap
 clean: build-builder
-	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} cargo clean
+	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} cargo clean --target-dir /builder/infra/build/target
 build-builder:
 	docker build -t ${builder-image} -f infra/builder.dockerfile .
