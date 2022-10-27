@@ -9,6 +9,8 @@ use crate::api::{
     utils::{get_cors_response_headers, APIRoutingResponse, ParsedRequest},
 };
 
+pub mod productizers;
+
 #[derive(Deserialize, Serialize, Debug)]
 struct ProxyRequestInput {
     method: String,
