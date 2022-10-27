@@ -61,10 +61,10 @@ async fn exec_router_request(request: Request) -> APIRoutingResponse {
         ("GET", "/") => {
             return routes::application::index(parsed_request).await;
         }
-        ("POST", "/getPopulation ") => {
+        ("POST", "/getPopulation") => {
             return routes::figure::get_population(parsed_request).await;
         }
-        ("POST", "/findJobPostings ") => {
+        ("POST", "/findJobPostings") => {
             return routes::job::find_job_postings(parsed_request).await;
         }
         _ => {
