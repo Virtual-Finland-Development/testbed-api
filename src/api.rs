@@ -13,6 +13,8 @@ pub async fn handler(
     request: Request,
 ) -> Result<lambda_http::Response<String>, std::convert::Infallible> {
     let router_response = exec_router_request(request).await;
+    log::debug!("Response: {:#?}", router_response);
+
     let mut api_response = Response::builder()
         .status(router_response.status_code)
         .body(router_response.body)
@@ -47,11 +49,14 @@ async fn exec_router_request(request: Request) -> utils::APIRoutingResponse {
         ("GET", "/") => {
             return routes::application::index(parsed_request).await;
         }
-        ("POST", "/getPopulation") => {
-            return routes::figure::get_population(parsed_request).await;
+        ("POST", "/reverse-proxy") => {
+            return routes::testbed::engage_reverse_proxy_request(parsed_request).await;
         }
-        ("POST", "/findJobPostings") => {
-            return routes::job::find_job_postings(parsed_request).await;
+        ("POST", "/get-population") => {
+            return routes::productizers::figure::get_population(parsed_request).await;
+        }
+        ("POST", "/find-job-postings") => {
+            return routes::productizers::job::find_job_postings(parsed_request).await;
         }
         _ => {
             return routes::application::not_found(parsed_request).await;

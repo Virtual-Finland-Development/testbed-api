@@ -4,6 +4,7 @@ use http::StatusCode;
 use lambda_http::aws_lambda_events::query_map::QueryMap;
 use lambda_http::{Body, Request, RequestExt};
 
+#[derive(Debug)]
 pub struct APIRoutingResponse {
     pub status_code: StatusCode, // http status code, e.g. 200, 404, 500
     pub body: String,

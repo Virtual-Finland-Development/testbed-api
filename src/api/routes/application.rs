@@ -15,7 +15,7 @@ pub async fn index(_request: ParsedRequest) -> APIRoutingResponse {
     return APIRoutingResponse {
         status_code: StatusCode::OK,
         body: json!({
-            "message": "Index".to_string(),
+            "message": "Implement: redirect to swagger docs".to_string(),
         })
         .to_string(),
         headers: Default::default(),
