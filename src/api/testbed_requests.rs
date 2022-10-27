@@ -1,6 +1,6 @@
 use http::HeaderMap;
 
-use crate::api::ParsedRequest;
+use crate::api::utils::ParsedRequest;
 
 /**
  * Parses the authorization headers fromn the input request
