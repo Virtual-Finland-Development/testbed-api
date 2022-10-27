@@ -1,6 +1,4 @@
-use lambda_http::Request;
-
-use crate::api::utils::{parse_router_request, APIRoutingResponse};
+use crate::api::utils::{APIRoutingResponse, ParsedRequest};
 
 pub mod application;
 pub mod testbed;
@@ -8,13 +6,9 @@ pub mod testbed;
 /**
  * This is the router for the API.
  */
-pub async fn exec_router_request(request: Request) -> APIRoutingResponse {
-    let parsed_request = parse_router_request(request);
-
+pub async fn exec_router_request(parsed_request: ParsedRequest) -> APIRoutingResponse {
     let method = parsed_request.method.as_str();
     let path = parsed_request.path.as_str();
-
-    log::info!("{} {}", method, path);
 
     if method == "OPTIONS" {
         return application::cors_preflight_response(parsed_request).await;
