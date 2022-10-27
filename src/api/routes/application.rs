@@ -1,7 +1,7 @@
 use http::StatusCode;
 use serde_json::json;
 
-use crate::api::{get_cors_response_headers, APIRoutingResponse, ParsedRequest};
+use crate::api::utils::{get_cors_response_headers, APIRoutingResponse, ParsedRequest};
 
 pub async fn cors_preflight_response(_request: ParsedRequest) -> APIRoutingResponse {
     return APIRoutingResponse {

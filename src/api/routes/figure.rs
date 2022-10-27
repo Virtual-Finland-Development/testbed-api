@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::api::routes::application::get_external_service_bad_response;
 use crate::api::testbed_requests::parse_testbed_request_headers;
-use crate::api::{get_cors_response_headers, APIRoutingResponse, ParsedRequest};
+use crate::api::utils::{get_cors_response_headers, APIRoutingResponse, ParsedRequest};
 
 /**
  * Population query parameters
