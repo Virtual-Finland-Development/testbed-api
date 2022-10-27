@@ -5,6 +5,7 @@ use lambda_http::{Body, Request, RequestExt};
 use log;
 
 mod routes;
+mod testbed_requests;
 
 pub struct APIRoutingResponse {
     pub status_code: StatusCode, // http status code, e.g. 200, 404, 500

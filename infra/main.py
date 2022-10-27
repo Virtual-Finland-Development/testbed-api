@@ -38,6 +38,7 @@ testbed_api_function = aws.lambda_.Function(
     role=testbed_api_lambda_role.arn,
     handler="bootstrap",  # contents of the zip file
     code=pulumi.FileArchive("./build/rust.zip"),
+    timeout=15,
 )
 
 lambda_url = aws_native.lambda_.Url(

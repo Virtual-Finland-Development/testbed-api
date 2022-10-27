@@ -1,6 +1,7 @@
 builder-image = "virtualfinland/testbed-api-builder"
 
-deploy: build
+deploy: build deploy-with-pulumi
+deploy-with-pulumi:
 	python -m pip install -r infra/requirements.txt # TODO: containerize, or handle in CI
 	pulumi -C infra up --yes
 build: build-builder clean

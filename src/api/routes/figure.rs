@@ -1,9 +1,11 @@
 use http::header::HeaderMap;
 use log;
 use reqwest;
-
-use crate::api::{get_cors_response_headers, APIRoutingResponse, ParsedRequest};
 use serde::{Deserialize, Serialize};
+
+use crate::api::routes::application::get_external_service_bad_response;
+use crate::api::testbed_requests::parse_testbed_request_headers;
+use crate::api::{get_cors_response_headers, APIRoutingResponse, ParsedRequest};
 
 /**
  * Population query parameters
@@ -12,18 +14,19 @@ use serde::{Deserialize, Serialize};
 #[derive(Deserialize, Serialize, Debug)]
 struct PopulationQuery {
     city: String,
-    year: i8,
+    year: String, // Note: front apps send strings, not numbers
 }
 
 /**
  * Population response
  */
 #[derive(Deserialize, Serialize, Debug)]
+#[allow(non_snake_case)]
 struct PopulationResponse {
     description: String,
-    source_name: String,
+    sourceName: String,
     population: i128,
-    updated_at: String,
+    updatedAt: String,
 }
 
 /**
@@ -31,8 +34,7 @@ struct PopulationResponse {
  */
 pub async fn get_population(request: ParsedRequest) -> APIRoutingResponse {
     let request_input: PopulationQuery = serde_json::from_str(request.body.as_str()).unwrap();
-    let request_headers = request.headers;
-
+    let request_headers = parse_testbed_request_headers(request);
     return fetch_population(request_input, request_headers).await;
 }
 
@@ -40,6 +42,9 @@ async fn fetch_population(
     request_input: PopulationQuery,
     request_headers: HeaderMap,
 ) -> APIRoutingResponse {
+    log::debug!("Input: {:#?}", request_input);
+    log::debug!("Headers: {:#?}", request_headers);
+
     let response = reqwest::Client::new()
         .post("https://gateway.testbed.fi/test/lsipii/Figure/Population?source=virtual_finland")
         .json(&request_input)
@@ -47,12 +52,15 @@ async fn fetch_population(
         .send()
         .await
         .unwrap();
-    println!();
-    log::debug!("{:#?}", response);
+
+    log::debug!("Response: {:#?}", response);
 
     let response_status = response.status();
-    let response_output = response.json::<PopulationResponse>().await.unwrap();
+    if response_status != 200 {
+        return get_external_service_bad_response(response_status);
+    }
 
+    let response_output = response.json::<PopulationResponse>().await.unwrap();
     return APIRoutingResponse {
         status_code: response_status,
         body: serde_json::to_string(&response_output).unwrap(),
