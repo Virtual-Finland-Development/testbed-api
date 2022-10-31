@@ -35,7 +35,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build-artifact-${{ inputs.deployment_stage }}
-          path: infra/build/rust.zip
       - name: Display structure of downloaded artifact files 🐪🔍
         run: |
           ls -la infra/build
