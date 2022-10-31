@@ -36,6 +36,10 @@ jobs:
         with:
           name: build-artifact-${{ inputs.deployment_stage }}
           path: infra/build/rust.zip
+      - name: Display structure of downloaded artifact files 🐪🔍
+        run: |
+          ls -la
+          ls -R infra
       - name: Setup Python 🪄
         uses: actions/setup-python@v4
         with:
