@@ -8,7 +8,7 @@ build: install
 	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} zip -r infra/build/rust.zip ./openapi
 deploy: build deploy-with-pulumi
 deploy-with-pulumi:
-	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} pulumi -C infra up --yes
+	pulumi -C infra up --yes
 clean: install
 	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} cargo clean --target-dir /builder/infra/build/target
 	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} rm infra/build/*.zip || true

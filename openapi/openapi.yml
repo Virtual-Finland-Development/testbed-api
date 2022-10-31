@@ -8,6 +8,11 @@ paths:
   /:
     get:
       responses:
+        "303":
+          description: Redirect to swagger docs at /docs
+  /docs:
+    get:
+      responses:
         "200":
           description: Swagger docs
   /testbed/reverse-proxy:
