@@ -15,6 +15,7 @@ jobs:
     uses: Virtual-Finland-Development/testbed-api/.github/workflows/build-and-test.yml@main
     with:
       deployment_stage: ${{ inputs.deployment_stage }}
+      wants_artifacts: true
   deploy:
     name: Deploy
     environment: ${{ inputs.deployment_stage }}

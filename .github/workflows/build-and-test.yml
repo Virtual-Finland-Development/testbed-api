@@ -1,12 +1,18 @@
 name: Build and test
 
 on:
+  pull_request:
+    branches:
+      - main
   workflow_call:
     inputs:
       deployment_stage:
         required: true
         type: string
-
+      wants_artifacts:
+        required: false
+        type: boolean
+        default: false
 jobs:
   build-and-test:
     name: Build and test
@@ -20,6 +26,7 @@ jobs:
         run: |
           make test
       - name: Archive build artifacts
+        if: ${{ inputs.wants_artifacts }}
         uses: actions/upload-artifact@v3
         with:
           name: build-artifact-${{ inputs.deployment_stage }}
