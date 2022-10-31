@@ -18,6 +18,12 @@ pub async fn exec_router_request(parsed_request: ParsedRequest) -> APIRoutingRes
         ("GET", "/") => {
             return application::index(parsed_request).await;
         }
+        ("GET", "/docs") => {
+            return application::docs(parsed_request).await;
+        }
+        ("GET", "/openapi.yml") => {
+            return application::openapi_spec(parsed_request).await;
+        }
         ("POST", "/testbed/reverse-proxy") => {
             return testbed::engage_reverse_proxy_request(parsed_request).await;
         }

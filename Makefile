@@ -5,6 +5,7 @@ install:
 build: install
 	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} cargo build --release --target-dir /builder/infra/build/target
 	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} zip -j infra/build/rust.zip ./infra/build/target/release/bootstrap
+	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} zip -r infra/build/rust.zip ./openapi
 deploy: build deploy-with-pulumi
 deploy-with-pulumi:
 	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} pulumi -C infra up --yes
@@ -17,6 +18,7 @@ install-debug:
 build-debug: install-debug
 	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} cargo build --target-dir /builder/infra/build/target
 	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} zip -j infra/build/rust-debug.zip ./infra/build/target/debug/bootstrap
+	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} zip -r infra/build/rust-debug.zip ./openapi
 
 run: build-debug
 	docker run -it --rm -p 3000:3000 \

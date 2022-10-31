@@ -1,0 +1,97 @@
+openapi: 3.0.3
+info:
+  title: Testbed API
+  description: |-
+    Testebed API documentation
+  version: 1.0.0
+paths:
+  /:
+    get:
+      responses:
+        "200":
+          description: Swagger docs
+  /testbed/reverse-proxy:
+    post:
+      operationId: testbed-reverse-proxy
+      requestBody:
+        description: The request package
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProxyRequestInput"
+      responses:
+        "200":
+          description: Proxy response
+  /testbed/productizers/get-population:
+    post:
+      operationId: get-population
+      requestBody:
+        description: The population figure query
+        content:
+          application/json:
+            schema:
+              type: object
+            examples:
+              success:
+                summary: JSON example
+                value: Loading...
+                externalValue: "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lsipii/Figure/Population.json"
+      responses:
+        "200":
+          description: Population figure response
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                success:
+                  summary: JSON example
+                  value: Loading...
+                  externalValue: "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lsipii/Figure/Population.json"
+  /testbed/productizers/find-job-postings:
+    post:
+      operationId: find-job-postings
+      requestBody:
+        description: The job postings query
+        content:
+          application/json:
+            schema:
+              type: object
+            examples:
+              success:
+                summary: JSON example
+                value: Loading...
+                externalValue: "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lassipatanen/Job/JobPosting.json"
+      responses:
+        "200":
+          description: The job postings
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                success:
+                  summary: JSON example
+                  value: Loading...
+                  externalValue: "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lassipatanen/Job/JobPosting.json"
+components:
+  schemas:
+    ProxyRequestInput:
+      type: object
+      properties:
+        method:
+          type: string
+          description: Request method
+          example: POST
+          enum:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+        url:
+          type: string
+          example: https://gateway.testbed.fi/action
+        data:
+          type: object
+        headers:
+          type: object

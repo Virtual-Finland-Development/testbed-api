@@ -12,6 +12,9 @@ Resources:
       Timeout: 15
       Architectures:
         - x86_64
+      Environment:
+        Variables:
+          RUST_BACKTRACE: 1
       Events:
         TestbedAPIEvent:
           Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api

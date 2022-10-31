@@ -1,5 +1,6 @@
-use http::StatusCode;
+use http::{HeaderMap, StatusCode};
 use serde_json::json;
+use std::fs;
 
 use crate::api::utils::{get_cors_response_headers, APIRoutingResponse, ParsedRequest};
 
@@ -13,12 +14,41 @@ pub async fn cors_preflight_response(_request: ParsedRequest) -> APIRoutingRespo
 
 pub async fn index(_request: ParsedRequest) -> APIRoutingResponse {
     return APIRoutingResponse {
+        status_code: StatusCode::TEMPORARY_REDIRECT,
+        body: "Redirecting to /docs".to_string(),
+        headers: {
+            let mut headers = HeaderMap::new();
+            headers.insert("Location", "/docs".parse().unwrap());
+            headers
+        },
+    };
+}
+
+pub async fn docs(_request: ParsedRequest) -> APIRoutingResponse {
+    let body = fs::read_to_string("./openapi/index.html").unwrap();
+
+    return APIRoutingResponse {
         status_code: StatusCode::OK,
-        body: json!({
-            "message": "Implement: redirect to swagger docs".to_string(),
-        })
-        .to_string(),
-        headers: Default::default(),
+        body: body.to_string(),
+        headers: {
+            let mut headers = HeaderMap::new();
+            headers.insert("Content-Type", "text/html".parse().unwrap());
+            headers
+        },
+    };
+}
+
+pub async fn openapi_spec(_request: ParsedRequest) -> APIRoutingResponse {
+    let body = fs::read_to_string("./openapi/openapi.yml").unwrap();
+
+    return APIRoutingResponse {
+        status_code: StatusCode::OK,
+        body: body.to_string(),
+        headers: {
+            let mut headers = HeaderMap::new();
+            headers.insert("Content-Type", "application/octet-stream".parse().unwrap());
+            headers
+        },
     };
 }
 
