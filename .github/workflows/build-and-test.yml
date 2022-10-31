@@ -3,7 +3,7 @@ name: Build and test
 on:
   workflow_call:
     inputs:
-      pulumi_stack:
+      deployment_stage:
         required: true
         type: string
 
@@ -22,6 +22,6 @@ jobs:
       - name: Archive build artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: build-artifact-${{ inputs.pulumi_stack }}
+          name: build-artifact-${{ inputs.deployment_stage }}
           path: |
             infra/build

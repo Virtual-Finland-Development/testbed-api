@@ -8,4 +8,4 @@ jobs:
   deploy:
     uses: Virtual-Finland-Development/testbed-api/.github/workflows/deployment.yml@main
     with:
-      pulumi_stack: virtualfinland/dev
+      deployment_stage: dev
