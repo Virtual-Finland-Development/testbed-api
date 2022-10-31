@@ -97,6 +97,7 @@
                             if (examples[externalValueUrlKey]) {
                                 // Set example value directly from examples map
                                 props.response = props.response.setIn(['content', contentType, 'examples', props.activeExamplesKey, 'value'], examples[externalValueUrlKey].examples)
+                                props.response = parseSchemaObject(props.response, examples[externalValueUrlKey].schema, contentType)
                             } else {
                                 const resolveData = (data) => {
                                     const ref = data.paths[Object.keys(data.paths)[0]][props.method].responses[Number(props.code)].content[contentType].schema["$ref"];
