@@ -38,10 +38,8 @@ jobs:
           path: infra/build/rust.zip
       - name: Display structure of downloaded artifact files 🐪🔍
         run: |
-          ls -la
-          ls -la infra
-          ls -la infra/build
           ls -la infra/build/rust.zip
+          ls -la infra/build/rust.zip/
       - name: Setup Python 🪄
         uses: actions/setup-python@v4
         with:
