@@ -6,6 +6,13 @@ on:
       deployment_stage:
         required: true
         type: string
+    secrets:
+      PULUMI_ACCESS_TOKEN:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
 
 env:
   pulumi_stack_organization: virtualfinland
