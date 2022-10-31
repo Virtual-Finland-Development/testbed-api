@@ -23,10 +23,10 @@
                 if (componentInfo.properties[propertyKey].type === "object" && typeof componentInfo.properties[propertyKey].properties === "object") {
                     examples[propertyKey] = parseExamples(componentInfo.properties[propertyKey]);
                 } else if (componentInfo.properties[propertyKey].type === "array" && typeof componentInfo.properties[propertyKey].items === "object") {
-                    const arrExample = componentInfo.properties[propertyKey].items.example || componentInfo.properties[propertyKey].items.default || componentInfo.properties[propertyKey].items.type;
+                    const arrExample = componentInfo.properties[propertyKey].items.example || componentInfo.properties[propertyKey].items.default || componentInfo.properties[propertyKey].items.type || componentInfo.properties[propertyKey].items["$ref"];
                     examples[propertyKey] = [arrExample];
                 } else {
-                    examples[propertyKey] = componentInfo.properties[propertyKey].example || componentInfo.properties[propertyKey].default || componentInfo.properties[propertyKey].type;
+                    examples[propertyKey] = componentInfo.properties[propertyKey].example || componentInfo.properties[propertyKey].default || componentInfo.properties[propertyKey].type || componentInfo.properties[propertyKey]["$ref"];
                 }
                 return examples;
             }, {});
