@@ -33,10 +33,10 @@
         }
 
         const parseSchemaObject = (settableObject, schema, contentType) => {
-            settableObject = settableObject.setIn(['content', contentType, 'schema', "title"], schema.title)
-            settableObject = settableObject.setIn(['content', contentType, 'schema', "type"], schema.type)
+            settableObject = settableObject.setIn(['content', contentType, 'schema', 'title'], schema.title)
+            settableObject = settableObject.setIn(['content', contentType, 'schema', 'type'], schema.type)
             if (schema.type === "object") {
-                settableObject = settableObject.setIn(['content', contentType, 'schema', "description"], `<pre>${JSON.stringify({
+                settableObject = settableObject.setIn(['content', contentType, 'schema', 'description'], `<pre>${JSON.stringify({
                     properties: schema.properties,
                     required: schema.required,
                 }, null, 2)}</pre>`)
