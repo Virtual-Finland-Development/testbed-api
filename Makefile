@@ -30,3 +30,6 @@ run: build-debug
 run-native: build-debug
 	sam local start-api --template ./infra/sam-template.yml \
 		--host 0.0.0.0 --port 3000
+
+test:
+	@echo "PASS"

@@ -1,0 +1,11 @@
+name: Deploy Dev
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    uses: Virtual-Finland-Development/testbed-api/.github/workflows/deployment.yml
+    with:
+      pulumi_stack: virtualfinland/dev
