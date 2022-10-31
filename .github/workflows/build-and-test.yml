@@ -1,0 +1,27 @@
+name: Build and test
+
+on:
+  workflow_call:
+    inputs:
+      pulumi_stack:
+        required: true
+        type: string
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build & Test
+        run: |
+          make build
+      - name: Test
+        run: |
+          make test
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact-${{ inputs.pulumi_stack }}
+          path: |
+            infra/build
