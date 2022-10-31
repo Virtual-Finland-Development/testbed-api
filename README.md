@@ -2,6 +2,10 @@
 
 A backend service for frontend client calls to testbed
 
+[![Deploy Dev](https://github.com/Virtual-Finland-Development/testbed-api/actions/workflows/deploy-dev.yml/badge.svg?branch=main)](https://github.com/Virtual-Finland-Development/testbed-api/actions/workflows/deploy-dev.yml)
+
+[![Deploy Staging](https://github.com/Virtual-Finland-Development/testbed-api/actions/workflows/deploy-dev.yml/badge.svg?branch=main)](https://github.com/Virtual-Finland-Development/testbed-api/actions/workflows/deploy-staging.yml)
+
 ## Usage
 
 ### Requirements
