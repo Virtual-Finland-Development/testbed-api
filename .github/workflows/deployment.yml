@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-and-test:
-    uses: Virtual-Finland-Development/testbed-api/.github/workflows/build-and-test.yml
+    uses: Virtual-Finland-Development/testbed-api/.github/workflows/build-and-test.yml@main
     with:
       pulumi_stack: ${{ inputs.pulumi_stack }}
   deploy:
