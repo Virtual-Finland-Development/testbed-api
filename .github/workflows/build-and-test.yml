@@ -30,5 +30,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build-artifact-${{ inputs.deployment_stage }}
-          path: |
-            infra/build
+          path: infra/build/rust.zip

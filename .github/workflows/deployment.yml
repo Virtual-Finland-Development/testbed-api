@@ -35,6 +35,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build-artifact-${{ inputs.deployment_stage }}
+          path: infra/build/rust.zip
       - name: Setup Python 🪄
         uses: actions/setup-python@v4
         with:
