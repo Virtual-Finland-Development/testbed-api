@@ -35,11 +35,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build-artifact-${{ inputs.deployment_stage }}
-          path: infra/build/rust.zip
+          path: infra/build
       - name: Display structure of downloaded artifact files 🐪🔍
         run: |
-          ls -la infra/build/rust.zip
-          ls -la infra/build/rust.zip/
+          ls -R infra/build
       - name: Setup Python 🪄
         uses: actions/setup-python@v4
         with:
