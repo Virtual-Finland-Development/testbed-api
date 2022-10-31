@@ -15,17 +15,17 @@ on:
         default: false
 jobs:
   build-and-test:
-    name: Build and test
+    name: Build and test ⌛
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Build & Test
+      - name: Build 🏗
         run: |
           make build
-      - name: Test
+      - name: Test 🧪
         run: |
           make test
-      - name: Archive build artifacts
+      - name: Archive the build artifacts 🐪
         if: ${{ inputs.wants_artifacts }}
         uses: actions/upload-artifact@v3
         with:
