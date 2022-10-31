@@ -9,6 +9,7 @@ on:
 
 env:
   pulumi_stack_organization: virtualfinland
+  aws_region: eu-north-1
 
 jobs:
   build-and-test:
@@ -17,7 +18,7 @@ jobs:
       deployment_stage: ${{ inputs.deployment_stage }}
       wants_artifacts: true
   deploy:
-    name: Deploy
+    name: Deployment 🔧🏹🧬🌀📡⛅
     environment: ${{ inputs.deployment_stage }}
     runs-on: ubuntu-latest
     needs: build-and-test
@@ -38,6 +39,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.aws_region }}
       - name: Deploy with Pulumi ✨
         uses: pulumi/actions@v3
         with:
