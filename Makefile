@@ -3,9 +3,9 @@ builder-image = "virtualfinland/testbed-api-builder"
 install:
 	docker build --target builder -t ${builder-image} -f infra/builder.dockerfile .
 build: install
-	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} cargo build --release --target-dir /builder/infra/build/target
-	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} zip -j infra/build/rust.zip ./infra/build/target/release/bootstrap
-	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} zip -r infra/build/rust.zip ./openapi
+	docker run --rm -v `pwd`:/builder -w /builder ${builder-image} cargo build --release --target-dir /builder/infra/build/target
+	docker run --rm -v `pwd`:/builder -w /builder ${builder-image} zip -j infra/build/rust.zip ./infra/build/target/release/bootstrap
+	docker run --rm -v `pwd`:/builder -w /builder ${builder-image} zip -r infra/build/rust.zip ./openapi
 deploy: build deploy-with-pulumi
 deploy-with-pulumi:
 	pulumi -C infra up --yes
