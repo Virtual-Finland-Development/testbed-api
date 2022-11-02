@@ -17,6 +17,7 @@ jobs:
   build-and-test:
     name: Build and test ⌛
     runs-on: ubuntu-latest
+    environment: ${{ inputs.deployment_stage }}
     steps:
       - uses: actions/checkout@v3
       - name: Build 🔧
