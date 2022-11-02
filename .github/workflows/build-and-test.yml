@@ -27,7 +27,6 @@ jobs:
         env:
           TEST_ENV_VARIABLE: ${{ secrets.TEST_ENV_VARIABLE }}
       - name: Test 🧪
-        if: ${{ secrets.TEST_ENV_VARIABLE == 'This is dev env' }}
         run: |
           make test
       - name: Archive the build artifacts 🐪
