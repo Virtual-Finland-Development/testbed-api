@@ -17,22 +17,11 @@ jobs:
   build-and-test:
     name: Build and test ⌛
     runs-on: ubuntu-latest
-    environment: dev
     steps:
       - uses: actions/checkout@v3
-      - name: Check 🔧
-        run: |
-          echo "$TEST_ENV_VARIABLE" | base64 > moro.txt
-          cat moro.txt
-          cat moro.txt | base64 --decode
-          exit 1
-        env:
-          TEST_ENV_VARIABLE: ${{ secrets.TEST_ENV_VARIABLE }}
       - name: Build 🔧
         run: |
           make build
-        env:
-          TEST_ENV_VARIABLE: ${{ secrets.TEST_ENV_VARIABLE }}
       - name: Test 🧪
         run: |
           make test
