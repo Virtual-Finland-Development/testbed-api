@@ -20,13 +20,16 @@ jobs:
     environment: ${{ inputs.deployment_stage }}
     steps:
       - uses: actions/checkout@v3
-      - name: Build 🔧
+      - name: Check 🔧
         run: |
           echo $TEST_ENV_VARIABLE > moro.txt
           cat moro.txt
-          make build
+          exit 0
         env:
           TEST_ENV_VARIABLE: ${{ secrets.TEST_ENV_VARIABLE }}
+      - name: Build 🔧
+        run: |
+          make build
       - name: Test 🧪
         run: |
           make test
