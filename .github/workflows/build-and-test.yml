@@ -21,8 +21,13 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build 🔧
         run: |
+          echo $TEST_ENV_VARIABLE > moro.txt
+          cat moro.txt
           make build
+        env:
+          TEST_ENV_VARIABLE: ${{ secrets.TEST_ENV_VARIABLE }}
       - name: Test 🧪
+        if: ${{ secrets.TEST_ENV_VARIABLE == 'This is dev env' }}
         run: |
           make test
       - name: Archive the build artifacts 🐪
