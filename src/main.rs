@@ -2,7 +2,8 @@ use lambda_http::{service_fn, Error};
 use log::LevelFilter;
 use simple_logger::SimpleLogger;
 
-mod api;
+pub mod api;
+mod tests;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {

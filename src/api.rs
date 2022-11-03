@@ -5,7 +5,7 @@ use log;
 use crate::api::utils::parse_router_request;
 
 mod routes;
-mod utils;
+pub mod utils;
 
 /**
  * The handler function for the lambda.
