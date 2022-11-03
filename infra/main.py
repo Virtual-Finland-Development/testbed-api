@@ -39,10 +39,17 @@ testbed_api_function = aws.lambda_.Function(
     handler="bootstrap",  # contents of the zip file
     code=pulumi.FileArchive("./build/rust.zip"),
     timeout=15,
+    tags={
+        "Name": "testbed-api",
+        "Environment": pulumi.get_stack(),
+        "Project": "Virtual Finland",
+    },
 )
 
 lambda_url = aws_native.lambda_.Url(
-    "testbed-api", target_function_arn=testbed_api_function.arn, auth_type=aws_native.lambda_.UrlAuthType.NONE
+    "testbed-api",
+    target_function_arn=testbed_api_function.arn,
+    auth_type=aws_native.lambda_.UrlAuthType.NONE,
 )
 
 add_permissions = local.Command(
