@@ -1,7 +1,7 @@
 use log::LevelFilter;
 use simple_logger::SimpleLogger;
 
-mod http_server;
+//mod http_server;
 mod lambda_service;
 
 pub mod api;
@@ -14,5 +14,5 @@ async fn main() {
         .init()
         .unwrap();
 
-    let _result = lambda_service::main();
+    let _result = lambda_service::main().await;
 }

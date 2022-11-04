@@ -32,4 +32,4 @@ run-native: build-debug
 		--host 0.0.0.0 --port 3000
 
 test:
-	@echo "PASS"
+	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} cargo test
