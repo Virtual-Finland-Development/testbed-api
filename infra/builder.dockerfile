@@ -26,16 +26,6 @@ FROM builder as devenv
 RUN cargo install cargo-watch 
 
 ###
-# Install SAM Cli
-###
-RUN yum install -y unzip
-RUN curl -LO https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip; \
-    unzip -q aws-sam-cli-linux-x86_64.zip -d sam-installation; \
-    ./sam-installation/install; \
-    sam --version; \
-    rm -rf aws-sam-cli-linux-x86_64.zip sam-installation
-
-###
 # Install pulumi & python for infra
 ###
 ENV PATH="${PATH}:/root/.pulumi/bin"
