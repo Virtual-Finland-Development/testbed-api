@@ -10,17 +10,32 @@ A backend service for frontend client calls to testbed
 
 ### Requirements
 
-- SAM cli: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html
 - Docker: https://docs.docker.com/get-docker/
-- make: https://www.gnu.org/software/make/
+- make: https://www.gnu.org/software/make/ (or use `docker-compose` commands directly)
 
-### Run locally
+### Run locally with hot reloading
 
 ```bash
-make run-native
+make dev
+```
+
+or with docker-compose
+
+```bash
+docker compose up
 ```
 
 The server should respond to http://localhost:3000
+
+### Run locally with SAM Client
+
+Requires a local installation of SAM Client:
+
+- SAM cli: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html
+
+```bash
+make run-sam
+```
 
 ## References
 
@@ -36,6 +51,11 @@ The server should respond to http://localhost:3000
 - https://crates.io/crates/serde
 - https://crates.io/crates/tokio
 - https://crates.io/crates/reqwest
+
+### Hot reloading
+
+- https://github.com/watchexec/cargo-watch
+- https://github.com/rksm/rust-hot-reload
 
 ### Docker
 

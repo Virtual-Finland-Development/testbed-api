@@ -2,7 +2,7 @@ use http::{HeaderMap, StatusCode};
 use serde_json::json;
 use std::fs;
 
-use crate::api::utils::{get_cors_response_headers, APIRoutingResponse, ParsedRequest};
+use crate::api::utils::{get_cors_response_headers, APIRoutingResponse, ParsedRequest, get_default_headers};
 
 pub async fn cors_preflight_response(_request: ParsedRequest) -> APIRoutingResponse {
     return APIRoutingResponse {
@@ -56,7 +56,7 @@ pub async fn health_check(_request: ParsedRequest) -> APIRoutingResponse {
     return APIRoutingResponse {
         status_code: StatusCode::OK,
         body: "OK".to_string(),
-        headers: Default::default(),
+        headers: get_default_headers(),
     };
 }
 

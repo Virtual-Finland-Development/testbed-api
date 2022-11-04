@@ -4,16 +4,19 @@ version = "1.0.0"
 edition = "2021"
 
 [dependencies]
-lambda_http = "0.7.0"
-serde_json = "1.0.0"
-serde = { version = "1.0.0", features = ["derive"] }
-tokio = { version = "1.21.2", features = ["full"] }
+hot-lib-reloader = { version = "^0.6", optional = true }
 log = "0.4.14"
-simple_logger = "3.0.0"
-http = "0.2.5"
-reqwest = { version = "0.11.12", features = ["json"] }
-hyper = "0.14.12"
+simple_logger = "4.0.0"
+tokio = { version = "1.21.2", features = ["full"] }
+api_app = { path = "./src/lib/api_app" }
+http_server = { path = "./src/lib/http_server" }
+lambda_service = { path = "./src/lib/lambda_service" }
+lambda_http = "0.7.0"
 
 [[bin]]
 name = "bootstrap"
 path = "src/main.rs"
+
+[features]
+default = []
+local-dev = ["dep:hot-lib-reloader"]

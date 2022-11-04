@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod utils_tests {
-    use crate::api::utils::parse_router_request;
+    use api_app::api::utils::parse_router_request;
     use lambda_http::{Body, Request};
 
     #[test]

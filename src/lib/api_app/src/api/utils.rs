@@ -69,3 +69,14 @@ pub fn get_cors_response_headers() -> HeaderMap {
 
     return headers;
 }
+
+pub fn get_default_headers() -> HeaderMap {
+    let mut headers = HeaderMap::new();
+
+    headers.insert(
+        HeaderName::from_static("content-type"),
+        HeaderValue::from_static("text/plain"),
+    );
+
+    return headers;
+}

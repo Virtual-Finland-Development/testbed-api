@@ -6,7 +6,7 @@ use lambda_http::{Body as LambdaBody, Request as LambdaRequest};
 use std::convert::Infallible;
 use std::net::SocketAddr;
 
-use crate::api;
+use api_app::api;
 
 async fn handle(request: HyperRequest<HyperBody>) -> Result<HyperResponse<HyperBody>, Infallible> {
     // Transform Hyper request into Lambda request
@@ -39,7 +39,7 @@ async fn handle(request: HyperRequest<HyperBody>) -> Result<HyperResponse<HyperB
     Ok(hyper_response)
 }
 
-pub async fn main() {
+pub async fn run() {
     // Construct our SocketAddr to listen on...
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
 
