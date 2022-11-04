@@ -7,6 +7,10 @@ use http_server as service;
 #[cfg(not(feature = "local-dev"))]
 use lambda_service as service;
 
+// Hot reloading for local development
+//
+// @see: https://github.com/rksm/rust-hot-reload
+//
 #[cfg(feature = "local-dev")]
 #[hot_lib_reloader::hot_module(dylib = "lib")]
 mod hot_lib {

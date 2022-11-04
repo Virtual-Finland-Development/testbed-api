@@ -32,7 +32,3 @@ pub async fn handler(
 
     Ok(api_response)
 }
-
-pub async fn test() {
-    log::info!("TEST")
-}
