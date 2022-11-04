@@ -21,13 +21,12 @@ with docker-compose:
 docker compose up
 ```
 
-with make:
+or with make:
 
 ```bash
 make dev
 ```
 
-````bash
 The server should respond to http://localhost:3000
 
 ### Natively with rust
@@ -39,7 +38,7 @@ Requires rust and cargo watch to be installed
 
 ```base
 cargo watch -x 'run --features local-dev'
-````
+```
 
 ### Simulate the lambda runtime with a local SAM Client
 
