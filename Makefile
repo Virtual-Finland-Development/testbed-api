@@ -24,4 +24,4 @@ run-sam: build
 		--host 0.0.0.0 --port 3000
 
 test:
-	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} cargo test
+	docker run --rm -v `pwd`:/builder -w /builder ${builder-image} cargo test
