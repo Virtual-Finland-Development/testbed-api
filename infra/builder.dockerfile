@@ -19,6 +19,12 @@ RUN yum install -y gcc gcc-c++ openssl-devel zip; \
     rustc --version;
 
 FROM builder as devenv
+
+###
+# Install cargo extensions
+###
+RUN cargo install cargo-watch 
+
 ###
 # Install SAM Cli
 ###

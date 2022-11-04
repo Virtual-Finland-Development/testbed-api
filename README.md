@@ -13,21 +13,35 @@ A backend service for frontend client calls to testbed
 - Docker: https://docs.docker.com/get-docker/
 - make: https://www.gnu.org/software/make/ (or use `docker-compose` commands directly)
 
-### Run locally with hot reloading
+### Run with docker with hot reloading
 
-```bash
-make dev
-```
-
-or with docker-compose
+with docker-compose:
 
 ```bash
 docker compose up
 ```
 
+with make:
+
+```bash
+make dev
+```
+
+````bash
 The server should respond to http://localhost:3000
 
-### Run locally with SAM Client
+### Natively with rust
+
+Requires rust and cargo watch to be installed
+
+- rust: https://www.rust-lang.org/tools/install
+- cargo watch: https://github.com/watchexec/cargo-watch
+
+```base
+cargo watch -x 'run --features local-dev'
+````
+
+### Simulate the lambda runtime with a local SAM Client
 
 Requires a local installation of SAM Client:
 
