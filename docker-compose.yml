@@ -2,15 +2,16 @@ version: "3.7"
 
 services:
   testbed-api:
-    image: virtualfinland/testbed-api-builder
+    image: virtualfinland/testbed-api-builder:devenv
     build:
       context: .
       dockerfile: infra/builder.dockerfile
+      target: devenv
     command: ["sh", "-c", "cargo watch -x 'run --features local-dev'"]
     working_dir: /builder
     volumes:
       - ./:/builder
     ports:
-      - 3000:3000
+      - 3003:3000
     stdin_open: true
     tty: true
