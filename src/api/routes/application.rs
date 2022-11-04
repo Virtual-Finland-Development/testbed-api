@@ -52,6 +52,14 @@ pub async fn openapi_spec(_request: ParsedRequest) -> APIRoutingResponse {
     };
 }
 
+pub async fn health_check(_request: ParsedRequest) -> APIRoutingResponse {
+    return APIRoutingResponse {
+        status_code: StatusCode::OK,
+        body: "OK".to_string(),
+        headers: Default::default(),
+    };
+}
+
 pub async fn not_found(_request: ParsedRequest) -> APIRoutingResponse {
     return APIRoutingResponse {
         status_code: StatusCode::NOT_FOUND,
