@@ -1,3 +1,4 @@
+use log;
 use log::LevelFilter;
 use simple_logger::SimpleLogger;
 mod tests;
@@ -21,10 +22,6 @@ mod hot_lib {
     // expose a type to subscribe to lib load events
     #[lib_change_subscription]
     pub fn subscribe() -> hot_lib_reloader::LibReloadObserver {}
-
-    // a monotonically increasing counter (starting with 0) that counts library reloads
-    #[lib_version]
-    pub fn version() -> usize {}
 }
 
 #[tokio::main]
@@ -41,7 +38,6 @@ async fn main() {
         break;
         #[cfg(feature = "local-dev")]
         {
-            println!("waiting for library change...");
             // Wait until a library change happens (but the old lib is still loader)
             let token = hot_lib::subscribe().wait_for_about_to_reload();
             // while token exists, reload is blocked
@@ -49,7 +45,6 @@ async fn main() {
 
             // wait for reload to be done
             hot_lib::subscribe().wait_for_reload();
-            println!("... library has been reloaded {} times", hot_lib::version());
         }
     }
 }
