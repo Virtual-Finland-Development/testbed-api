@@ -20,7 +20,7 @@ with docker-compose:
 docker compose up
 ```
 
-After a log message: ` Running 'target/debug/bootstrap'`, the server should respond to http://localhost:3003 with a redirect to the swagger documentation page
+After a log message: ` Running 'target/debug/bootstrap'`, the server should respond to http://localhost:3003 with a swagger documentation page.
 
 ### Natively with rust
 
