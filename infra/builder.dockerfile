@@ -26,17 +26,6 @@ FROM builder as devenv
 RUN cargo install cargo-watch 
 
 ###
-# Install pulumi & python for infra
-###
-ENV PATH="${PATH}:/root/.pulumi/bin"
-
-RUN yum install -y python3 tar gzip; \
-    curl -fsSL https://get.pulumi.com | sh; \
-    ${HOME}/.pulumi/bin/pulumi version;
-COPY ./infra/requirements.txt /tmp/requirements.txt
-RUN python3 -m pip install -r /tmp/requirements.txt
-
-###
 # Cleanup
 ###
 RUN yum clean all; \
