@@ -4,11 +4,27 @@ use http::StatusCode;
 use lambda_http::aws_lambda_events::query_map::QueryMap;
 use lambda_http::{Body, Request, RequestExt};
 
+use crate::api::errors::APIRoutingError;
+
 #[derive(Debug)]
 pub struct APIRoutingResponse {
     pub status_code: StatusCode, // http status code, e.g. 200, 404, 500
     pub body: String,
     pub headers: HeaderMap,
+}
+
+impl APIRoutingResponse {
+    pub fn from_routing_error(error: APIRoutingError) -> APIRoutingResponse {
+        let status_code = error.get_status_code();
+        let body = error.to_string();
+        let headers = get_cors_response_headers();
+
+        APIRoutingResponse {
+            status_code,
+            body,
+            headers,
+        }
+    }
 }
 
 pub struct ParsedRequest {

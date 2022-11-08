@@ -1,12 +1,27 @@
+use crate::api::errors::APIRoutingError;
 use crate::api::utils::{APIRoutingResponse, ParsedRequest};
 
 pub mod application;
 pub mod testbed;
 
 /**
- * This is the router for the API.
+ * Exec API routing
  */
 pub async fn exec_router_request(parsed_request: ParsedRequest) -> APIRoutingResponse {
+    match get_router_response(parsed_request).await {
+        Ok(response) => return response,
+        Err(e) => {
+            return APIRoutingResponse::from_routing_error(e);
+        }
+    }
+}
+
+/**
+ * API router
+ */
+pub async fn get_router_response(
+    parsed_request: ParsedRequest,
+) -> Result<APIRoutingResponse, APIRoutingError> {
     let method = parsed_request.method.as_str();
     let path = parsed_request.path.as_str();
 

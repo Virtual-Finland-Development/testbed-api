@@ -4,6 +4,7 @@ use log;
 
 use crate::api::utils::parse_router_request;
 
+mod errors;
 mod routes;
 pub mod utils;
 

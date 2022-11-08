@@ -4,6 +4,7 @@ use http::{header::HeaderName, HeaderMap, HeaderValue, StatusCode};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JSONValue};
 
+use crate::api::errors::APIRoutingError;
 use crate::api::{
     routes::application::get_external_service_bad_response,
     utils::{get_cors_response_headers, APIRoutingResponse, ParsedRequest},
@@ -20,7 +21,9 @@ struct ProxyRequestInput {
     headers: HashMap<String, String>,
 }
 
-pub async fn engage_reverse_proxy_request(request: ParsedRequest) -> APIRoutingResponse {
+pub async fn engage_reverse_proxy_request(
+    request: ParsedRequest,
+) -> Result<APIRoutingResponse, APIRoutingError> {
     let request_body_as_text = request.body.as_str();
     log::debug!("Input: {:#?}", request_body_as_text);
     let request_input: ProxyRequestInput = serde_json::from_str(request_body_as_text).unwrap();
@@ -28,14 +31,14 @@ pub async fn engage_reverse_proxy_request(request: ParsedRequest) -> APIRoutingR
     // Access control list check
     let access_denied = access_control_check(request_input.url.as_str());
     if access_denied {
-        return APIRoutingResponse {
+        return Ok(APIRoutingResponse {
             status_code: StatusCode::UNAUTHORIZED,
             body: json!({
                 "message": "Access Denied".to_string(),
             })
             .to_string(),
             headers: get_cors_response_headers(),
-        };
+        });
     }
 
     // Transform headers
@@ -63,11 +66,12 @@ pub async fn engage_reverse_proxy_request(request: ParsedRequest) -> APIRoutingR
     }
 
     let response_output = response.json::<JSONValue>().await.unwrap();
-    return APIRoutingResponse {
+
+    return Ok(APIRoutingResponse {
         status_code: response_status,
         body: serde_json::to_string(&response_output).unwrap(),
         headers: get_cors_response_headers(),
-    };
+    });
 }
 
 /**
