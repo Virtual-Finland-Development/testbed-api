@@ -39,6 +39,7 @@ testbed_api_function = aws.lambda_.Function(
     handler="bootstrap",  # contents of the zip file
     code=pulumi.FileArchive("./build/rust.zip"),
     timeout=15,
+    memory_size=512,
     tags={
         "Name": "testbed-api",
         "Environment": pulumi.get_stack(),
