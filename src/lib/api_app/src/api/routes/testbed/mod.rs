@@ -1,6 +1,6 @@
-use std::{collections::HashMap, str::FromStr};
+use std::{collections::HashMap};
 
-use http::{header::HeaderName, HeaderMap, HeaderValue, StatusCode};
+use http::{HeaderMap, StatusCode};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JSONValue};
 
@@ -41,14 +41,9 @@ pub async fn engage_reverse_proxy_request(
     }
 
     // Transform headers
-    let mut proxy_headers = HeaderMap::new();
-    for (key, value) in request_input.headers {
-        proxy_headers.insert(
-            HeaderName::from_str(key.as_str()).unwrap(),
-            HeaderValue::from_str(value.as_str()).unwrap(),
-        );
-    }
-
+    let proxy_headers = HeaderMap::try_from(&request_input.headers).expect("Failed to parse headers");
+    
+    // Execute request
     let response = reqwest::Client::new()
         .post(request_input.url)
         .body(serde_json::to_string(&request_input.data).unwrap())
