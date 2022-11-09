@@ -41,7 +41,7 @@ pub async fn engage_reverse_proxy_request(
     }
 
     // Transform headers
-    let proxy_headers = HeaderMap::try_from(&request_input.headers).expect("Failed to parse headers");
+    let proxy_headers = HeaderMap::try_from(&request_input.headers)?;
     
     // Execute request
     let response = reqwest::Client::new()

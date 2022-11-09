@@ -46,6 +46,12 @@ impl From<std::string::String> for APIRoutingError {
     }
 }
 
+impl From<http::Error> for APIRoutingError {
+    fn from(_: http::Error) -> Self {
+        APIRoutingError::UnprocessableEntity
+    }
+}
+
 impl std::fmt::Display for APIRoutingError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
