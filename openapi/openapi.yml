@@ -10,6 +10,14 @@ paths:
       responses:
         "303":
           description: Redirect to swagger docs at /docs
+  /health:
+    get:
+      responses:
+        "200":
+          description: Health check response
+          content:
+            text/plain:
+              example: "OK"
   /docs:
     get:
       responses:

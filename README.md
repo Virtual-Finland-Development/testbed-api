@@ -10,17 +10,39 @@ A backend service for frontend client calls to testbed
 
 ### Requirements
 
-- SAM cli: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html
 - Docker: https://docs.docker.com/get-docker/
-- make: https://www.gnu.org/software/make/
 
-### Run locally
+### Run with docker with hot reloading
+
+with docker-compose:
 
 ```bash
-make run-native
+docker compose up
 ```
 
-The server should respond to http://localhost:3000
+After a log message: ` Running 'target/debug/bootstrap'`, the server should respond to http://localhost:3003 with a swagger documentation page.
+
+### Natively with rust
+
+Requires rust and cargo watch to be installed
+
+- rust: https://www.rust-lang.org/tools/install
+- cargo watch: https://github.com/watchexec/cargo-watch
+
+```base
+cargo watch -x 'run --features local-dev'
+```
+
+### Simulate the lambda runtime with a local SAM Client
+
+Requires a local installation of SAM Client:
+
+- SAM cli: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html
+- make: https://www.gnu.org/software/make/
+
+```bash
+make run-sam
+```
 
 ## References
 
@@ -36,6 +58,11 @@ The server should respond to http://localhost:3000
 - https://crates.io/crates/serde
 - https://crates.io/crates/tokio
 - https://crates.io/crates/reqwest
+
+### Hot reloading
+
+- https://github.com/watchexec/cargo-watch
+- https://github.com/rksm/rust-hot-reload
 
 ### Docker
 

@@ -6,30 +6,26 @@ build: install
 	docker run --rm -v `pwd`:/builder -w /builder ${builder-image} cargo build --release --target-dir /builder/infra/build/target
 	docker run --rm -v `pwd`:/builder -w /builder ${builder-image} zip -j infra/build/rust.zip ./infra/build/target/release/bootstrap
 	docker run --rm -v `pwd`:/builder -w /builder ${builder-image} zip -r infra/build/rust.zip ./openapi
+	
 deploy: build deploy-with-pulumi
 deploy-with-pulumi:
 	pulumi -C infra up --yes
+
+install-dev:
+	docker build --target devenv -t ${builder-image}:devenv -f infra/builder.dockerfile .
+dev: install-dev
+	docker run -it --rm -p 3003:3000 \
+		-v `pwd`:/builder -w /builder \
+		virtualfinland/testbed-api-builder:devenv \
+		cargo watch -x 'run --features local-dev'
+
+run-sam: build
+	sam local start-api --template ./infra/sam-template.yml \
+		--host 0.0.0.0 --port 3003
+
+test: install
+	docker run --rm -v `pwd`:/builder -w /builder ${builder-image} cargo test
+
 clean: install
 	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} cargo clean --target-dir /builder/infra/build/target
 	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} rm infra/build/*.zip || true
-
-install-debug:
-	docker build --target devenv -t ${builder-image} -f infra/builder.dockerfile .
-build-debug: install-debug
-	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} cargo build --target-dir /builder/infra/build/target
-	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} zip -j infra/build/rust-debug.zip ./infra/build/target/debug/bootstrap
-	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} zip -r infra/build/rust-debug.zip ./openapi
-
-run: build-debug
-	docker run -it --rm -p 3000:3000 \
-		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v `pwd`:/builder -w /builder \
-		virtualfinland/testbed-api-builder \
-		sam local start-api --template ./infra/sam-template.yml \
-		--host 0.0.0.0 --port 3000
-run-native: build-debug
-	sam local start-api --template ./infra/sam-template.yml \
-		--host 0.0.0.0 --port 3000
-
-test:
-	@echo "PASS"

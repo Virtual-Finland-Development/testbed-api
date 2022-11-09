@@ -19,26 +19,11 @@ RUN yum install -y gcc gcc-c++ openssl-devel zip; \
     rustc --version;
 
 FROM builder as devenv
-###
-# Install SAM Cli
-###
-RUN yum install -y unzip
-RUN curl -LO https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip; \
-    unzip -q aws-sam-cli-linux-x86_64.zip -d sam-installation; \
-    ./sam-installation/install; \
-    sam --version; \
-    rm -rf aws-sam-cli-linux-x86_64.zip sam-installation
 
 ###
-# Install pulumi & python for infra
+# Install cargo extensions
 ###
-ENV PATH="${PATH}:/root/.pulumi/bin"
-
-RUN yum install -y python3 tar gzip; \
-    curl -fsSL https://get.pulumi.com | sh; \
-    ${HOME}/.pulumi/bin/pulumi version;
-COPY ./infra/requirements.txt /tmp/requirements.txt
-RUN python3 -m pip install -r /tmp/requirements.txt
+RUN cargo install cargo-watch 
 
 ###
 # Cleanup
