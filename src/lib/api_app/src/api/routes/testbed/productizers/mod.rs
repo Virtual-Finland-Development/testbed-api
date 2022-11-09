@@ -17,7 +17,9 @@ fn parse_testbed_request_headers(request: ParsedRequest) -> Result<HeaderMap, AP
         request
             .headers
             .get("authorization")
-            .ok_or(APIRoutingError::UnprocessableEntity)?
+            .ok_or(APIRoutingError::UnprocessableEntity(
+                "No authorization header".to_string(),
+            ))?
             .clone(),
     );
     request_headers.insert(
@@ -25,7 +27,9 @@ fn parse_testbed_request_headers(request: ParsedRequest) -> Result<HeaderMap, AP
         request
             .headers
             .get("x-authorization-provider")
-            .ok_or(APIRoutingError::UnprocessableEntity)?
+            .ok_or(APIRoutingError::UnprocessableEntity(
+                "No authorization provider header".to_string(),
+            ))?
             .clone(),
     );
 
