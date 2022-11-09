@@ -4,14 +4,13 @@ use http::{header::HeaderName, HeaderMap, HeaderValue, StatusCode};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JSONValue};
 
-use crate::api::errors::APIRoutingError;
 use crate::api::{
+    errors::APIRoutingError,
     routes::application::get_external_service_bad_response,
     utils::{get_cors_response_headers, APIRoutingResponse, ParsedRequest},
 };
 
 pub mod productizers;
-mod testbed_request_utils;
 
 #[derive(Deserialize, Serialize, Debug)]
 struct ProxyRequestInput {
@@ -85,7 +84,7 @@ fn access_control_check(proxy_destination_url: &str) -> bool {
     let acl = ["https://consent.testbed.fi/", "https://gateway.testbed.fi/"];
 
     let mut acl_is_satisfied = false;
-    for url in acl.iter() {
+    for url in acl {
         if proxy_destination_url.starts_with(url) {
             acl_is_satisfied = true;
             break;

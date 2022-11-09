@@ -2,8 +2,10 @@ use http::{HeaderMap, StatusCode, HeaderValue};
 use serde_json::json;
 use std::fs;
 
-use crate::api::errors::APIRoutingError;
-use crate::api::utils::{get_cors_response_headers, get_default_headers, APIRoutingResponse, ParsedRequest};
+use crate::api::{
+    errors::APIRoutingError,
+    utils::{get_cors_response_headers, get_default_headers, APIRoutingResponse, ParsedRequest}
+};
 
 pub async fn cors_preflight_response(
     _request: ParsedRequest,

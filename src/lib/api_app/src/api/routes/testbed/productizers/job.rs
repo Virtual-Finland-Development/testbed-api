@@ -3,10 +3,12 @@ use log;
 use reqwest;
 use serde_json::Value as JSONValue;
 
-use crate::api::errors::APIRoutingError;
-use crate::api::routes::application::get_external_service_bad_response;
-use crate::api::routes::testbed::testbed_request_utils::parse_testbed_request_headers;
-use crate::api::utils::{get_cors_response_headers, APIRoutingResponse, ParsedRequest};
+use crate::api:: {
+    errors::APIRoutingError,
+    routes::application::get_external_service_bad_response,
+    utils::{get_cors_response_headers, APIRoutingResponse, ParsedRequest}
+};
+use super::parse_testbed_request_headers;
 
 /**
  * Get job postings

@@ -1,5 +1,7 @@
-use crate::api::errors::APIRoutingError;
-use crate::api::utils::{APIRoutingResponse, ParsedRequest};
+use crate::api::{
+    errors::APIRoutingError,
+    utils::{APIRoutingResponse, ParsedRequest}
+};
 
 pub mod application;
 pub mod testbed;
