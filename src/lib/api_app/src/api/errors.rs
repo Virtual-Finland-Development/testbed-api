@@ -10,6 +10,8 @@ pub enum APIRoutingError {
     Forbidden,
     // 404
     NotFound,
+    // 422
+    UnprocessableEntity,
     // 500
     InternalServerError,
     // 502
@@ -27,6 +29,7 @@ impl APIRoutingError {
             APIRoutingError::Unauthorized => StatusCode::UNAUTHORIZED,
             APIRoutingError::Forbidden => StatusCode::FORBIDDEN,
             APIRoutingError::NotFound => StatusCode::NOT_FOUND,
+            APIRoutingError::UnprocessableEntity => StatusCode::UNPROCESSABLE_ENTITY,
             APIRoutingError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
             APIRoutingError::BadGateway => StatusCode::BAD_GATEWAY,
             APIRoutingError::ServiceUnavailable => StatusCode::SERVICE_UNAVAILABLE,
@@ -37,6 +40,12 @@ impl APIRoutingError {
 
 impl std::error::Error for APIRoutingError {}
 
+impl From<Box<dyn std::error::Error>> for APIRoutingError {
+    fn from(_: Box<dyn std::error::Error>) -> Self {
+        APIRoutingError::InternalServerError
+    }
+}
+
 impl std::fmt::Display for APIRoutingError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
@@ -44,6 +53,7 @@ impl std::fmt::Display for APIRoutingError {
             APIRoutingError::Unauthorized => write!(f, "Unauthorized"),
             APIRoutingError::Forbidden => write!(f, "Forbidden"),
             APIRoutingError::NotFound => write!(f, "Not found"),
+            APIRoutingError::UnprocessableEntity => write!(f, "Validation error"),
             APIRoutingError::InternalServerError => write!(f, "Internal server error"),
             APIRoutingError::BadGateway => write!(f, "Bad gateway"),
             APIRoutingError::ServiceUnavailable => write!(f, "Service unavailable"),
@@ -59,6 +69,7 @@ impl From<reqwest::Error> for APIRoutingError {
             StatusCode::UNAUTHORIZED => APIRoutingError::Unauthorized,
             StatusCode::FORBIDDEN => APIRoutingError::Forbidden,
             StatusCode::NOT_FOUND => APIRoutingError::NotFound,
+            StatusCode::UNPROCESSABLE_ENTITY => APIRoutingError::UnprocessableEntity,
             StatusCode::INTERNAL_SERVER_ERROR => APIRoutingError::InternalServerError,
             StatusCode::BAD_GATEWAY => APIRoutingError::BadGateway,
             StatusCode::SERVICE_UNAVAILABLE => APIRoutingError::ServiceUnavailable,
