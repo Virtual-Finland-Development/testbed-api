@@ -2,7 +2,7 @@ use std::{collections::HashMap};
 
 use http::{HeaderMap, StatusCode};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value as JSONValue};
+use serde_json::{Value as JSONValue};
 
 use crate::api::{
     errors::APIRoutingError,
