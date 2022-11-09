@@ -40,8 +40,8 @@ impl APIRoutingError {
 
 impl std::error::Error for APIRoutingError {}
 
-impl From<Box<dyn std::error::Error>> for APIRoutingError {
-    fn from(_: Box<dyn std::error::Error>) -> Self {
+impl From<std::string::String> for APIRoutingError {
+    fn from(_: std::string::String) -> Self {
         APIRoutingError::InternalServerError
     }
 }

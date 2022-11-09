@@ -15,7 +15,7 @@ pub async fn find_job_postings(
     request: ParsedRequest,
 ) -> Result<APIRoutingResponse, APIRoutingError> {
     let request_input = serde_json::from_str(request.body.as_str()).unwrap();
-    let request_headers = parse_testbed_request_headers(request);
+    let request_headers = parse_testbed_request_headers(request)?;
     return fetch_job_postings(request_input, request_headers).await;
 }
 

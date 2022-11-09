@@ -14,16 +14,20 @@ pub struct APIRoutingResponse {
 }
 
 impl APIRoutingResponse {
-    pub fn from_routing_error(error: APIRoutingError) -> APIRoutingResponse {
-        let status_code = error.get_status_code();
-        let body = error.to_string();
-        let headers = get_cors_response_headers();
-
-        APIRoutingResponse {
+    pub fn new(status_code: StatusCode, body: &str, headers: HeaderMap) -> Self {
+        Self {
             status_code,
-            body,
+            body: body.to_string(),
             headers,
         }
+    }
+
+    pub fn from_routing_error(error: APIRoutingError) -> Self {
+        Self::new(
+            error.get_status_code(),
+            error.to_string().as_ref(),
+            get_cors_response_headers(),
+        )
     }
 }
 

@@ -22,14 +22,10 @@ pub async fn exec_router_request(parsed_request: ParsedRequest) -> APIRoutingRes
 pub async fn get_router_response(
     parsed_request: ParsedRequest,
 ) -> Result<APIRoutingResponse, APIRoutingError> {
-    let method = parsed_request.method.as_str();
-    let path = parsed_request.path.as_str();
-
-    if method == "OPTIONS" {
-        return application::cors_preflight_response(parsed_request).await;
-    }
-
-    match (method, path) {
+    match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
+        ("OPTIONS", _) => {
+            return application::cors_preflight_response(parsed_request).await;
+        }
         ("GET", "/") => {
             return application::index(parsed_request).await;
         }
