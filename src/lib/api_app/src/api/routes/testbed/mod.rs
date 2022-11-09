@@ -30,14 +30,7 @@ pub async fn engage_reverse_proxy_request(
     // Access control list check
     let access_denied = access_control_check(request_input.url.as_str());
     if access_denied {
-        return Ok(APIRoutingResponse {
-            status_code: StatusCode::UNAUTHORIZED,
-            body: json!({
-                "message": "Access Denied".to_string(),
-            })
-            .to_string(),
-            headers: get_cors_response_headers(),
-        });
+        return Ok(APIRoutingResponse::new(StatusCode::UNAUTHORIZED, "Access Denied", get_cors_response_headers()))
     }
 
     // Transform headers
@@ -49,8 +42,7 @@ pub async fn engage_reverse_proxy_request(
         .body(serde_json::to_string(&request_input.data).unwrap())
         .headers(proxy_headers)
         .send()
-        .await
-        .unwrap();
+        .await?;
 
     log::debug!("Response: {:#?}", response);
 
@@ -59,13 +51,9 @@ pub async fn engage_reverse_proxy_request(
         return get_external_service_bad_response(response_status);
     }
 
-    let response_output = response.json::<JSONValue>().await.unwrap();
+    let response_output = response.json::<JSONValue>().await?;
 
-    return Ok(APIRoutingResponse {
-        status_code: response_status,
-        body: serde_json::to_string(&response_output).unwrap(),
-        headers: get_cors_response_headers(),
-    });
+    Ok(APIRoutingResponse::new(response_status, &serde_json::to_string(&response_output)?, get_cors_response_headers()))
 }
 
 /**

@@ -51,6 +51,11 @@ impl From<http::Error> for APIRoutingError {
         APIRoutingError::UnprocessableEntity(e.to_string())
     }
 }
+impl From<serde_json::Error> for APIRoutingError {
+    fn from(e: serde_json::Error) -> Self {
+        APIRoutingError::UnprocessableEntity(e.to_string())
+    }
+}
 
 impl std::fmt::Display for APIRoutingError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {

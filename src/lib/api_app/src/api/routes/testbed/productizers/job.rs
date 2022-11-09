@@ -16,7 +16,7 @@ use super::parse_testbed_request_headers;
 pub async fn find_job_postings(
     request: ParsedRequest,
 ) -> Result<APIRoutingResponse, APIRoutingError> {
-    let request_input = serde_json::from_str(request.body.as_str()).unwrap();
+    let request_input = serde_json::from_str(request.body.as_str())?;
     let request_headers = parse_testbed_request_headers(request)?;
     return fetch_job_postings(request_input, request_headers).await;
 }
@@ -33,8 +33,7 @@ async fn fetch_job_postings(
         .json(&request_input)
         .headers(request_headers)
         .send()
-        .await
-        .unwrap();
+        .await?;
 
     log::debug!("Response: {:#?}", response);
 
@@ -43,11 +42,7 @@ async fn fetch_job_postings(
         return get_external_service_bad_response(response_status);
     }
 
-    let response_output = response.json::<JSONValue>().await.unwrap();
+    let response_output = response.json::<JSONValue>().await?;
 
-    Ok(APIRoutingResponse {
-        status_code: response_status,
-        body: serde_json::to_string(&response_output).unwrap(),
-        headers: get_cors_response_headers(),
-    })
+    Ok(APIRoutingResponse::new(response_status, &serde_json::to_string(&response_output)?, get_cors_response_headers()))
 }
