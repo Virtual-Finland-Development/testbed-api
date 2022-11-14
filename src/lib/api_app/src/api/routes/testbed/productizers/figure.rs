@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use crate::api:: {
     errors::APIRoutingError,
     routes::application::get_external_service_bad_response,
-    utils::{get_cors_response_headers, APIRoutingResponse, ParsedRequest}
+    utils::{get_default_headers, APIRoutingResponse, ParsedRequest}
 };
 use super::parse_testbed_request_headers;
 
@@ -64,5 +64,5 @@ async fn fetch_population(
     }
 
     let response_output = response.json::<PopulationResponse>().await?;
-    Ok(APIRoutingResponse::new(response_status, &serde_json::to_string(&response_output)?, get_cors_response_headers()))
+    Ok(APIRoutingResponse::new(response_status, &serde_json::to_string(&response_output)?, get_default_headers()))
 }

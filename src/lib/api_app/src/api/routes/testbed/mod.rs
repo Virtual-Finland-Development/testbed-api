@@ -7,7 +7,7 @@ use serde_json::{Value as JSONValue};
 use crate::api::{
     errors::APIRoutingError,
     routes::application::get_external_service_bad_response,
-    utils::{get_cors_response_headers, APIRoutingResponse, ParsedRequest},
+    utils::{get_default_headers, APIRoutingResponse, ParsedRequest},
 };
 
 pub mod productizers;
@@ -30,7 +30,7 @@ pub async fn engage_reverse_proxy_request(
     // Access control list check
     let access_denied = access_control_check(request_input.url.as_str());
     if access_denied {
-        return Ok(APIRoutingResponse::new(StatusCode::UNAUTHORIZED, "Access Denied", get_cors_response_headers()))
+        return Ok(APIRoutingResponse::new(StatusCode::UNAUTHORIZED, "Access Denied", get_default_headers()))
     }
 
     // Transform headers
@@ -53,7 +53,7 @@ pub async fn engage_reverse_proxy_request(
 
     let response_output = response.json::<JSONValue>().await?;
 
-    Ok(APIRoutingResponse::new(response_status, &serde_json::to_string(&response_output)?, get_cors_response_headers()))
+    Ok(APIRoutingResponse::new(response_status, &serde_json::to_string(&response_output)?, get_default_headers()))
 }
 
 /**

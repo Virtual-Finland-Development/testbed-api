@@ -3,6 +3,7 @@ use http::HeaderValue;
 use http::StatusCode;
 use lambda_http::aws_lambda_events::query_map::QueryMap;
 use lambda_http::{Body, Request, RequestExt};
+use serde_json::json;
 
 use crate::api::errors::APIRoutingError;
 
@@ -25,7 +26,11 @@ impl APIRoutingResponse {
     pub fn from_routing_error(error: APIRoutingError) -> Self {
         Self::new(
             error.get_status_code(),
-            error.to_string().as_ref(),
+            json!({
+                "message": error.to_string(),
+            })
+            .to_string()
+            .as_ref(),
             get_cors_response_headers(),
         )
     }
@@ -91,6 +96,17 @@ pub fn get_cors_response_headers() -> HeaderMap {
 }
 
 pub fn get_default_headers() -> HeaderMap {
+    let mut cors_headers = get_cors_response_headers();
+
+    cors_headers.insert(
+        HeaderName::from_static("content-type"),
+        HeaderValue::from_static("application/json"),
+    );
+
+    return cors_headers;
+}
+
+pub fn get_plain_headers() -> HeaderMap {
     let mut headers = HeaderMap::new();
 
     headers.insert(
