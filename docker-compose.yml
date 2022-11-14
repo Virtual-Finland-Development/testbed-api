@@ -8,6 +8,8 @@ services:
       dockerfile: infra/builder.dockerfile
       target: devenv
     command: ["sh", "-c", "cargo watch -x 'run --features local-dev'"]
+    environment:
+      - RUST_BACKTRACE=1
     working_dir: /builder
     volumes:
       - ./:/builder
