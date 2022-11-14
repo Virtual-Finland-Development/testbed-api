@@ -5,7 +5,7 @@ pub enum APIRoutingError {
     // 400
     BadRequest,
     // 401
-    Unauthorized,
+    Unauthorized(String),
     // 403
     Forbidden,
     // 404
@@ -26,7 +26,7 @@ impl APIRoutingError {
     pub fn get_status_code(&self) -> StatusCode {
         match self {
             APIRoutingError::BadRequest => StatusCode::BAD_REQUEST,
-            APIRoutingError::Unauthorized => StatusCode::UNAUTHORIZED,
+            APIRoutingError::Unauthorized(_) => StatusCode::UNAUTHORIZED,
             APIRoutingError::Forbidden => StatusCode::FORBIDDEN,
             APIRoutingError::NotFound => StatusCode::NOT_FOUND,
             APIRoutingError::UnprocessableEntity(_) => StatusCode::UNPROCESSABLE_ENTITY,
@@ -61,7 +61,9 @@ impl std::fmt::Display for APIRoutingError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             APIRoutingError::BadRequest => write!(f, "Bad request"),
-            APIRoutingError::Unauthorized => write!(f, "Unauthorized"),
+            APIRoutingError::Unauthorized(message) => {
+                write!(f, "Access denied: {}", message)
+            }
             APIRoutingError::Forbidden => write!(f, "Forbidden"),
             APIRoutingError::NotFound => write!(f, "Not found"),
             APIRoutingError::UnprocessableEntity(message) => {
@@ -79,7 +81,7 @@ impl From<reqwest::Error> for APIRoutingError {
     fn from(e: reqwest::Error) -> Self {
         match e.status().unwrap_or_default() {
             StatusCode::BAD_REQUEST => APIRoutingError::BadRequest,
-            StatusCode::UNAUTHORIZED => APIRoutingError::Unauthorized,
+            StatusCode::UNAUTHORIZED => APIRoutingError::Unauthorized(e.to_string()),
             StatusCode::FORBIDDEN => APIRoutingError::Forbidden,
             StatusCode::NOT_FOUND => APIRoutingError::NotFound,
             StatusCode::UNPROCESSABLE_ENTITY => APIRoutingError::UnprocessableEntity(e.to_string()),

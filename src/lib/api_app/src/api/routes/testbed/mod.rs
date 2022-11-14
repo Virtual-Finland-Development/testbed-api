@@ -1,6 +1,6 @@
 use std::{collections::HashMap};
 
-use http::{HeaderMap, StatusCode};
+use http::{HeaderMap};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value as JSONValue};
 
@@ -30,7 +30,7 @@ pub async fn engage_reverse_proxy_request(
     // Access control list check
     let access_denied = access_control_check(request_input.url.as_str());
     if access_denied {
-        return Ok(APIRoutingResponse::new(StatusCode::UNAUTHORIZED, "Access Denied", get_default_headers()))
+        return Err(APIRoutingError::Unauthorized("Unknown destination".to_string()));
     }
 
     // Transform headers

@@ -31,7 +31,7 @@ impl APIRoutingResponse {
             })
             .to_string()
             .as_ref(),
-            get_cors_response_headers(),
+            get_default_headers(),
         )
     }
 }
