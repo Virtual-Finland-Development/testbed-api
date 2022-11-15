@@ -41,7 +41,7 @@ async fn handle(request: HyperRequest<HyperBody>) -> Result<HyperResponse<HyperB
 
 pub async fn run() {
     // Construct our SocketAddr to listen on...
-    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
+    let addr = SocketAddr::from(([0, 0, 0, 0], 3003));
 
     // And a MakeService to handle each connection...
     let make_service = make_service_fn(|_conn| async { Ok::<_, Infallible>(service_fn(handle)) });
