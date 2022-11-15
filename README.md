@@ -29,6 +29,12 @@ Requires rust and cargo watch to be installed
 - rust: https://www.rust-lang.org/tools/install
 - cargo watch: https://github.com/watchexec/cargo-watch
 
+```bash
+make run
+```
+
+or
+
 ```base
 cargo watch -x 'run --features local-dev'
 ```
