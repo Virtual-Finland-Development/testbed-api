@@ -11,6 +11,7 @@ A backend service for frontend client calls to testbed
 ### Requirements
 
 - Docker: https://docs.docker.com/get-docker/
+- make: https://www.gnu.org/software/make/ (optional)
 
 ### Run with docker with hot reloading
 
@@ -44,7 +45,6 @@ cargo watch -x 'run --features local-dev'
 Requires a local installation of SAM Client:
 
 - SAM cli: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html
-- make: https://www.gnu.org/software/make/
 
 ```bash
 make run-sam
