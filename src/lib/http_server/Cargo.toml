@@ -8,5 +8,5 @@ crate-type = ["rlib", "dylib"]
 path = "src/http_server.rs"
 
 [dependencies]
-hyper = { version = "0.14.12", optional = false }
+hyper = { version = "^0.14.23", optional = false }
 api_app = { path = "../api_app" }
