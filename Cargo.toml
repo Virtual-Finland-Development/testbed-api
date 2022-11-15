@@ -5,13 +5,10 @@ edition = "2021"
 
 [dependencies]
 hot-lib-reloader = { version = "^0.6", optional = true }
-log = "0.4.14"
-simple_logger = "4.0.0"
 tokio = { version = "1.21.2", features = ["full"] }
 api_app = { path = "./src/lib/api_app" }
 http_server = { path = "./src/lib/http_server" }
 lambda_service = { path = "./src/lib/lambda_service" }
-lambda_http = "0.7.0"
 
 [[bin]]
 name = "bootstrap"

@@ -1,6 +1,5 @@
-use log;
-use log::LevelFilter;
-use simple_logger::SimpleLogger;
+use api_app::log::LevelFilter;
+use api_app::simple_logger::SimpleLogger;
 mod tests;
 
 #[cfg(feature = "local-dev")]

@@ -9,6 +9,4 @@ path = "src/http_server.rs"
 
 [dependencies]
 hyper = { version = "0.14.12", optional = false }
-log = "0.4.14"
-lambda_http = "0.7.0"
 api_app = { path = "../api_app" }

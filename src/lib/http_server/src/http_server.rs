@@ -2,7 +2,7 @@ use hyper::service::{make_service_fn, service_fn};
 use hyper::{
     Body as HyperBody, Request as HyperRequest, Response as HyperResponse, Server as HyperServer,
 };
-use lambda_http::{Body as LambdaBody, Request as LambdaRequest};
+use api_app::lambda_http::{Body as LambdaBody, Request as LambdaRequest};
 use std::convert::Infallible;
 use std::net::SocketAddr;
 
