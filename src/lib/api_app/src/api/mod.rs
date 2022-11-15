@@ -2,8 +2,7 @@ use http::Response;
 use lambda_http::Request;
 use log;
 
-use crate::api::utils::parse_router_request;
-
+mod errors;
 mod routes;
 pub mod utils;
 
@@ -13,7 +12,7 @@ pub mod utils;
 pub async fn handler(
     request: Request,
 ) -> Result<lambda_http::Response<String>, std::convert::Infallible> {
-    let parsed_request = parse_router_request(request);
+    let parsed_request = utils::parse_router_request(request);
 
     log::info!("{} {}", parsed_request.method, parsed_request.path);
     let router_response = routes::exec_router_request(parsed_request).await;

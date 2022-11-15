@@ -1,16 +1,16 @@
-use std::{collections::HashMap, str::FromStr};
+use std::{collections::HashMap};
 
-use http::{header::HeaderName, HeaderMap, HeaderValue, StatusCode};
+use http::{HeaderMap};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value as JSONValue};
+use serde_json::{Value as JSONValue};
 
 use crate::api::{
+    errors::APIRoutingError,
     routes::application::get_external_service_bad_response,
-    utils::{get_cors_response_headers, APIRoutingResponse, ParsedRequest},
+    utils::{get_default_headers, APIRoutingResponse, ParsedRequest},
 };
 
 pub mod productizers;
-mod testbed_request_utils;
 
 #[derive(Deserialize, Serialize, Debug)]
 struct ProxyRequestInput {
@@ -20,7 +20,9 @@ struct ProxyRequestInput {
     headers: HashMap<String, String>,
 }
 
-pub async fn engage_reverse_proxy_request(request: ParsedRequest) -> APIRoutingResponse {
+pub async fn engage_reverse_proxy_request(
+    request: ParsedRequest,
+) -> Result<APIRoutingResponse, APIRoutingError> {
     let request_body_as_text = request.body.as_str();
     log::debug!("Input: {:#?}", request_body_as_text);
     let request_input: ProxyRequestInput = serde_json::from_str(request_body_as_text).unwrap();
@@ -28,32 +30,19 @@ pub async fn engage_reverse_proxy_request(request: ParsedRequest) -> APIRoutingR
     // Access control list check
     let access_denied = access_control_check(request_input.url.as_str());
     if access_denied {
-        return APIRoutingResponse {
-            status_code: StatusCode::UNAUTHORIZED,
-            body: json!({
-                "message": "Access Denied".to_string(),
-            })
-            .to_string(),
-            headers: get_cors_response_headers(),
-        };
+        return Err(APIRoutingError::Unauthorized("Unknown destination".to_string()));
     }
 
     // Transform headers
-    let mut proxy_headers = HeaderMap::new();
-    for (key, value) in request_input.headers {
-        proxy_headers.insert(
-            HeaderName::from_str(key.as_str()).unwrap(),
-            HeaderValue::from_str(value.as_str()).unwrap(),
-        );
-    }
-
+    let proxy_headers = HeaderMap::try_from(&request_input.headers)?;
+    
+    // Execute request
     let response = reqwest::Client::new()
         .post(request_input.url)
         .body(serde_json::to_string(&request_input.data).unwrap())
         .headers(proxy_headers)
         .send()
-        .await
-        .unwrap();
+        .await?;
 
     log::debug!("Response: {:#?}", response);
 
@@ -62,12 +51,9 @@ pub async fn engage_reverse_proxy_request(request: ParsedRequest) -> APIRoutingR
         return get_external_service_bad_response(response_status);
     }
 
-    let response_output = response.json::<JSONValue>().await.unwrap();
-    return APIRoutingResponse {
-        status_code: response_status,
-        body: serde_json::to_string(&response_output).unwrap(),
-        headers: get_cors_response_headers(),
-    };
+    let response_output = response.json::<JSONValue>().await?;
+
+    Ok(APIRoutingResponse::new(response_status, &serde_json::to_string(&response_output)?, get_default_headers()))
 }
 
 /**
@@ -81,7 +67,7 @@ fn access_control_check(proxy_destination_url: &str) -> bool {
     let acl = ["https://consent.testbed.fi/", "https://gateway.testbed.fi/"];
 
     let mut acl_is_satisfied = false;
-    for url in acl.iter() {
+    for url in acl {
         if proxy_destination_url.starts_with(url) {
             acl_is_satisfied = true;
             break;
