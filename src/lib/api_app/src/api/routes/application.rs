@@ -3,8 +3,8 @@ use serde_json::json;
 use std::fs;
 
 use crate::api::{
-    errors::APIRoutingError,
-    utils::{get_cors_response_headers, get_default_headers, get_plain_headers, APIRoutingResponse, ParsedRequest}
+    routing_types::{APIRoutingError, APIRoutingResponse, ParsedRequest},
+    utils::{get_cors_response_headers, get_default_headers, get_plain_headers}
 };
 
 pub async fn cors_preflight_response(

@@ -1,6 +1,5 @@
 use super::{
-    errors::APIRoutingError,
-    utils::{APIRoutingResponse, ParsedRequest}
+    routing_types::{APIRoutingResponse, APIRoutingError, ParsedRequest},
 };
 
 pub mod application;

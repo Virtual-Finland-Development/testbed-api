@@ -1,4 +1,49 @@
+use super::utils::get_default_headers;
+use http::header::HeaderMap;
 use http::StatusCode;
+use lambda_http::aws_lambda_events::query_map::QueryMap;
+use serde_json::json;
+
+#[derive(Debug)]
+pub struct APIRoutingResponse {
+    pub status_code: StatusCode, // http status code, e.g. 200, 404, 500
+    pub body: String,
+    pub headers: HeaderMap,
+}
+
+impl APIRoutingResponse {
+    pub fn new(status_code: StatusCode, body: &str, headers: HeaderMap) -> Self {
+        Self {
+            status_code,
+            body: body.to_string(),
+            headers,
+        }
+    }
+
+    pub fn from_routing_error(error: APIRoutingError) -> Self {
+        Self::new(
+            error.get_status_code(),
+            json!({
+                "message": error.to_string(),
+            })
+            .to_string()
+            .as_ref(),
+            get_default_headers(),
+        )
+    }
+}
+
+pub struct ParsedRequest {
+    pub path: String,
+    pub method: String,
+    pub query: QueryMap,
+    pub headers: HeaderMap,
+    pub body: String,
+}
+
+/**
+ * Exceptions
+ */
 
 #[derive(Debug)]
 pub enum APIRoutingError {

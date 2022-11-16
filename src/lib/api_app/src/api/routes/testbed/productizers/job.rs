@@ -4,9 +4,9 @@ use reqwest;
 use serde_json::Value as JSONValue;
 
 use crate::api:: {
-    errors::APIRoutingError,
+    routing_types::{APIRoutingError, APIRoutingResponse, ParsedRequest},
     routes::application::get_external_service_bad_response,
-    utils::{get_default_headers, APIRoutingResponse, ParsedRequest}
+    utils::get_default_headers
 };
 use super::parse_testbed_request_headers;
 
@@ -16,12 +16,14 @@ use super::parse_testbed_request_headers;
 pub async fn find_job_postings(
     request: ParsedRequest,
 ) -> Result<APIRoutingResponse, APIRoutingError> {
+    let endpoint_url = "https://gateway.testbed.fi/test/lassipatanen/Job/JobPosting?source=tyomarkkinatori";
     let request_input = serde_json::from_str(request.body.as_str())?;
     let request_headers = parse_testbed_request_headers(request)?;
-    return fetch_job_postings(request_input, request_headers).await;
+    return fetch_job_postings(endpoint_url, request_input, request_headers).await;
 }
 
 async fn fetch_job_postings(
+    endpoint_url: &str,
     request_input: JSONValue,
     request_headers: HeaderMap,
 ) -> Result<APIRoutingResponse, APIRoutingError> {
@@ -29,7 +31,7 @@ async fn fetch_job_postings(
     log::debug!("Headers: {:#?}", request_headers);
 
     let response = reqwest::Client::new()
-        .post("https://gateway.testbed.fi/test/lassipatanen/Job/JobPosting?source=tyomarkkinatori")
+        .post(endpoint_url)
         .json(&request_input)
         .headers(request_headers)
         .send()
