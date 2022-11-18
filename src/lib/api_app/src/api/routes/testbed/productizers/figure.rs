@@ -4,9 +4,9 @@ use reqwest;
 use serde::{Deserialize, Serialize};
 
 use crate::api:: {
-    errors::APIRoutingError,
+    routing_types::{APIRoutingError, APIRoutingResponse, ParsedRequest},
     routes::application::get_external_service_bad_response,
-    utils::{get_default_headers, APIRoutingResponse, ParsedRequest}
+    utils::get_default_headers
 };
 use super::parse_testbed_request_headers;
 
@@ -37,12 +37,14 @@ struct PopulationResponse {
  * Get population figure
  */
 pub async fn get_population(request: ParsedRequest) -> Result<APIRoutingResponse, APIRoutingError> {
+    let endpoint_url = "https://gateway.testbed.fi/test/lsipii/Figure/Population?source=virtual_finland";
     let request_input: PopulationQuery = serde_json::from_str(request.body.as_str())?;
     let request_headers = parse_testbed_request_headers(request)?;
-    return fetch_population(request_input, request_headers).await;
+    return fetch_population(endpoint_url, request_input, request_headers).await;
 }
 
 async fn fetch_population(
+    endpoint_url: &str,
     request_input: PopulationQuery,
     request_headers: HeaderMap,
 ) -> Result<APIRoutingResponse, APIRoutingError> {
@@ -50,7 +52,7 @@ async fn fetch_population(
     log::debug!("Headers: {:#?}", request_headers);
 
     let response = reqwest::Client::new()
-        .post("https://gateway.testbed.fi/test/lsipii/Figure/Population?source=virtual_finland")
+        .post(endpoint_url)
         .json(&request_input)
         .headers(request_headers)
         .send()

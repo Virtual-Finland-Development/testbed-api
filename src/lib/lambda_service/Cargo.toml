@@ -8,6 +8,4 @@ crate-type = ["rlib", "dylib"]
 path = "src/lambda_service.rs"
 
 [dependencies]
-log = "0.4.14"
-lambda_http = "0.7.0"
 api_app = { path = "../api_app" }

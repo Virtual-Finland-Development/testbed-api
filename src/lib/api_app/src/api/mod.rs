@@ -2,7 +2,7 @@ use http::Response;
 use lambda_http::Request;
 use log;
 
-mod errors;
+mod routing_types;
 mod routes;
 pub mod utils;
 
@@ -21,12 +21,12 @@ pub async fn handler(
     let mut api_response = Response::builder()
         .status(router_response.status_code)
         .body(router_response.body)
-        .unwrap();
+        .expect("Failed to build handler response");
 
     // Populate headers
     let headers = api_response.headers_mut();
     for (key, value) in router_response.headers {
-        headers.insert(key.unwrap(), value);
+        headers.insert(key.expect("Bad header key in API-response"), value);
     }
 
     Ok(api_response)
