@@ -4,6 +4,7 @@ use crate::api::routing_types::{APIRoutingError, ParsedRequest};
 
 pub mod figure;
 pub mod job;
+pub mod user;
 
 /**
  * Parses the authorization headers fromn the input request
