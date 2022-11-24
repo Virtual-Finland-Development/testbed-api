@@ -79,12 +79,13 @@ pub async fn find_job_postings(
     // Merge the good responses
     // If any response failed, all fail
     let mut response_status = StatusCode::OK;
+    let mut error_response_body = String::new();
     let mut response_output = JobPostingResponse {
         results: vec![],
         totalCount: 0,
     };
     
-    for json_body in response_json_bodies {
+    for r in response_json_bodies {
         match r {
             Ok(r) => {
                 // TODO: merge the results
@@ -95,6 +96,7 @@ pub async fn find_job_postings(
             Err(r) => {
                 eprintln!("Got an error: {}", r);
                 response_status = r.status().unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
+                error_response_body = r.to_string();
                 break;
             },
         }
@@ -103,7 +105,7 @@ pub async fn find_job_postings(
     if response_status == StatusCode::OK {
         Ok(APIRoutingResponse::new(response_status, &serde_json::to_string(&response_output)?, get_default_headers()))
     } else {
-        resolve_external_service_bad_response(response_status, "".to_string())
+        resolve_external_service_bad_response(response_status, error_response_body)
     }
     
 }
