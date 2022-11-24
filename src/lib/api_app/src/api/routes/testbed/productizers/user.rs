@@ -39,7 +39,7 @@ async fn post_json_request(
 
     let response_status = response.status();
     if response_status != 200 {
-        return get_external_service_bad_response(response_status);
+        return get_external_service_bad_response(response).await;
     }
 
     let response_output = response.json::<JSONValue>().await?;
