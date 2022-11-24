@@ -48,6 +48,9 @@ pub async fn get_router_response(
         ("POST", "/testbed/productizers/find-job-postings") => {
             testbed::productizers::job::find_job_postings(parsed_request).await
         }
+        ("POST", "/testbed/productizers/user-profile") => {
+            testbed::productizers::user::fetch_user_profile(parsed_request).await
+        }
         _ => {
             application::not_found(parsed_request).await
         }
