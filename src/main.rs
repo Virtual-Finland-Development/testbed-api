@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use api_app::log::LevelFilter;
 use api_app::simple_logger::SimpleLogger;
 mod tests;
@@ -25,8 +27,14 @@ mod hot_lib {
 
 #[tokio::main]
 async fn main() {
+    // Initialize the logger
+    let logging_level: LevelFilter = match std::env::var("LOGGING_LEVEL") {
+        Ok(level) => LevelFilter::from_str(level.as_ref()).expect("Invalid logging level"),
+        Err(_) => LevelFilter::Info,
+    };
+
     SimpleLogger::new()
-        .with_level(LevelFilter::Info)
+        .with_level(logging_level)
         .init()
         .unwrap();
 

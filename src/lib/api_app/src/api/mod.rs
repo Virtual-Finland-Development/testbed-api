@@ -5,6 +5,7 @@ use log;
 mod routing_types;
 mod routes;
 pub mod utils;
+pub mod text_utils;
 
 /**
  * The handler function for the lambda.

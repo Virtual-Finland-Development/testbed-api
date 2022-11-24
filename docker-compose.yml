@@ -10,6 +10,7 @@ services:
     command: ["sh", "-c", "cargo watch -x 'run --features local-dev'"]
     environment:
       - RUST_BACKTRACE=1
+      - LOGGING_LEVEL=debug
     working_dir: /builder
     volumes:
       - ./:/builder
