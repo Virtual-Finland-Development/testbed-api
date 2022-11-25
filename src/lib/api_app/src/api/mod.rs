@@ -3,7 +3,7 @@ use lambda_http::Request;
 use log;
 
 mod routes;
-mod response_types;
+mod responses;
 mod requests;
 
 pub mod utils;

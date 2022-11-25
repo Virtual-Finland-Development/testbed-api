@@ -1,8 +1,9 @@
 use serde_json::{Value as JSONValue};
 
 use crate::api:: {
-    response_types::{APIRoutingError, APIRoutingResponse, ParsedRequest},
-    requests::post_json_request
+    responses::{APIRoutingError, APIRoutingResponse},
+    requests::post_json_request,
+    utils::ParsedRequest,
 };
 use super::parse_testbed_request_headers;
 

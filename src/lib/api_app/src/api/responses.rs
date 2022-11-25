@@ -1,7 +1,6 @@
 use super::utils::get_default_headers;
 use http::header::HeaderMap;
 use http::StatusCode;
-use lambda_http::aws_lambda_events::query_map::QueryMap;
 use serde_json::json;
 
 #[derive(Debug)]
@@ -31,14 +30,6 @@ impl APIRoutingResponse {
             get_default_headers(),
         )
     }
-}
-
-pub struct ParsedRequest {
-    pub path: String,
-    pub method: String,
-    pub query: QueryMap,
-    pub headers: HeaderMap,
-    pub body: String,
 }
 
 /**
@@ -163,4 +154,24 @@ fn parse_api_routing_error_message(message: &String, default: &str, prefix: &str
         error_message = format!("{}{}", prefix, message);
     }
     error_message
+}
+
+pub fn resolve_external_service_bad_response(
+    status_code: StatusCode,
+    response_body: String,
+) -> Result<APIRoutingResponse, APIRoutingError> {
+
+    // Ensure JSON response
+    let response_json = serde_json::from_str::<serde_json::Value>(&response_body)
+    .unwrap_or(json!({"content": response_body}));
+    
+    Ok(APIRoutingResponse {
+        status_code: status_code,
+        body: json!({
+            "message": format!("External service responded with a status: {}", status_code).to_string(),
+            "data": response_json,
+        })
+        .to_string(),
+        headers: get_default_headers(),
+    })
 }

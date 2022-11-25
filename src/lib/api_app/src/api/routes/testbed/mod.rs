@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value as JSONValue};
 
 use crate::api::{
-    response_types::{APIRoutingError, APIRoutingResponse, ParsedRequest},
+    responses::{APIRoutingError, APIRoutingResponse},
     routes::application::get_external_service_bad_response,
-    utils::{get_default_headers},
+    utils::{get_default_headers, ParsedRequest},
 };
 
 pub mod productizers;

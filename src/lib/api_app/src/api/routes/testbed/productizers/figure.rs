@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 use crate::api:: {
-    response_types::{APIRoutingError, APIRoutingResponse, ParsedRequest},
+    responses::{APIRoutingError, APIRoutingResponse},
     requests::post_json_request,
+    utils::ParsedRequest,
 };
 use super::parse_testbed_request_headers;
 

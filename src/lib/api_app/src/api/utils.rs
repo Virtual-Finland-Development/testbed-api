@@ -1,7 +1,17 @@
-use super::response_types::ParsedRequest;
-use http::header::{HeaderMap, HeaderName};
-use http::HeaderValue;
+use lambda_http::aws_lambda_events::query_map::QueryMap;
+use http::{
+    HeaderValue,
+    header::{HeaderMap, HeaderName}
+};
 use lambda_http::{Body, Request, RequestExt};
+
+pub struct ParsedRequest {
+    pub path: String,
+    pub method: String,
+    pub query: QueryMap,
+    pub headers: HeaderMap,
+    pub body: String,
+}
 
 /**
  * Convert the lambda_http::Request to a parsed_request.

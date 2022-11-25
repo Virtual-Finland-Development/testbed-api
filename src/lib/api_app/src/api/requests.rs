@@ -6,7 +6,7 @@ use serde::{Serialize, Deserialize};
 use std::fmt::Debug;
 
 use super:: {
-    response_types::{APIRoutingError, APIRoutingResponse},
+    responses::{APIRoutingError, APIRoutingResponse},
     utils::get_default_headers
 };
 

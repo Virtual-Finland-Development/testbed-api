@@ -5,10 +5,9 @@ use serde_json::Value as JSONValue;
 use futures::future;
 
 use crate::api::{
-    response_types::{ APIRoutingError, APIRoutingResponse, ParsedRequest },
+    responses::{ APIRoutingError, APIRoutingResponse, resolve_external_service_bad_response },
     requests::get_post_json_request_data,
-    routes::application::resolve_external_service_bad_response,
-    utils::get_default_headers,
+    utils::{get_default_headers, ParsedRequest},
 };
 use super::parse_testbed_request_headers;
 
