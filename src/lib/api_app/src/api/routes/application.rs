@@ -4,7 +4,7 @@ use serde_json::json;
 use std::fs;
 
 use crate::api::{
-    routing_types::{APIRoutingError, APIRoutingResponse, ParsedRequest},
+    response_types::{APIRoutingError, APIRoutingResponse, ParsedRequest},
     utils::{get_cors_response_headers, get_default_headers, get_plain_headers}
 };
 

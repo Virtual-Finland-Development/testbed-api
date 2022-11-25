@@ -1,4 +1,4 @@
-use super::routing_types::ParsedRequest;
+use super::response_types::ParsedRequest;
 use http::header::{HeaderMap, HeaderName};
 use http::HeaderValue;
 use lambda_http::{Body, Request, RequestExt};

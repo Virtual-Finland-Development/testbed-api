@@ -1,6 +1,6 @@
 use http::{HeaderMap, HeaderValue};
 
-use crate::api::routing_types::{APIRoutingError, ParsedRequest};
+use crate::api::response_types::{APIRoutingError, ParsedRequest};
 
 pub mod figure;
 pub mod job;

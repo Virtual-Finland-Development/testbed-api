@@ -2,7 +2,7 @@ use http::Response;
 use lambda_http::Request;
 use log;
 
-mod routing_types;
+mod response_types;
 mod routes;
 pub mod utils;
 pub mod text_utils;

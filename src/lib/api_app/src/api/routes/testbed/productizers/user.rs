@@ -4,7 +4,7 @@ use reqwest;
 use serde_json::Value as JSONValue;
 
 use crate::api:: {
-    routing_types::{APIRoutingError, APIRoutingResponse, ParsedRequest},
+    response_types::{APIRoutingError, APIRoutingResponse, ParsedRequest},
     routes::application::get_external_service_bad_response,
     utils::get_default_headers
 };

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use futures::future;
 
 use crate::api:: {
-    routing_types::{APIRoutingError, APIRoutingResponse, ParsedRequest},
+    response_types::{APIRoutingError, APIRoutingResponse, ParsedRequest},
     routes::application::resolve_external_service_bad_response,
     utils::get_default_headers,
     text_utils::split_text_keep_right,
