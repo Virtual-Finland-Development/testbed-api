@@ -48,46 +48,68 @@ pub struct ParsedRequest {
 #[derive(Debug)]
 pub enum APIRoutingError {
     // 400
-    BadRequest,
+    BadRequest(String),
     // 401
     Unauthorized(String),
     // 403
-    Forbidden,
+    Forbidden(String),
     // 404
-    NotFound,
+    NotFound(String),
     // 422
     UnprocessableEntity(String),
     // 500
-    InternalServerError,
+    InternalServerError(String),
     // 502
-    BadGateway,
+    BadGateway(String),
     // 503
-    ServiceUnavailable,
+    ServiceUnavailable(String),
     // 504
-    GatewayTimeout,
+    GatewayTimeout(String),
 }
 
 impl APIRoutingError {
     pub fn get_status_code(&self) -> StatusCode {
         match self {
-            APIRoutingError::BadRequest => StatusCode::BAD_REQUEST,
+            APIRoutingError::BadRequest(_) => StatusCode::BAD_REQUEST,
             APIRoutingError::Unauthorized(_) => StatusCode::UNAUTHORIZED,
-            APIRoutingError::Forbidden => StatusCode::FORBIDDEN,
-            APIRoutingError::NotFound => StatusCode::NOT_FOUND,
+            APIRoutingError::Forbidden(_) => StatusCode::FORBIDDEN,
+            APIRoutingError::NotFound(_) => StatusCode::NOT_FOUND,
             APIRoutingError::UnprocessableEntity(_) => StatusCode::UNPROCESSABLE_ENTITY,
-            APIRoutingError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
-            APIRoutingError::BadGateway => StatusCode::BAD_GATEWAY,
-            APIRoutingError::ServiceUnavailable => StatusCode::SERVICE_UNAVAILABLE,
-            APIRoutingError::GatewayTimeout => StatusCode::GATEWAY_TIMEOUT,
+            APIRoutingError::InternalServerError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            APIRoutingError::BadGateway(_) => StatusCode::BAD_GATEWAY,
+            APIRoutingError::ServiceUnavailable(_) => StatusCode::SERVICE_UNAVAILABLE,
+            APIRoutingError::GatewayTimeout(_) => StatusCode::GATEWAY_TIMEOUT,
+        }
+    }
+
+    #[allow(dead_code)] // Signify the meaning of default message
+    pub fn from_status_code(status_code: StatusCode) -> Self {
+        Self::from_status_code_and_message(status_code, "default")
+    }
+
+    pub fn from_status_code_and_message(status_code: StatusCode, message: &str) -> Self {
+        let message_string = message.to_string();
+        match status_code {
+            StatusCode::BAD_REQUEST => APIRoutingError::BadRequest(message_string),
+            StatusCode::UNAUTHORIZED => APIRoutingError::Unauthorized(message_string),
+            StatusCode::FORBIDDEN => APIRoutingError::Forbidden(message_string),
+            StatusCode::NOT_FOUND => APIRoutingError::NotFound(message_string),
+            StatusCode::UNPROCESSABLE_ENTITY => APIRoutingError::UnprocessableEntity(message_string),
+            StatusCode::INTERNAL_SERVER_ERROR => APIRoutingError::InternalServerError(message_string),
+            StatusCode::BAD_GATEWAY => APIRoutingError::BadGateway(message_string),
+            StatusCode::SERVICE_UNAVAILABLE => APIRoutingError::ServiceUnavailable(message_string),
+            StatusCode::GATEWAY_TIMEOUT => APIRoutingError::GatewayTimeout(message_string),
+            _ => APIRoutingError::InternalServerError(message_string),
         }
     }
 }
 
+
 impl std::error::Error for APIRoutingError {}
 
 impl From<std::string::String> for APIRoutingError {
-    fn from(_: std::string::String) -> Self {
-        APIRoutingError::InternalServerError
+    fn from(e: std::string::String) -> Self {
+        APIRoutingError::InternalServerError(e.to_string())
     }
 }
 
@@ -105,19 +127,15 @@ impl From<serde_json::Error> for APIRoutingError {
 impl std::fmt::Display for APIRoutingError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            APIRoutingError::BadRequest => write!(f, "Bad request"),
-            APIRoutingError::Unauthorized(message) => {
-                write!(f, "Access denied: {}", message)
-            }
-            APIRoutingError::Forbidden => write!(f, "Forbidden"),
-            APIRoutingError::NotFound => write!(f, "Not found"),
-            APIRoutingError::UnprocessableEntity(message) => {
-                write!(f, "Validation error: {}", message)
-            }
-            APIRoutingError::InternalServerError => write!(f, "Internal server error"),
-            APIRoutingError::BadGateway => write!(f, "Bad gateway"),
-            APIRoutingError::ServiceUnavailable => write!(f, "Service unavailable"),
-            APIRoutingError::GatewayTimeout => write!(f, "Gateway timeout"),
+            APIRoutingError::BadRequest(message) => write!(f, "{}", parse_api_routing_error_message(message, "Bad request", "")),
+            APIRoutingError::Unauthorized(message) => write!(f, "{}", parse_api_routing_error_message(message, "Unauthorized", "Access denied: ")),
+            APIRoutingError::Forbidden(message) => write!(f, "{}", parse_api_routing_error_message(message, "Forbidden", "")),
+            APIRoutingError::NotFound(message) => write!(f, "{}", parse_api_routing_error_message(message, "Not found", "")),
+            APIRoutingError::UnprocessableEntity(message) => write!(f, "{}", parse_api_routing_error_message(message, "Unauthorized", "Validation error: ")),
+            APIRoutingError::InternalServerError(message) => write!(f, "{}", parse_api_routing_error_message(message, "Internal server error", "")),
+            APIRoutingError::BadGateway(message) => write!(f, "{}", parse_api_routing_error_message(message, "Bad gateway", "")),
+            APIRoutingError::ServiceUnavailable(message) => write!(f, "{}", parse_api_routing_error_message(message, "Service unavailable", "")),
+            APIRoutingError::GatewayTimeout(message) => write!(f, "{}", parse_api_routing_error_message(message, "Gateway timeout", "")),
         }
     }
 }
@@ -125,16 +143,24 @@ impl std::fmt::Display for APIRoutingError {
 impl From<reqwest::Error> for APIRoutingError {
     fn from(e: reqwest::Error) -> Self {
         match e.status().unwrap_or_default() {
-            StatusCode::BAD_REQUEST => APIRoutingError::BadRequest,
+            StatusCode::BAD_REQUEST => APIRoutingError::BadRequest(e.to_string()),
             StatusCode::UNAUTHORIZED => APIRoutingError::Unauthorized(e.to_string()),
-            StatusCode::FORBIDDEN => APIRoutingError::Forbidden,
-            StatusCode::NOT_FOUND => APIRoutingError::NotFound,
+            StatusCode::FORBIDDEN => APIRoutingError::Forbidden(e.to_string()),
+            StatusCode::NOT_FOUND => APIRoutingError::NotFound(e.to_string()),
             StatusCode::UNPROCESSABLE_ENTITY => APIRoutingError::UnprocessableEntity(e.to_string()),
-            StatusCode::INTERNAL_SERVER_ERROR => APIRoutingError::InternalServerError,
-            StatusCode::BAD_GATEWAY => APIRoutingError::BadGateway,
-            StatusCode::SERVICE_UNAVAILABLE => APIRoutingError::ServiceUnavailable,
-            StatusCode::GATEWAY_TIMEOUT => APIRoutingError::GatewayTimeout,
-            _ => APIRoutingError::InternalServerError,
+            StatusCode::INTERNAL_SERVER_ERROR => APIRoutingError::InternalServerError(e.to_string()),
+            StatusCode::BAD_GATEWAY => APIRoutingError::BadGateway(e.to_string()),
+            StatusCode::SERVICE_UNAVAILABLE => APIRoutingError::ServiceUnavailable(e.to_string()),
+            StatusCode::GATEWAY_TIMEOUT => APIRoutingError::GatewayTimeout(e.to_string()),
+            _ => APIRoutingError::InternalServerError(e.to_string()),
         }
     }
+}
+
+fn parse_api_routing_error_message(message: &String, default: &str, prefix: &str) -> String {
+    let mut error_message = default.to_string();
+    if message != "default" {
+        error_message = format!("{}{}", prefix, message);
+    }
+    error_message
 }

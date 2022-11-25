@@ -11,8 +11,8 @@ use api_app::api;
 async fn handle(request: HyperRequest<HyperBody>) -> Result<HyperResponse<HyperBody>, Infallible> {
     // Transform Hyper request into Lambda request
     let (parts, body) = request.into_parts();
-    let body_bytes = hyper::body::to_bytes(body).await.unwrap();
-    let body_text = String::from_utf8(body_bytes.to_vec()).unwrap();
+    let body_bytes = hyper::body::to_bytes(body).await.expect("Should read body bytes");
+    let body_text = String::from_utf8(body_bytes.to_vec()).expect("Should read body text");
     let lambda_body = LambdaBody::from(body_text);
     let mut lambda_request = LambdaRequest::new(lambda_body);
     *lambda_request.method_mut() = parts.method;
@@ -28,7 +28,7 @@ async fn handle(request: HyperRequest<HyperBody>) -> Result<HyperResponse<HyperB
     let mut hyper_response = HyperResponse::builder()
         .status(response.status())
         .body(HyperBody::from(response.body().to_string()))
-        .unwrap();
+        .expect("Should build response");
 
     // Set response headers
     let response_headers = hyper_response.headers_mut();

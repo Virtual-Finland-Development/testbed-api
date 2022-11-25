@@ -38,8 +38,9 @@ async fn main() {
         .init()
         .unwrap();
 
+    #[allow(clippy::never_loop)] // Allow the loop to be skipped in a not-local dev
     loop {
-        let _result = service::run().await;
+        service::run().await;
 
         #[cfg(not(feature = "local-dev"))]
         break;
