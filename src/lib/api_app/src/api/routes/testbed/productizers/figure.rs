@@ -1,6 +1,3 @@
-use http::header::HeaderMap;
-use log;
-use reqwest;
 use serde::{Deserialize, Serialize};
 
 use crate::api:: {
