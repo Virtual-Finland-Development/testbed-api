@@ -1,7 +1,7 @@
 use http::header::HeaderMap;
 use log;
 use reqwest;
-use serde_json::Value as JSONValue;
+use serde_json::{Value as JSONValue, json};
 
 use crate::api:: {
     routing_types::{APIRoutingError, APIRoutingResponse, ParsedRequest},
@@ -28,6 +28,7 @@ async fn post_json_request(
     let response = reqwest::Client::new()
         .post(endpoint_url)
         .headers(request_headers)
+        .json(&json!({}))
         .send()
         .await?;
 
