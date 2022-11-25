@@ -1,14 +1,14 @@
 use http::StatusCode;
 use log;
-use reqwest;
 use serde::{ Deserialize, Serialize };
+use serde_json::Value as JSONValue;
 use futures::future;
 
 use crate::api::{
     response_types::{ APIRoutingError, APIRoutingResponse, ParsedRequest },
+    requests::get_post_json_request_data,
     routes::application::resolve_external_service_bad_response,
     utils::get_default_headers,
-    text_utils::split_text_keep_right,
 };
 use super::parse_testbed_request_headers;
 
@@ -50,7 +50,7 @@ struct BasicInfo {
 pub async fn find_job_postings(
     request: ParsedRequest
 ) -> Result<APIRoutingResponse, APIRoutingError> {
-    let request_input = serde_json::from_str::<serde_json::Value>(request.body.as_str())?;
+    let request_input = serde_json::from_str::<JSONValue>(request.body.as_str())?;
     let request_headers = parse_testbed_request_headers(request)?;
     let endpoint_urls = vec![
         "https://gateway.testbed.fi/test/lassipatanen/Job/JobPosting?source=tyomarkkinatori"
@@ -61,21 +61,12 @@ pub async fn find_job_postings(
 
     // Get the job postings from the external services using concurrent requests and merge them
     // @see: https://stackoverflow.com/a/51047786
-    let client = reqwest::Client::new();
     let response_json_bodies = future::join_all(
         endpoint_urls.into_iter().map(|endpoint_url| {
-            let client = &client;
             let headers = request_headers.clone();
             let input = request_input.clone();
             async move {
-                let source = split_text_keep_right(endpoint_url, "?source=");
-                let response = client
-                    .post(endpoint_url)
-                    .json(&input)
-                    .headers(headers)
-                    .send().await?;
-                log::debug!("Requesting from source: {source}..");
-                response.json::<JobPostingResponse>().await
+                get_post_json_request_data::<JSONValue, JobPostingResponse>(endpoint_url, input, headers).await
             }
         })
     ).await;
@@ -93,13 +84,13 @@ pub async fn find_job_postings(
         match r {
             Ok(r) => {
                 // TODO: merge the results
-                let mut results = r.results;
+                let response = r.0;
+                let mut results = response.results;
                 response_output.results.append(&mut results);
-                response_output.totalCount += r.totalCount;
+                response_output.totalCount += response.totalCount;
             }
             Err(r) => {
-                eprintln!("Got an error: {}", r);
-                response_status = r.status().unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
+                response_status = r.get_status_code();
                 error_response_body = r.to_string();
                 break;
             }
