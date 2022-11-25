@@ -20,7 +20,7 @@ dev: install-dev
 		cargo watch -x 'run --features local-dev'
 
 run:
-	cargo watch -x 'run --features local-dev'
+	LOGGING_LEVEL=debug cargo watch -x 'run --features local-dev'
 run-sam: build
 	sam local start-api --template ./infra/sam-template.yml \
 		--host 0.0.0.0 --port 3003
