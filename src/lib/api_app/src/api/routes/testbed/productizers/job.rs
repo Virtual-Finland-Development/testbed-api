@@ -1,5 +1,5 @@
+use std::cmp::Ordering;
 use http::StatusCode;
-use itertools::Itertools;
 use serde::{ Deserialize, Serialize };
 use serde_json::Value as JSONValue;
 
@@ -17,7 +17,7 @@ struct JobPostingResponse {
     totalCount: i32,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, PartialEq)]
 #[allow(non_snake_case)]
 struct JobPosting {
     employer: String,
@@ -25,16 +25,16 @@ struct JobPosting {
     basicInfo: BasicInfo,
     publishedAt: String,
     applicationEndDate: String,
-    applicationUrl: String,
+    applicationUrl: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, PartialEq)]
 struct Location {
     municipality: String,
     postcode: String,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, PartialEq)]
 #[allow(non_snake_case)]
 struct BasicInfo {
     title: String,
@@ -51,7 +51,7 @@ pub async fn find_job_postings(
     let request_input = serde_json::from_str::<JSONValue>(request.body.as_str())?;
     let request_headers = parse_testbed_request_headers(request)?;
     let endpoint_urls = vec![
-        "https://gateway.testbed.fi/test/lassipatanen/Job/JobPosting?source=tyomarkkinatori"
+        "https://rivo44sx4jiec4fu7c2kl6f4li0vxqkh.lambda-url.eu-north-1.on.aws/test/lassipatanen/Job/JobPosting"
     ];
 
     // Fetch the data
@@ -69,13 +69,18 @@ pub async fn find_job_postings(
             good_results.append(&mut r.results);
         }
 
-        // Uniquefy the results
-        let unique_results = good_results.into_iter().unique_by(|jp| jp.applicationUrl.clone()).collect::<Vec<JobPosting>>();
-        let total_count = unique_results.len() as i32;
+        log::debug!("Total job postings: {:?}", good_results.len());
+
+        // Uniquefy the results (by mutatation)
+        good_results.sort_by(|a, b| job_postings_sort_comparator(a,  b));
+        good_results.dedup_by(|a, b| is_job_postings_the_same(a, b));
+        let total_count = good_results.len() as i32;
+
+        log::debug!("Merged job postings: {:?}", total_count);
 
         // Return the response
         let response_output = JobPostingResponse {
-            results: unique_results,
+            results: good_results,
             totalCount: total_count,
         };
 
@@ -89,4 +94,21 @@ pub async fn find_job_postings(
     } else {
         resolve_external_service_bad_response(response_status, error_response_body)
     }
+}
+
+
+fn job_postings_sort_comparator(a: &JobPosting, b: &JobPosting) -> Ordering {
+    if is_job_postings_the_same(a, b) {
+        Ordering::Equal
+    } else {
+        a.publishedAt.cmp(&b.publishedAt)
+    }
+}
+
+fn is_job_postings_the_same(a: &JobPosting, b: &JobPosting) -> bool {
+    a.employer == b.employer &&
+    a.location.municipality == b.location.municipality &&
+    a.basicInfo.title == b.basicInfo.title &&
+    a.publishedAt == b.publishedAt &&
+    a.applicationUrl == b.applicationUrl
 }
