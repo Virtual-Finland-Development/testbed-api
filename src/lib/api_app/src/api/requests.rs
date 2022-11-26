@@ -6,7 +6,7 @@ use serde::{Serialize, Deserialize};
 use std::fmt::Debug;
 
 use super:: {
-    responses::{APIRoutingError, APIRoutingResponse},
+    responses::{APIRoutingError, APIRoutingResponse, resolve_external_service_bad_response},
     utils::get_default_headers
 };
 
@@ -16,11 +16,20 @@ pub async fn post_json_request<I: Debug + Serialize, O: Debug + Serialize + for<
     request_input: I,
     request_headers: HeaderMap,
 ) -> Result<APIRoutingResponse, APIRoutingError> {
-    let (response_output, response_status) = get_post_json_request_data::<I, O>(endpoint_url, request_input, request_headers).await?;
-    Ok(APIRoutingResponse::new(response_status, &serde_json::to_string(&response_output)?, get_default_headers()))
+    let client = reqwest::Client::new();
+    let response = request_post_json_request_data::<I, O>(&client, endpoint_url, request_input, request_headers).await;
+    match response {
+        Ok(result) => {
+            Ok(APIRoutingResponse::new(result.1, &serde_json::to_string(&result.0)?, get_default_headers()))
+        }
+        Err(error) => {
+            resolve_external_service_bad_response(error.get_status_code(), error.to_string())
+        }
+    }
 }
 
-pub async fn get_post_json_request_data<I: Debug + Serialize, O: Debug + Serialize + for<'a> Deserialize<'a>>(
+pub async fn request_post_json_request_data<I: Debug + Serialize, O: Debug + Serialize + for<'a> Deserialize<'a>>(
+    client: &reqwest::Client,
     endpoint_url: &str,
     request_input: I,
     request_headers: HeaderMap,
@@ -29,7 +38,7 @@ pub async fn get_post_json_request_data<I: Debug + Serialize, O: Debug + Seriali
     log::debug!("Input: {:#?}", request_input);
     log::debug!("Headers: {:#?}", request_headers);
 
-    let response = reqwest::Client::new()
+    let response = client
         .post(endpoint_url)
         .json(&request_input)
         .headers(request_headers)
@@ -38,7 +47,7 @@ pub async fn get_post_json_request_data<I: Debug + Serialize, O: Debug + Seriali
 
     let response_status = response.status();
     if response_status != 200 {
-        let response_body = response.text().await?;
+        let response_body = response.text().await.unwrap_or("No response body received".to_string());
         return Err(APIRoutingError::from_status_code_and_message(response_status, response_body.as_str()));
     }
 

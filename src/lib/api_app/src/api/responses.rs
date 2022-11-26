@@ -100,7 +100,7 @@ impl std::error::Error for APIRoutingError {}
 
 impl From<std::string::String> for APIRoutingError {
     fn from(e: std::string::String) -> Self {
-        APIRoutingError::InternalServerError(e.to_string())
+        APIRoutingError::InternalServerError(e)
     }
 }
 
