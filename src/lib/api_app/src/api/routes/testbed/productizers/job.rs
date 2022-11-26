@@ -59,7 +59,7 @@ pub async fn find_job_postings(
         endpoint_urls,
         &request_input,
         request_headers
-    ).await?;
+    ).await.expect("Something went wrong with the bulk requests");
 
     if response_status == StatusCode::OK {
         
