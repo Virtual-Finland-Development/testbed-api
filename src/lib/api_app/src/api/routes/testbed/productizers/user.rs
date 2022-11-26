@@ -1,8 +1,4 @@
-use http::header::HeaderMap;
-use log;
-use reqwest;
 use serde_json::{Value as JSONValue, json};
-
 
 use crate::api:: {
     responses::{APIRoutingError, APIRoutingResponse},

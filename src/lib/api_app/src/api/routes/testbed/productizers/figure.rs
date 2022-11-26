@@ -22,12 +22,13 @@ struct PopulationQuery {
  * Population response
  */
 #[derive(Deserialize, Serialize, Debug)]
-#[allow(non_snake_case)]
 struct PopulationResponse {
     description: String,
-    sourceName: String,
+    #[serde(rename = "sourceName")]
+    source_name: String,
     population: i128,
-    updatedAt: String,
+    #[serde(rename = "updatedAt")]
+    updated_at: String,
 }
 
 /**

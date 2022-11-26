@@ -11,21 +11,24 @@ use crate::api::{
 use super::parse_testbed_request_headers;
 
 #[derive(Deserialize, Serialize, Debug)]
-#[allow(non_snake_case)] // FIXME: remove this
 struct JobPostingResponse {
     results: Vec<JobPosting>,
-    totalCount: i32,
+    #[serde(rename = "totalCount")]
+    total_count: i32,
 }
 
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
-#[allow(non_snake_case)]
 struct JobPosting {
     employer: String,
     location: Location,
-    basicInfo: BasicInfo,
-    publishedAt: String,
-    applicationEndDate: String,
-    applicationUrl: Option<String>,
+    #[serde(rename = "basicInfo")]
+    basic_info: BasicInfo,
+    #[serde(rename = "publishedAt")]
+    published_at: String,
+    #[serde(rename = "applicationEndDate")]
+    application_end_date: String,
+    #[serde(rename = "applicationUrl")]
+    application_url: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
@@ -35,11 +38,11 @@ struct Location {
 }
 
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
-#[allow(non_snake_case)]
 struct BasicInfo {
     title: String,
     description: String,
-    workTimeType: String,
+    #[serde(rename = "workTimeType")]
+    work_time_type: String,
 }
 
 /**
@@ -81,7 +84,7 @@ pub async fn find_job_postings(
         // Return the response
         let response_output = JobPostingResponse {
             results: good_results,
-            totalCount: total_count,
+            total_count: total_count,
         };
 
         Ok(
@@ -101,14 +104,14 @@ fn job_postings_sort_comparator(a: &JobPosting, b: &JobPosting) -> Ordering {
     if is_job_postings_the_same(a, b) {
         Ordering::Equal
     } else {
-        a.publishedAt.cmp(&b.publishedAt)
+        a.published_at.cmp(&b.published_at)
     }
 }
 
 fn is_job_postings_the_same(a: &JobPosting, b: &JobPosting) -> bool {
     a.employer == b.employer &&
     a.location.municipality == b.location.municipality &&
-    a.basicInfo.title == b.basicInfo.title &&
-    a.publishedAt == b.publishedAt &&
-    a.applicationUrl == b.applicationUrl
+    a.basic_info.title == b.basic_info.title &&
+    a.published_at == b.published_at &&
+    a.application_url == b.application_url
 }
