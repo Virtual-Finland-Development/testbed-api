@@ -7,7 +7,6 @@ mod responses;
 mod requests;
 
 pub mod utils;
-pub mod text_utils;
 
 /**
  * The handler function for the lambda.

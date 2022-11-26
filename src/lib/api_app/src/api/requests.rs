@@ -89,12 +89,17 @@ async fn request_post_json_request_data<I: Debug + Serialize, O: Debug + Seriali
         .await?;
 
     let response_status = response.status();
+    log::debug!("Response status code: {:#?}", response_status);
+
     if response_status != 200 {
         let response_body = response.text().await.unwrap_or("No response body received".to_string());
         return Err(APIRoutingError::from_status_code_and_message(response_status, response_body.as_str()));
     }
 
-    let response_output = response.json::<O>().await?;
+    let response_output = response.json::<O>().await.map_err(|e| {
+        log::error!("Error parsing response: {:#?}", e);
+        APIRoutingError::UnprocessableEntity("Error parsing response".to_string())
+    })?;
 
     Ok((response_output, response_status))
 }
