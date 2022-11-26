@@ -74,7 +74,7 @@ pub async fn find_job_postings(
 
         log::debug!("Total job postings: {:?}", good_results.len());
 
-        // Uniquefy the results (by mutatation)
+        // Uniquefy the results (with mutatation)
         good_results.sort_by(|a, b| job_postings_sort_comparator(a,  b));
         good_results.dedup_by(|a, b| is_job_postings_the_same(a, b));
         let total_count = good_results.len() as i32;
