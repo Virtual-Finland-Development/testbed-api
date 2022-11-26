@@ -14,5 +14,5 @@ pub async fn fetch_user_profile(
     let endpoint_url = "https://gateway.testbed.fi/test/lassipatanen/User/Profile?source=access_to_finland";
     let request_input = serde_json::from_str(request.body.as_str())?;
     let request_headers = parse_testbed_request_headers(request)?;
-    return post_json_request::<JSONValue, JSONValue>(endpoint_url, request_input, request_headers).await;
+    return post_json_request::<JSONValue, JSONValue>(endpoint_url, &request_input, request_headers).await;
 }

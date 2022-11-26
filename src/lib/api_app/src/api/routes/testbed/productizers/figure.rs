@@ -37,5 +37,5 @@ pub async fn get_population(request: ParsedRequest) -> Result<APIRoutingResponse
     let endpoint_url = "https://gateway.testbed.fi/test/lsipii/Figure/Population?source=virtual_finland";
     let request_input: PopulationQuery = serde_json::from_str(request.body.as_str())?;
     let request_headers = parse_testbed_request_headers(request)?;
-    return post_json_request::<PopulationQuery, PopulationResponse>(endpoint_url, request_input, request_headers).await;
+    return post_json_request::<PopulationQuery, PopulationResponse>(endpoint_url, &request_input, request_headers).await;
 }
