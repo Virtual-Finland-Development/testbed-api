@@ -51,7 +51,7 @@ pub async fn find_job_postings(
     let request_input = serde_json::from_str::<JSONValue>(request.body.as_str())?;
     let request_headers = parse_testbed_request_headers(request)?;
     let endpoint_urls = vec![
-        "https://rivo44sx4jiec4fu7c2kl6f4li0vxqkh.lambda-url.eu-north-1.on.aws/test/lassipatanen/Job/JobPosting"
+        "https://gateway.testbed.fi/test/lassipatanen/Job/JobPosting?source=tyomarkkinatori"
     ];
 
     // Fetch the data
