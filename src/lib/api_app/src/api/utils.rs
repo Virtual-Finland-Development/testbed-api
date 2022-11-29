@@ -1,7 +1,17 @@
-use super::routing_types::ParsedRequest;
-use http::header::{HeaderMap, HeaderName};
-use http::HeaderValue;
+use lambda_http::aws_lambda_events::query_map::QueryMap;
+use http::{
+    HeaderValue,
+    header::{HeaderMap, HeaderName}
+};
 use lambda_http::{Body, Request, RequestExt};
+
+pub struct ParsedRequest {
+    pub path: String,
+    pub method: String,
+    pub query: QueryMap,
+    pub headers: HeaderMap,
+    pub body: String,
+}
 
 /**
  * Convert the lambda_http::Request to a parsed_request.
@@ -74,4 +84,11 @@ pub fn get_plain_headers() -> HeaderMap {
     );
 
     return headers;
+}
+
+pub fn truncate_too_long_string(string: String, max_length: usize, postfix: &str) -> String {
+    if string.len() > max_length {
+        return string[..max_length].to_string() + postfix;
+    }
+    return string;
 }

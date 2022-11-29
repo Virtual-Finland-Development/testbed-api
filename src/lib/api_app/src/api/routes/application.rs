@@ -4,8 +4,9 @@ use serde_json::json;
 use std::fs;
 
 use crate::api::{
-    routing_types::{APIRoutingError, APIRoutingResponse, ParsedRequest},
-    utils::{get_cors_response_headers, get_default_headers, get_plain_headers}
+    responses::{APIRoutingError, APIRoutingResponse},
+    utils::{ParsedRequest, get_cors_response_headers, get_default_headers, get_plain_headers},
+    responses::resolve_external_service_bad_response,
 };
 
 pub async fn cors_preflight_response(
@@ -60,18 +61,5 @@ pub async fn get_external_service_bad_response(
 ) -> Result<APIRoutingResponse, APIRoutingError> {
     let status_code = response.status();
     let response_body = response.text().await?;
-
-    // Ensure JSON response
-    let response_json = serde_json::from_str::<serde_json::Value>(&response_body)
-        .unwrap_or(json!({"content": response_body}));
-    
-    Ok(APIRoutingResponse {
-        status_code: status_code,
-        body: json!({
-            "message": format!("External service responded with a status: {}", status_code).to_string(),
-            "data": response_json,
-        })
-        .to_string(),
-        headers: get_default_headers(),
-    })
+    return resolve_external_service_bad_response(status_code, response_body);
 }

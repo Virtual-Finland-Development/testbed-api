@@ -20,13 +20,14 @@ dev: install-dev
 		cargo watch -x 'run --features local-dev'
 
 run:
-	cargo watch -x 'run --features local-dev'
+	LOGGING_LEVEL=debug cargo watch -x 'run --features local-dev'
 run-sam: build
 	sam local start-api --template ./infra/sam-template.yml \
 		--host 0.0.0.0 --port 3003
 
 test: install
 	docker run --rm -v `pwd`:/builder -w /builder ${builder-image} cargo test
+	docker run --rm -v `pwd`:/builder -w /builder ${builder-image} cargo test -p api_app
 
 clean: install
 	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} cargo clean --target-dir /builder/infra/build/target

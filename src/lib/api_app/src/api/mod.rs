@@ -2,8 +2,10 @@ use http::Response;
 use lambda_http::Request;
 use log;
 
-mod routing_types;
-mod routes;
+pub mod routes;
+mod responses;
+mod requests;
+
 pub mod utils;
 
 /**
@@ -16,7 +18,11 @@ pub async fn handler(
 
     log::info!("{} {}", parsed_request.method, parsed_request.path);
     let router_response = routes::exec_router_request(parsed_request).await;
-    log::debug!("Response: {:#?}", router_response);
+    log::debug!("Response: {:#?},\nBody: {:#?},\nHeaders: {:#?}", 
+        router_response.status_code, 
+        utils::truncate_too_long_string(router_response.body.to_string(), 5000, "..."), 
+        router_response.headers
+    );
 
     let mut api_response = Response::builder()
         .status(router_response.status_code)
