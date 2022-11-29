@@ -2,7 +2,7 @@ use http::Response;
 use lambda_http::Request;
 use log;
 
-mod routes;
+pub mod routes;
 mod responses;
 mod requests;
 

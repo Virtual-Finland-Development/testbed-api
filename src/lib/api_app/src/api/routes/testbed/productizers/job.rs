@@ -1,7 +1,6 @@
 use std::cmp::Ordering;
 use http::StatusCode;
 use serde::{ Deserialize, Serialize };
-use serde_json::Value as JSONValue;
 
 use crate::api::{
     responses::{ APIRoutingError, APIRoutingResponse, resolve_external_service_bad_response },
@@ -10,15 +9,38 @@ use crate::api::{
 };
 use super::parse_testbed_request_headers;
 
+//
+// Inputs
+// 
 #[derive(Deserialize, Serialize, Debug)]
-struct JobPostingResponse {
-    results: Vec<JobPosting>,
-    #[serde(rename = "totalCount")]
-    total_count: i32,
+struct JobsRequest {
+    query: String,
+    location: RequestLocation,
+    paging: RequestPaging,
+}
+#[derive(Deserialize, Serialize, Debug)]
+struct RequestLocation {
+    countries: Vec<String>,
+    regions: Vec<String>,
+    municipalities: Vec<String>,
+}
+#[derive(Deserialize, Serialize, Debug)]
+struct RequestPaging {
+    limit: usize,
+    offset: usize,
 }
 
+//
+// Outputs
+//
+#[derive(Deserialize, Serialize, Debug)]
+pub struct JobPostingResponse {
+    pub results: Vec<JobPosting>,
+    #[serde(rename = "totalCount")]
+    pub total_count: i32,
+}
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
-struct JobPosting {
+pub struct JobPosting {
     employer: String,
     location: Location,
     #[serde(rename = "basicInfo")]
@@ -51,14 +73,19 @@ struct BasicInfo {
 pub async fn find_job_postings(
     request: ParsedRequest
 ) -> Result<APIRoutingResponse, APIRoutingError> {
-    let request_input = serde_json::from_str::<JSONValue>(request.body.as_str())?;
+    let request_input = serde_json::from_str::<JobsRequest>(request.body.as_str())?;
     let request_headers = parse_testbed_request_headers(request)?;
     let endpoint_urls = vec![
-        "https://gateway.testbed.fi/test/lassipatanen/Job/JobPosting?source=tyomarkkinatori"
+        "https://gateway.testbed.fi/test/lassipatanen/Job/JobPosting?source=tyomarkkinatori",
+        "https://gateway.testbed.fi/test/lassipatanen/Job/JobPosting?source=jobs_in_finland"
     ];
 
+    // Compensate the pagination parameters
+    //request_input.paging.limit = request_input.paging.limit / endpoint_urls.len();
+    //request_input.paging.offset = request_input.paging.offset * request_input.paging.limit;
+
     // Fetch the data
-    let (response_status, good_responses, error_response_body) = request_post_many_json_requests::<JSONValue, JobPostingResponse>(
+    let (response_status, good_responses, error_response_body) = request_post_many_json_requests::<JobsRequest, JobPostingResponse>(
         endpoint_urls,
         &request_input,
         request_headers
@@ -75,8 +102,7 @@ pub async fn find_job_postings(
         log::debug!("Total job postings: {:?}", good_results.len());
 
         // Uniquefy the results (with mutatation)
-        good_results.sort_by(|a, b| job_postings_sort_comparator(a,  b));
-        good_results.dedup_by(|a, b| is_job_postings_the_same(a, b));
+        merge_job_posting_results(&mut good_results);
         let total_count = good_results.len() as i32;
 
         log::debug!("Merged job postings: {:?}", total_count);
@@ -99,6 +125,14 @@ pub async fn find_job_postings(
     }
 }
 
+/**
+ * Merge the job posting results
+ */
+pub fn merge_job_posting_results(results: &mut Vec::<JobPosting>) -> &mut Vec::<JobPosting> {
+    results.sort_by(|a, b| job_postings_sort_comparator(a,  b));
+    results.dedup_by(|a, b| is_job_postings_the_same(a, b));
+    return results
+}
 
 fn job_postings_sort_comparator(a: &JobPosting, b: &JobPosting) -> Ordering {
     if is_job_postings_the_same(a, b) {

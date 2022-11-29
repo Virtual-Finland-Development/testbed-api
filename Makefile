@@ -27,6 +27,7 @@ run-sam: build
 
 test: install
 	docker run --rm -v `pwd`:/builder -w /builder ${builder-image} cargo test
+	docker run --rm -v `pwd`:/builder -w /builder ${builder-image} cargo test -p api_app
 
 clean: install
 	docker run -it --rm -v `pwd`:/builder -w /builder ${builder-image} cargo clean --target-dir /builder/infra/build/target

@@ -1,0 +1,65 @@
+{
+    "results": [
+        {
+            "employer": "Dementiahoitokoti Dagmaaria Oy",
+            "location": {
+                "municipality": "PORI",
+                "postcode": "28800"
+            },
+            "basicInfo": {
+                "title": "Hoitoapulainen, Dementiahoitokoti Dagmaaria Oy, Pori",
+                "description": "Tervetuloa iloiseen mahtavaan joukkoomme tekemään ikäihmisten arjesta elämisen arvoista palvelukodeissamme. Jos etsit erityisen reilua ja mukavaa työyhteisöä, vapautta vaikuttaa työhön ja arvostat joustavuutta, niin tule meille. \r\nKerrohan toiveesi esimerkiksi työajoista, meillä on mahdollista liittyä hulvattomaan yökyöpeleiden tiimiin tai tehdä, kolme-, kaksi tai yksi vuoroa. Voit tehdä kokoaikaista tai osa-aikaista, mikä vain sinulle sopii. Avosylin otamme sinut vastaan myös eläkkeeltä tai hoitovapailta tarjoten juurikin sinulle sopivat toivomasi työvuorot.\nTai muu työntekijän toiveen mukainen",
+                "workTimeType": "01"
+            },
+            "publishedAt": "2022-04-06T21:00:00+00:00",
+            "applicationEndDate": "0001-01-01T00:00:00",
+            "applicationUrl": null
+        },
+        {
+            "employer": "KR-Dental Oy",
+            "location": {
+                "municipality": "RAUMA",
+                "postcode": "26100"
+            },
+            "basicInfo": {
+                "title": "Suuhygienisti, KR-Dental Oy, HammasKarisma, Rauma, Rauma",
+                "description": "Toimintamme kasvaessa ja asiakaskysynnän lisääntymisen takia etsimme joukkoomme nyt iloista ja asiakaspalveluhenkistä suuhygienistiä. Mielellään palkkaisimme sinut kokoaikaiseksi palkkatyöhön, mutta olemme valmiit räätälöimään kanssasi sinulle mieluisen kokonaisuuden.\r\nSinulla saisi olla jo alasta hieman kokemusta ja näyttöä onnistuneista työsuhteista.\r\nNoudatamme alan TES-sopimusta. Mikäli koet, että haluat työskennellä iloisessa työyhteisössä uusimpien laitteiden ja erilaisten ammattilaisten kanssa yhteistyössä, ota rohkeasti yhteyttä.",
+                "workTimeType": "01"
+            },
+            "publishedAt": "2022-04-11T21:00:00+00:00",
+            "applicationEndDate": "0001-01-01T00:00:00",
+            "applicationUrl": null
+        },
+        {
+            "employer": "Kankaanpään kaupunki",
+            "location": {
+                "municipality": "KANKAANPÄÄ",
+                "postcode": "38700"
+            },
+            "basicInfo": {
+                "title": "Ravitsemistyöntekijä, suurtalouskokki, Kankaanpään kaupunki, Kankaanpää",
+                "description": "Kankaanpään kaupungin ruokahuollossa on jatkuva rekrytointi lyhyt- ja pitkäaikaissijaisuuksiin.\r\n\r\nRavitsemistyöntekijät ja suurtalouskokit työskentelevät koulujen keittiöllä sekä peruspalvelukeskuksen keittiöllä, jossa on myös ilta- ja viikonlopputyötä.\r\nKeittiötyössä edellytämme ravitsemisalan perustutkintoa; ravitsemistyöntekijä, suurtalouskokki.\r\n\r\nVoit ilmoittautua sijaisrekisteriin täyttämällä sähköisen hakemuksen Kuntarekryn sivuilla.\r\nOtamme yhteyttä työnhakijaan mahdollisen haastattelun sopimiseksi.",
+                "workTimeType": "01"
+            },
+            "publishedAt": "2022-04-22T21:00:00+00:00",
+            "applicationEndDate": "2022-12-31T13:00:00+00:00",
+            "applicationUrl": null
+        },
+        {
+            "employer": "Kankaanpään kaupunki",
+            "location": {
+                "municipality": "KANKAANPÄÄ",
+                "postcode": "38700"
+            },
+            "basicInfo": {
+                "title": "Ravitsemistyöntekijä, suurtalouskokki, Kankaanpään kaupunki, Kankaanpää",
+                "description": "Kankaanpään kaupungin ruokahuollossa on jatkuva rekrytointi lyhyt- ja pitkäaikaissijaisuuksiin.\r\n\r\nRavitsemistyöntekijät ja suurtalouskokit työskentelevät koulujen keittiöllä sekä peruspalvelukeskuksen keittiöllä, jossa on myös ilta- ja viikonlopputyötä.\r\nKeittiötyössä edellytämme ravitsemisalan perustutkintoa; ravitsemistyöntekijä, suurtalouskokki.\r\n\r\nVoit ilmoittautua sijaisrekisteriin täyttämällä sähköisen hakemuksen Kuntarekryn sivuilla.\r\nOtamme yhteyttä työnhakijaan mahdollisen haastattelun sopimiseksi.",
+                "workTimeType": "01"
+            },
+            "publishedAt": "2022-04-22T21:00:00+00:00",
+            "applicationEndDate": "2022-12-31T13:00:00+00:00",
+            "applicationUrl": null
+        }
+    ],
+    "totalCount": 4
+}
