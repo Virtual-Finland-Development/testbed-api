@@ -73,7 +73,7 @@ struct BasicInfo {
 pub async fn find_job_postings(
     request: ParsedRequest
 ) -> Result<APIRoutingResponse, APIRoutingError> {
-    let request_input = serde_json::from_str::<JobsRequest>(request.body.as_str())?;
+    let mut request_input = serde_json::from_str::<JobsRequest>(request.body.as_str())?;
     let request_headers = parse_testbed_request_headers(request)?;
     let endpoint_urls = vec![
         "https://gateway.testbed.fi/test/lassipatanen/Job/JobPosting?source=tyomarkkinatori",
@@ -82,7 +82,7 @@ pub async fn find_job_postings(
 
     // Compensate the pagination parameters
     //request_input.paging.limit = request_input.paging.limit / endpoint_urls.len();
-    //request_input.paging.offset = request_input.paging.offset * request_input.paging.limit;
+    request_input.paging.offset = request_input.paging.offset * request_input.paging.limit;
 
     // Fetch the data
     let (response_status, good_responses, error_response_body) = request_post_many_json_requests::<JobsRequest, JobPostingResponse>(
