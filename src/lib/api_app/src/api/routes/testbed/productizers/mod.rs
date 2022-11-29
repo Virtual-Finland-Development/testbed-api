@@ -23,16 +23,5 @@ fn parse_testbed_request_headers(request: ParsedRequest) -> Result<HeaderMap, AP
             ))?
             .clone(),
     );
-    request_headers.insert(
-        "x-authorization-provider",
-        request
-            .headers
-            .get("x-authorization-provider")
-            .ok_or(APIRoutingError::UnprocessableEntity(
-                "No authorization provider header".to_string(),
-            ))?
-            .clone(),
-    );
-
     Ok(request_headers)
 }
