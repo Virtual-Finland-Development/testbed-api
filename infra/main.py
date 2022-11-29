@@ -28,7 +28,7 @@ testbed_api_lambda_role = aws_native.iam.Role(
 
 testbed_api_lambda_role_attachment = aws.iam.RolePolicyAttachment(
     "testbed_api_lambda_role_attachment",
-    role=pulumi.Output.concat(testbed_api_lambda_role.role_name),
+    role=pulumi.Output.concat(testbed_api_lambda_role.role_name),  # type: ignore
     policy_arn="arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
 )
 
@@ -38,6 +38,7 @@ testbed_api_function = aws.lambda_.Function(
     role=testbed_api_lambda_role.arn,
     handler="bootstrap",  # contents of the zip file
     code=pulumi.FileArchive("./build/rust.zip"),
+    publish=True,
     timeout=15,
     memory_size=512,
     tags={
@@ -45,6 +46,32 @@ testbed_api_function = aws.lambda_.Function(
         "Environment": pulumi.get_stack(),
         "Project": "Virtual Finland",
     },
+)
+
+lambda_id_for_provisioning = pulumi.Output.concat(
+    "function:", testbed_api_function.name, ":", testbed_api_function.version
+)
+aws.appautoscaling.ScheduledAction(
+    "testbed-api-provisioned-concurrency-by-day",
+    service_namespace="lambda",
+    resource_id=lambda_id_for_provisioning,
+    scalable_dimension="lambda:function:ProvisionedConcurrency",
+    schedule="0 6 * * ? *",
+    scalable_target_action=aws.appautoscaling.ScheduledActionScalableTargetActionArgs(
+        min_capacity=1,
+        max_capacity=10,
+    ),
+)
+aws.appautoscaling.ScheduledAction(
+    "testbed-api-provisioned-concurrency-by-night",
+    service_namespace="lambda",
+    resource_id=lambda_id_for_provisioning,
+    scalable_dimension="lambda:function:ProvisionedConcurrency",
+    schedule="0 18 * * ? *",
+    scalable_target_action=aws.appautoscaling.ScheduledActionScalableTargetActionArgs(
+        min_capacity=0,
+        max_capacity=5,
+    ),
 )
 
 lambda_url = aws_native.lambda_.Url(
