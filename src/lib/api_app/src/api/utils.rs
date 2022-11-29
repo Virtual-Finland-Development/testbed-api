@@ -85,3 +85,10 @@ pub fn get_plain_headers() -> HeaderMap {
 
     return headers;
 }
+
+pub fn truncate_too_long_string(string: String, max_length: usize, postfix: &str) -> String {
+    if string.len() > max_length {
+        return string[..max_length].to_string() + postfix;
+    }
+    return string;
+}
