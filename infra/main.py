@@ -7,6 +7,12 @@ import pulumi_aws as aws
 import pulumi_aws_native as aws_native
 from pulumi_command import local
 
+tags = {
+    "Name": "testbed-api",
+    "Environment": pulumi.get_stack(),
+    "Project": "Virtual Finland",
+}
+
 testbed_api_lambda_role = aws_native.iam.Role(
     "testbed_api_lambda_role",
     assume_role_policy_document=json.dumps(
@@ -28,7 +34,7 @@ testbed_api_lambda_role = aws_native.iam.Role(
 
 testbed_api_lambda_role_attachment = aws.iam.RolePolicyAttachment(
     "testbed_api_lambda_role_attachment",
-    role=pulumi.Output.concat(testbed_api_lambda_role.role_name),
+    role=pulumi.Output.concat(testbed_api_lambda_role.role_name),  # type: ignore
     policy_arn="arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
 )
 
@@ -38,13 +44,17 @@ testbed_api_function = aws.lambda_.Function(
     role=testbed_api_lambda_role.arn,
     handler="bootstrap",  # contents of the zip file
     code=pulumi.FileArchive("./build/rust.zip"),
+    publish=True,  # needed for provisioned concurrency
     timeout=15,
     memory_size=512,
-    tags={
-        "Name": "testbed-api",
-        "Environment": pulumi.get_stack(),
-        "Project": "Virtual Finland",
-    },
+    tags=tags,
+)
+
+aws.lambda_.ProvisionedConcurrencyConfig(
+    "testbed-api-fixed-concurrency",
+    function_name=testbed_api_function.name,
+    qualifier=testbed_api_function.version,
+    provisioned_concurrent_executions=1,
 )
 
 lambda_url = aws_native.lambda_.Url(
