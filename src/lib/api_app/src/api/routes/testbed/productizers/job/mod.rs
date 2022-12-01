@@ -8,7 +8,7 @@ use crate::api::{
 };
 use super::parse_testbed_request_headers;
 
-mod job_models;
+pub mod job_models;
 use job_models::{
     JobsRequest,
     JobPostingResponse,
