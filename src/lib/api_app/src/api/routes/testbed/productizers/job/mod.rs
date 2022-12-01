@@ -1,6 +1,5 @@
-use std::cmp::Ordering;
+use std::{cmp::Ordering, collections::hash_map::DefaultHasher, hash::Hasher};
 use http::StatusCode;
-use serde::{ Deserialize, Serialize };
 
 use crate::api::{
     responses::{ APIRoutingError, APIRoutingResponse, resolve_external_service_bad_response },
@@ -9,63 +8,13 @@ use crate::api::{
 };
 use super::parse_testbed_request_headers;
 
-//
-// Inputs
-// 
-#[derive(Deserialize, Serialize, Debug)]
-struct JobsRequest {
-    query: String,
-    location: RequestLocation,
-    paging: RequestPaging,
-}
-#[derive(Deserialize, Serialize, Debug)]
-struct RequestLocation {
-    countries: Vec<String>,
-    regions: Vec<String>,
-    municipalities: Vec<String>,
-}
-#[derive(Deserialize, Serialize, Debug)]
-struct RequestPaging {
-    limit: usize,
-    offset: usize,
-}
-
-//
-// Outputs
-//
-#[derive(Deserialize, Serialize, Debug)]
-pub struct JobPostingResponse {
-    pub results: Vec<JobPosting>,
-    #[serde(rename = "totalCount")]
-    pub total_count: i32,
-}
-#[derive(Deserialize, Serialize, Debug, PartialEq)]
-pub struct JobPosting {
-    employer: String,
-    location: Location,
-    #[serde(rename = "basicInfo")]
-    basic_info: BasicInfo,
-    #[serde(rename = "publishedAt")]
-    published_at: String,
-    #[serde(rename = "applicationEndDate")]
-    application_end_date: String,
-    #[serde(rename = "applicationUrl")]
-    application_url: Option<String>,
-}
-
-#[derive(Deserialize, Serialize, Debug, PartialEq)]
-struct Location {
-    municipality: String,
-    postcode: String,
-}
-
-#[derive(Deserialize, Serialize, Debug, PartialEq)]
-struct BasicInfo {
-    title: String,
-    description: String,
-    #[serde(rename = "workTimeType")]
-    work_time_type: String,
-}
+mod job_models;
+use job_models::{
+    JobsRequest,
+    JobPostingResponse,
+    JobPosting,
+    JobPostingForFrontend,
+};
 
 /**
  * Get job postings
@@ -85,7 +34,7 @@ pub async fn find_job_postings(
     request_input.paging.offset = request_input.paging.offset * request_input.paging.limit;
 
     // Fetch the data
-    let (response_status, good_responses, error_response_body) = request_post_many_json_requests::<JobsRequest, JobPostingResponse>(
+    let (response_status, good_responses, error_response_body) = request_post_many_json_requests::<JobsRequest, JobPostingResponse<JobPosting>>(
         endpoint_urls,
         &request_input,
         request_headers
@@ -101,15 +50,17 @@ pub async fn find_job_postings(
 
         log::debug!("Total job postings: {:?}", good_results.len());
 
-        // Uniquefy the results (with mutatation)
-        merge_job_posting_results(&mut good_results);
+        // Uniquefy the results, transform to a frontend suitable format and sort
+        let good_results = merge_job_posting_results(&mut good_results);
         let total_count = good_results.len() as i32;
-
         log::debug!("Merged job postings: {:?}", total_count);
+
+        // Transform the results to a frontend suitable format
+        let transformed_results = transform_job_posting_results(good_results);
 
         // Return the response
         let response_output = JobPostingResponse {
-            results: good_results,
+            results: transformed_results,
             total_count: total_count,
         };
 
@@ -143,9 +94,41 @@ fn job_postings_sort_comparator(a: &JobPosting, b: &JobPosting) -> Ordering {
 }
 
 fn is_job_postings_the_same(a: &JobPosting, b: &JobPosting) -> bool {
-    a.employer == b.employer &&
-    a.location.municipality == b.location.municipality &&
-    a.basic_info.title == b.basic_info.title &&
-    a.published_at == b.published_at &&
-    a.application_url == b.application_url
+    generate_job_posting_id(a) == generate_job_posting_id(b)
+}
+
+/**
+ * Transform the job posting results
+ */
+pub fn transform_job_posting_results(results: &mut Vec::<JobPosting>) -> Vec::<JobPostingForFrontend> {
+    results.into_iter().map(|r| JobPostingForFrontend {
+        id: generate_job_posting_id(r),
+        employer: r.employer.clone(),
+        location: r.location.clone(),
+        basic_info: r.basic_info.clone(),
+        published_at: r.published_at.clone(),
+        application_url: r.application_url.clone(),
+        application_end_date: r.application_end_date.clone(),
+    }).collect()
+}
+
+/**
+ * Utils
+ */
+
+// Generate ID for the job posting 
+fn generate_job_posting_id(job_posting: &JobPosting) -> String {
+    let job_now = job_posting.clone();
+    let app_url = job_now.application_url.clone();
+    let url_part = app_url.unwrap_or("".to_string());
+
+    let mut hasher = DefaultHasher::new();
+    let mut id_parts = String::new();
+    id_parts.push_str(job_now.employer.as_str());
+    id_parts.push_str(job_now.location.municipality.as_str());
+    id_parts.push_str(job_now.basic_info.title.as_str());
+    id_parts.push_str(job_now.published_at.as_str());
+    id_parts.push_str(url_part.as_str());
+    hasher.write(id_parts.as_bytes());
+    hasher.finish().to_string()
 }
