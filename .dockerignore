@@ -1,2 +1,3 @@
 target
 infra/build
+.cargo_home

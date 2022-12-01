@@ -12,3 +12,4 @@ Cargo.lock
 # Infra build packages
 infra/build/*
 !infra/build/.gitkeep
+.cargo_home
