@@ -17,8 +17,8 @@ pub struct RequestLocation {
 }
 #[derive(Deserialize, Serialize, Debug)]
 pub struct RequestPaging {
-    pub limit: usize,
-    pub offset: usize,
+    pub limit: i32,
+    pub offset: i32,
 }
 
 //

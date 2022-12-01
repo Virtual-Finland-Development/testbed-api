@@ -1,5 +1,6 @@
 use std::{cmp::Ordering, collections::hash_map::DefaultHasher, hash::Hasher};
 use http::StatusCode;
+use math::round;
 
 use crate::api::{
     responses::{ APIRoutingError, APIRoutingResponse, resolve_external_service_bad_response },
@@ -30,7 +31,12 @@ pub async fn find_job_postings(
     ];
 
     // Compensate the pagination parameters
-    //request_input.paging.limit = request_input.paging.limit / endpoint_urls.len();
+    let original_limit = request_input.paging.limit;
+    let limit = (request_input.paging.limit / (endpoint_urls.len() as i32)) as f64;
+    request_input.paging.limit = round::ceil(limit, 1) as i32;
+    if request_input.paging.limit < 1 {
+        request_input.paging.limit = 1;
+    }
     request_input.paging.offset = request_input.paging.offset * request_input.paging.limit;
 
     // Fetch the data
@@ -61,7 +67,7 @@ pub async fn find_job_postings(
 
         // Return the response
         let response_output = JobPostingResponse {
-            results: good_results,
+            results: good_results.iter().take(original_limit as usize).collect(),
             total_count: total_count,
         };
 
