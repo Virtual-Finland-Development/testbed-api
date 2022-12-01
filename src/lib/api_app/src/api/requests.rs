@@ -29,12 +29,14 @@ pub async fn post_json_request<I: Debug + Serialize, O: Debug + Serialize + for<
     }
 }
 
-
+/// Requests many json post requests
+/// Returns tuples of good responses and headers along with request url
 pub async fn request_post_many_json_requests<I: Debug + Serialize, O: Debug + Serialize + for<'a> Deserialize<'a>>(
     endpoint_urls: Vec<&str>,
     request_input: &I,
     request_headers: HeaderMap,
-) -> Result<(StatusCode, Vec::<O>, String), APIRoutingError> {
+    allow_failures: bool,
+) -> Result<(StatusCode, Vec::<(O, HeaderMap, String)>, String), APIRoutingError> {
     // Get the job postings from the external services using concurrent requests and merge them
     // @see: https://stackoverflow.com/a/51047786
     let api_client = reqwest::Client::new();
@@ -50,33 +52,34 @@ pub async fn request_post_many_json_requests<I: Debug + Serialize, O: Debug + Se
     ).await;
 
     // Merge the good responses
-    // If any response failed, all fail
-    let mut response_status = StatusCode::OK;
-    let mut error_response_body = String::new();
-    let mut good_responses = Vec::<O>::new();
+   
+    let mut good_responses = Vec::<(O, HeaderMap, String)>::new();
     
     for r in response_json_bodies {
         match r {
             Ok(r) => {
-                good_responses.push(r.0);
+                good_responses.push((r.0, r.2, r.3));
             }
             Err(r) => {
-                response_status = r.get_status_code();
-                error_response_body = r.to_string();
-                break;
+                if !allow_failures {
+                    // If any response failed, all fail
+                    return Ok((r.get_status_code(), Vec::<(O, HeaderMap, String)>::new(), r.to_string()));
+                }
             }
         }
     }
 
-    Ok((response_status, good_responses, error_response_body))
+    Ok((StatusCode::OK, good_responses, String::new()))
 }
 
+/// Request a POST JSON request to an external service
+/// Returns the response body as a JSON object, status code, the response headers and request url 
 async fn request_post_json_request_data<I: Debug + Serialize, O: Debug + Serialize + for<'a> Deserialize<'a>>(
     client: &reqwest::Client,
     endpoint_url: &str,
     request_input: &I,
     request_headers: HeaderMap,
-) -> Result<(O, StatusCode), APIRoutingError> {
+) -> Result<(O, StatusCode, HeaderMap, String), APIRoutingError> {
     log::debug!("Url: {:#?}", endpoint_url);
     log::debug!("Input: {:#?}", request_input);
     log::debug!("Headers: {:#?}", request_headers);
@@ -89,6 +92,7 @@ async fn request_post_json_request_data<I: Debug + Serialize, O: Debug + Seriali
         .await?;
 
     let response_status = response.status();
+    let response_headers = response.headers().clone();
     log::debug!("Response status code: {:#?}", response_status);
 
     if response_status != 200 {
@@ -101,5 +105,5 @@ async fn request_post_json_request_data<I: Debug + Serialize, O: Debug + Seriali
         APIRoutingError::UnprocessableEntity("Error parsing response".to_string())
     })?;
 
-    Ok((response_output, response_status))
+    Ok((response_output, response_status, response_headers, endpoint_url.to_string()))
 }

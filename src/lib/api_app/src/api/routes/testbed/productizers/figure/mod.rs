@@ -1,5 +1,3 @@
-use serde::{Deserialize, Serialize};
-
 use crate::api:: {
     responses::{APIRoutingError, APIRoutingResponse},
     requests::post_json_request,
@@ -7,29 +5,11 @@ use crate::api:: {
 };
 use super::parse_testbed_request_headers;
 
-
-/**
- * Population query parameters
- */
-
-#[derive(Deserialize, Serialize, Debug)]
-struct PopulationQuery {
-    city: String,
-    year: String, // Note: front apps send strings, not numbers
-}
-
-/**
- * Population response
- */
-#[derive(Deserialize, Serialize, Debug)]
-struct PopulationResponse {
-    description: String,
-    #[serde(rename = "sourceName")]
-    source_name: String,
-    population: i128,
-    #[serde(rename = "updatedAt")]
-    updated_at: String,
-}
+mod figure_models;
+use figure_models::{
+    PopulationQuery,
+    PopulationResponse,
+};
 
 /**
  * Get population figure

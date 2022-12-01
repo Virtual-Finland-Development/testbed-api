@@ -16,6 +16,7 @@ install-dev:
 dev: install-dev
 	docker run -it --rm -p 3003:3000 \
 		-v `pwd`:/builder -w /builder \
+		-e LOGGING_LEVEL=debug \
 		-e CARGO_HOME=/builder/.cargo_home \
 		virtualfinland/testbed-api-builder:devenv \
 		cargo watch -x 'run --features local-dev'
