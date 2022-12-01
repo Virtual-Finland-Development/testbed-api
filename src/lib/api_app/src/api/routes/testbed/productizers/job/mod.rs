@@ -4,7 +4,7 @@ use http::StatusCode;
 use crate::api::{
     responses::{ APIRoutingError, APIRoutingResponse, resolve_external_service_bad_response },
     requests::request_post_many_json_requests,
-    utils::{get_default_headers, ParsedRequest},
+    utils::{get_default_headers, ParsedRequest, cut_string_by_delimiter_keep_right},
 };
 use super::parse_testbed_request_headers;
 
@@ -42,25 +42,25 @@ pub async fn find_job_postings(
 
     if response_status == StatusCode::OK {
         
-        // Merge the good response results
-        let mut good_results = Vec::<JobPosting>::new();
+        // Transform the good response results for the frontend
+        let mut good_results = Vec::<JobPostingForFrontend>::new();
         for mut r in good_responses {
-            good_results.append(&mut r.results);
+
+            let jobs_source = cut_string_by_delimiter_keep_right(r.2, "?source=");
+            let mut transformed_results = transform_job_posting_results(jobs_source, &mut r.0.results);
+            good_results.append(&mut transformed_results);
         }
 
         log::debug!("Total job postings: {:?}", good_results.len());
 
         // Uniquefy the results, transform to a frontend suitable format and sort
-        let good_results = merge_job_posting_results(&mut good_results);
+        merge_job_posting_results(&mut good_results);
         let total_count = good_results.len() as i32;
         log::debug!("Merged job postings: {:?}", total_count);
 
-        // Transform the results to a frontend suitable format
-        let transformed_results = transform_job_posting_results(good_results);
-
         // Return the response
         let response_output = JobPostingResponse {
-            results: transformed_results,
+            results: good_results,
             total_count: total_count,
         };
 
@@ -77,15 +77,14 @@ pub async fn find_job_postings(
 }
 
 /**
- * Merge the job posting results
+ * Merge the job posting results, by mutation
  */
-pub fn merge_job_posting_results(results: &mut Vec::<JobPosting>) -> &mut Vec::<JobPosting> {
+pub fn merge_job_posting_results(results: &mut Vec::<JobPostingForFrontend>) {
     results.sort_by(|a, b| job_postings_sort_comparator(a,  b));
     results.dedup_by(|a, b| is_job_postings_the_same(a, b));
-    return results
 }
 
-fn job_postings_sort_comparator(a: &JobPosting, b: &JobPosting) -> Ordering {
+fn job_postings_sort_comparator(a: &JobPostingForFrontend, b: &JobPostingForFrontend) -> Ordering {
     if is_job_postings_the_same(a, b) {
         Ordering::Equal
     } else {
@@ -93,16 +92,17 @@ fn job_postings_sort_comparator(a: &JobPosting, b: &JobPosting) -> Ordering {
     }
 }
 
-fn is_job_postings_the_same(a: &JobPosting, b: &JobPosting) -> bool {
-    generate_job_posting_id(a) == generate_job_posting_id(b)
+fn is_job_postings_the_same(a: &JobPostingForFrontend, b: &JobPostingForFrontend) -> bool {
+    a.id == b.id
 }
 
 /**
  * Transform the job posting results
  */
-pub fn transform_job_posting_results(results: &mut Vec::<JobPosting>) -> Vec::<JobPostingForFrontend> {
+pub fn transform_job_posting_results(jobs_source: String, results: &mut Vec::<JobPosting>) -> Vec::<JobPostingForFrontend> {
     results.into_iter().map(|r| JobPostingForFrontend {
         id: generate_job_posting_id(r),
+        jobs_source: jobs_source.to_string(),
         employer: r.employer.clone(),
         location: r.location.clone(),
         basic_info: r.basic_info.clone(),

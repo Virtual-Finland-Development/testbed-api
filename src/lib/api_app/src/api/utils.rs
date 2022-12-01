@@ -92,3 +92,9 @@ pub fn truncate_too_long_string(string: String, max_length: usize, postfix: &str
     }
     return string;
 }
+
+pub fn cut_string_by_delimiter_keep_right(string: String, delimiter: &str) -> String {
+    let split = string.split(delimiter);
+    let result = split.last().unwrap().to_string();
+    return result;
+}

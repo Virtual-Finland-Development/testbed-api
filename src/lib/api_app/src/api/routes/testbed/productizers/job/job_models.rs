@@ -65,6 +65,8 @@ pub struct BasicInfo {
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
 pub struct JobPostingForFrontend {
     pub id: String,
+    #[serde(rename = "jobsSource")]
+    pub jobs_source: String,
     pub employer: String,
     pub location: Location,
     #[serde(rename = "basicInfo")]
