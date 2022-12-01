@@ -11,7 +11,9 @@ use super::parse_testbed_request_headers;
 
 pub mod job_models;
 use job_models::{
+    JobsRequestFromFrontend,
     JobsRequest,
+    RequestPaging,
     JobPostingResponse,
     JobPosting,
     JobPostingForFrontend,
@@ -23,26 +25,36 @@ use job_models::{
 pub async fn find_job_postings(
     request: ParsedRequest
 ) -> Result<APIRoutingResponse, APIRoutingError> {
-    let mut request_input = serde_json::from_str::<JobsRequest>(request.body.as_str())?;
+    let request_input = serde_json::from_str::<JobsRequestFromFrontend>(request.body.as_str())?;
     let request_headers = parse_testbed_request_headers(request)?;
     let endpoint_urls = vec![
         "https://gateway.testbed.fi/test/lassipatanen/Job/JobPosting?source=tyomarkkinatori",
         "https://gateway.testbed.fi/test/lassipatanen/Job/JobPosting?source=jobs_in_finland"
     ];
 
-    // Compensate the pagination parameters
-    let original_limit = request_input.paging.limit;
-    let limit = (request_input.paging.limit / (endpoint_urls.len() as i32)) as f64;
-    request_input.paging.limit = round::ceil(limit, 1) as i32;
-    if request_input.paging.limit < 1 {
-        request_input.paging.limit = 1;
+    // Calc compensated pagination parameters
+    let original_limit = request_input.paging.items_per_page;
+    let compensated_limit = (request_input.paging.items_per_page / (endpoint_urls.len() as i32)) as f64;
+    let mut request_limit = round::ceil(compensated_limit, 1) as i32;
+    if request_limit < 1 {
+        request_limit = 1;
     }
-    request_input.paging.offset = request_input.paging.offset * request_input.paging.limit;
+    let offset = request_input.paging.page_number * request_limit;
+
+    // Create the request input
+    let productizer_request_input = JobsRequest {
+        query: request_input.query,
+        location: request_input.location,
+        paging: RequestPaging {
+            limit: request_limit,
+            offset: offset,
+        },
+    };
 
     // Fetch the data
     let (response_status, good_responses, error_response_body) = request_post_many_json_requests::<JobsRequest, JobPostingResponse<JobPosting>>(
         endpoint_urls,
-        &request_input,
+        &productizer_request_input,
         request_headers,
         true
     ).await.expect("Something went wrong with the bulk requests");

@@ -1,7 +1,23 @@
 use serde::{ Deserialize, Serialize };
 
 //
-// Inputs from the front app to the productizers
+// Inputs from the frontend 
+//
+#[derive(Deserialize, Serialize, Debug)]
+pub struct JobsRequestFromFrontend {
+    pub query: String,
+    pub location: RequestLocation,
+    pub paging: RequestPagingFromFrontend,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct RequestPagingFromFrontend {
+    pub items_per_page: i32,
+    pub page_number: i32,
+}
+
+//
+// Inputs to the productizers
 // 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct JobsRequest {
