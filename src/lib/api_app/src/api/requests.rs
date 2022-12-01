@@ -35,6 +35,7 @@ pub async fn request_post_many_json_requests<I: Debug + Serialize, O: Debug + Se
     endpoint_urls: Vec<&str>,
     request_input: &I,
     request_headers: HeaderMap,
+    allow_failures: bool,
 ) -> Result<(StatusCode, Vec::<(O, HeaderMap, String)>, String), APIRoutingError> {
     // Get the job postings from the external services using concurrent requests and merge them
     // @see: https://stackoverflow.com/a/51047786
@@ -51,9 +52,7 @@ pub async fn request_post_many_json_requests<I: Debug + Serialize, O: Debug + Se
     ).await;
 
     // Merge the good responses
-    // If any response failed, all fail
-    let mut response_status = StatusCode::OK;
-    let mut error_response_body = String::new();
+   
     let mut good_responses = Vec::<(O, HeaderMap, String)>::new();
     
     for r in response_json_bodies {
@@ -62,14 +61,15 @@ pub async fn request_post_many_json_requests<I: Debug + Serialize, O: Debug + Se
                 good_responses.push((r.0, r.2, r.3));
             }
             Err(r) => {
-                response_status = r.get_status_code();
-                error_response_body = r.to_string();
-                break;
+                if !allow_failures {
+                    // If any response failed, all fail
+                    return Ok((r.get_status_code(), Vec::<(O, HeaderMap, String)>::new(), r.to_string()));
+                }
             }
         }
     }
 
-    Ok((response_status, good_responses, error_response_body))
+    Ok((StatusCode::OK, good_responses, String::new()))
 }
 
 /// Request a POST JSON request to an external service

@@ -37,7 +37,8 @@ pub async fn find_job_postings(
     let (response_status, good_responses, error_response_body) = request_post_many_json_requests::<JobsRequest, JobPostingResponse<JobPosting>>(
         endpoint_urls,
         &request_input,
-        request_headers
+        request_headers,
+        true
     ).await.expect("Something went wrong with the bulk requests");
 
     if response_status == StatusCode::OK {
