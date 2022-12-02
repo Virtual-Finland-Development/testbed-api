@@ -57,16 +57,19 @@ pub async fn find_job_postings(
 
         // Uniquefy the results, transform to a frontend suitable format and sort
         merge_job_posting_results(&mut good_results);
-        let total_count = good_results.len() as i32;
-        log::debug!("Merged job postings: {:?}", total_count);
+        let merged_total = good_results.len() as i32;
+        log::debug!("Merged job postings: {:?}", merged_total);
+
+        let trimmed_results: Vec<&JobPostingForFrontend> = good_results
+            .iter()
+            .take(request.original_input.paging.items_per_page as usize)
+            .collect();
+        let final_count = trimmed_results.len() as i32;
 
         // Return the response
         let response_output = JobPostingResponse {
-            results: good_results
-                .iter()
-                .take(request.original_input.paging.items_per_page as usize)
-                .collect(),
-            total_count: total_count,
+            results: trimmed_results,
+            total_count: final_count,
         };
 
         Ok(
