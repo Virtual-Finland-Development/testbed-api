@@ -66,6 +66,8 @@ pub async fn find_job_postings(
             .collect();
         let final_count = trimmed_results.len() as i32;
 
+        log::debug!("Final total: {:?}", final_count);
+
         // Return the response
         let response_output = JobPostingResponse {
             results: trimmed_results,
