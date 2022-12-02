@@ -1,5 +1,5 @@
 use std::{ cmp::Ordering, collections::hash_map::DefaultHasher, hash::Hasher };
-use http::{ StatusCode, HeaderMap };
+use http::{ StatusCode };
 use math::round;
 
 use crate::api::{
@@ -17,6 +17,7 @@ use job_models::{
     JobPostingResponse,
     JobPosting,
     JobPostingForFrontend,
+    ProductizerRequest,
 };
 
 /**
@@ -36,7 +37,7 @@ pub async fn find_job_postings(
     let (response_status, good_responses, error_response_body) = request_post_many_json_requests::<
         JobsRequest,
         JobPostingResponse<JobPosting>
-    >(request.0, &request.1, request.2, true).await.expect(
+    >(request.endpoint_urls, &request.request_input, request.headers, true).await.expect(
         "Something went wrong with the bulk requests"
     );
 
@@ -63,7 +64,7 @@ pub async fn find_job_postings(
         let response_output = JobPostingResponse {
             results: good_results
                 .iter()
-                .take(request.3 as usize)
+                .take(request.original_input.paging.items_per_page as usize)
                 .collect(),
             total_count: total_count,
         };
@@ -83,12 +84,13 @@ pub async fn find_job_postings(
 pub fn construct_productizer_requests(
     request: ParsedRequest,
     endpoint_urls: Vec<&str>
-) -> Result<(Vec<&str>, JobsRequest, HeaderMap, i32), APIRoutingError> {
+) -> Result<ProductizerRequest, APIRoutingError> {
     let request_input = serde_json::from_str::<JobsRequestFromFrontend>(request.body.as_str())?;
+    let originial_input = request_input.clone();
+
     let request_headers = parse_testbed_request_headers(request)?;
 
     // Calc compensated pagination parameters
-    let original_limit = request_input.paging.items_per_page;
     let compensated_limit =
         f64::from(request_input.paging.items_per_page) / f64::from(endpoint_urls.len() as i32);
     let rounded_limit = round::ceil(compensated_limit, 0);
@@ -96,8 +98,6 @@ pub fn construct_productizer_requests(
     if request_limit < 1 {
         request_limit = 1;
     }
-
-    log::debug!("Request limit: {:?}", request_limit);
 
     let offset = request_input.paging.page_number * request_limit;
 
@@ -111,7 +111,15 @@ pub fn construct_productizer_requests(
         },
     };
 
-    return Ok((endpoint_urls, jobs_request, request_headers, original_limit));
+    return Ok(ProductizerRequest {
+        endpoint_urls: endpoint_urls
+            .iter()
+            .map(|s| s.to_string())
+            .collect(),
+        request_input: jobs_request,
+        headers: request_headers,
+        original_input: originial_input,
+    });
 }
 
 /**
@@ -143,15 +151,15 @@ pub fn transform_job_posting_results(
 ) -> Vec<JobPostingForFrontend> {
     results
         .into_iter()
-        .map(|r| JobPostingForFrontend {
-            id: generate_job_posting_id(r),
+        .map(|job_posting| JobPostingForFrontend {
+            id: generate_job_posting_id(job_posting),
             jobs_source: jobs_source.to_string(),
-            employer: r.employer.clone(),
-            location: r.location.clone(),
-            basic_info: r.basic_info.clone(),
-            published_at: r.published_at.clone(),
-            application_url: r.application_url.clone(),
-            application_end_date: r.application_end_date.clone(),
+            employer: job_posting.employer.clone(),
+            location: job_posting.location.clone(),
+            basic_info: job_posting.basic_info.clone(),
+            published_at: job_posting.published_at.clone(),
+            application_url: job_posting.application_url.clone(),
+            application_end_date: job_posting.application_end_date.clone(),
         })
         .collect()
 }

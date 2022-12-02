@@ -1,16 +1,17 @@
+use http::HeaderMap;
 use serde::{ Deserialize, Serialize };
 
 //
-// Inputs from the frontend 
+// Inputs from the frontend
 //
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct JobsRequestFromFrontend {
     pub query: String,
     pub location: RequestLocation,
     pub paging: RequestPagingFromFrontend,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct RequestPagingFromFrontend {
     pub items_per_page: i32,
     pub page_number: i32,
@@ -18,14 +19,22 @@ pub struct RequestPagingFromFrontend {
 
 //
 // Inputs to the productizers
-// 
+//
+#[derive(Debug)]
+pub struct ProductizerRequest {
+    pub endpoint_urls: Vec<String>,
+    pub request_input: JobsRequest,
+    pub headers: HeaderMap,
+    pub original_input: JobsRequestFromFrontend,
+}
+
 #[derive(Deserialize, Serialize, Debug)]
 pub struct JobsRequest {
     pub query: String,
     pub location: RequestLocation,
     pub paging: RequestPaging,
 }
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct RequestLocation {
     pub countries: Vec<String>,
     pub regions: Vec<String>,

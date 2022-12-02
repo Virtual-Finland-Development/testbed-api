@@ -66,9 +66,9 @@ mod api_utils_test {
             "Failed to construct the productizer requests"
         );
 
-        assert_eq!(request.0.len(), 2);
-        assert_eq!(request.3, 25);
-        assert_eq!(request.1.paging.limit, 13);
+        assert_eq!(request.endpoint_urls.len(), 2);
+        assert_eq!(request.original_input.paging.items_per_page, 25);
+        assert_eq!(request.request_input.paging.limit, 13);
     }
 
     #[test]
