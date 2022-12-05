@@ -158,9 +158,9 @@ components:
     RequestPagingFromFrontend:
       type: object
       properties:
-        items_per_page:
+        itemsPerPage:
           type: number
           example: 20
-        page_number:
+        pageNumber:
           type: number
           example: 0
