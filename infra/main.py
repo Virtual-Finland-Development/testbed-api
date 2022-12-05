@@ -45,7 +45,7 @@ testbed_api_function = aws.lambda_.Function(
     handler="bootstrap",  # contents of the zip file
     code=pulumi.FileArchive("./build/rust.zip"),
     publish=True,  # needed for provisioned concurrency
-    timeout=15,
+    timeout=30,
     memory_size=512,
     tags=tags,
 )
