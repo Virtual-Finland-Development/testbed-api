@@ -13,7 +13,9 @@ pub struct JobsRequestFromFrontend {
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct RequestPagingFromFrontend {
+    #[serde(rename = "itemsPerPage")]
     pub items_per_page: i32,
+    #[serde(rename = "pageNumber")]
     pub page_number: i32,
 }
 
