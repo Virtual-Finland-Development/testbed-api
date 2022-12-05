@@ -16,6 +16,9 @@ tags = {
     "Project": "Virtual Finland",
 }
 
+#
+# Lambda function
+#
 testbed_api_lambda_role = aws_native.iam.Role(
     f"{name}-lambda-role-{stage}",
     assume_role_policy_document=json.dumps(
@@ -53,6 +56,9 @@ testbed_api_function = aws.lambda_.Function(
     tags=tags,
 )
 
+#
+# Scheduled provisioned concurrency setup
+#
 lambda_id_for_provisioning = pulumi.Output.concat(
     "function:", testbed_api_function.name, ":", testbed_api_function.version
 )
@@ -89,6 +95,9 @@ aws.appautoscaling.ScheduledAction(
     ),
 )
 
+#
+# Function URL
+#
 lambda_url = aws_native.lambda_.Url(
     f"{name}-function-url-{stage}",
     target_function_arn=testbed_api_function.arn,
