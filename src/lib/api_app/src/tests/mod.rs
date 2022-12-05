@@ -55,8 +55,8 @@ mod api_utils_test {
                         "municipalities": vec![""]
                     },
                     "paging": {
-                        "items_per_page": 25,
-                        "page_number": 0
+                        "itemsPerPage": 25,
+                        "pageNumber": 0
                     }
                 }
             ).to_string(),
