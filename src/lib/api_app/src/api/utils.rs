@@ -17,7 +17,7 @@ pub struct ParsedRequest {
  * Convert the lambda_http::Request to a parsed_request.
  */
 pub fn parse_router_request(request: Request) -> ParsedRequest {
-    let path = format!("/{}", strings::trim_left_slash(request.uri().path().clone().to_string()));
+    let path = format!("/{}", strings::trim_left_slashes(request.uri().path().clone().to_string()));
     let method = request.method().as_str().to_string();
     let query = request.query_string_parameters().clone();
     let headers = request.headers().clone();
@@ -103,11 +103,12 @@ pub mod strings {
         return result;
     }
 
-    pub fn trim_left_slash(string: impl Into<String>) -> String {
+    pub fn trim_left_slashes(string: impl Into<String>) -> String {
         let text = string.into();
-        if text.starts_with("/") {
-            return text[1..].to_string();
+        let mut result = text.clone();
+        while result.starts_with("/") {
+            result = result[1..].to_string();
         }
-        return text;
+        return result;
     }
 }
