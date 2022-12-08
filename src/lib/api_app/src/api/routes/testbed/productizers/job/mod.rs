@@ -5,7 +5,7 @@ use math::round;
 use crate::api::{
     responses::{ APIRoutingError, APIRoutingResponse, resolve_external_service_bad_response },
     requests::request_post_many_json_requests,
-    utils::{ get_default_headers, ParsedRequest, cut_string_by_delimiter_keep_right },
+    utils::{ get_default_headers, ParsedRequest, strings::cut_string_by_delimiter_keep_right },
 };
 use super::parse_testbed_request_headers;
 

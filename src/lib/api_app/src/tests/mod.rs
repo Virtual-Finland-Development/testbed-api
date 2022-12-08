@@ -4,7 +4,7 @@ mod api_utils_test {
     use http::{ HeaderValue, header::{ HeaderMap, HeaderName } };
     use lambda_http::aws_lambda_events::query_map::QueryMap;
     use crate::api::{
-        utils::{ cut_string_by_delimiter_keep_right, ParsedRequest },
+        utils::{ strings::cut_string_by_delimiter_keep_right, ParsedRequest },
         routes::testbed::productizers::job::{
             job_models::{ JobPostingResponse, JobPosting },
             merge_job_posting_results,
