@@ -88,23 +88,26 @@ pub fn get_plain_headers() -> HeaderMap {
 
 pub mod strings {
 
-    pub fn truncate_too_long_string(string: String, max_length: usize, postfix: &str) -> String {
-        if string.len() > max_length {
-            return string[..max_length].to_string() + postfix;
+    pub fn truncate_too_long_string(string: impl Into<String>, max_length: usize, postfix: &str) -> String {
+        let text = string.into();
+        if text.len() > max_length {
+            return text[..max_length].to_string() + postfix;
         }
-        return string;
+        return text;
     }
     
-    pub fn cut_string_by_delimiter_keep_right(string: String, delimiter: &str) -> String {
-        let split = string.split(delimiter);
+    pub fn cut_string_by_delimiter_keep_right(string: impl Into<String>, delimiter: &str) -> String {
+        let text = string.into();
+        let split = text.split(delimiter);
         let result = split.last().unwrap().to_string();
         return result;
     }
 
-    pub fn trim_left_slash(string: String) -> String {
-        if string.starts_with("/") {
-            return string[1..].to_string();
+    pub fn trim_left_slash(string: impl Into<String>) -> String {
+        let text = string.into();
+        if text.starts_with("/") {
+            return text[1..].to_string();
         }
-        return string;
+        return text;
     }
 }
