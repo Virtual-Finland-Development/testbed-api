@@ -17,7 +17,7 @@ pub struct ParsedRequest {
  * Convert the lambda_http::Request to a parsed_request.
  */
 pub fn parse_router_request(request: Request) -> ParsedRequest {
-    let path = request.uri().path().clone().to_string();
+    let path = format!("/{}", strings::trim_left_slashes(request.uri().path().clone().to_string()));
     let method = request.method().as_str().to_string();
     let query = request.query_string_parameters().clone();
     let headers = request.headers().clone();
@@ -86,15 +86,29 @@ pub fn get_plain_headers() -> HeaderMap {
     return headers;
 }
 
-pub fn truncate_too_long_string(string: String, max_length: usize, postfix: &str) -> String {
-    if string.len() > max_length {
-        return string[..max_length].to_string() + postfix;
-    }
-    return string;
-}
+pub mod strings {
 
-pub fn cut_string_by_delimiter_keep_right(string: String, delimiter: &str) -> String {
-    let split = string.split(delimiter);
-    let result = split.last().unwrap().to_string();
-    return result;
+    pub fn truncate_too_long_string(string: impl Into<String>, max_length: usize, postfix: &str) -> String {
+        let text = string.into();
+        if text.len() > max_length {
+            return text[..max_length].to_string() + postfix;
+        }
+        return text;
+    }
+    
+    pub fn cut_string_by_delimiter_keep_right(string: impl Into<String>, delimiter: &str) -> String {
+        let text = string.into();
+        let split = text.split(delimiter);
+        let result = split.last().unwrap().to_string();
+        return result;
+    }
+
+    pub fn trim_left_slashes(string: impl Into<String>) -> String {
+        let text = string.into();
+        let mut result = text.clone();
+        while result.starts_with("/") {
+            result = result[1..].to_string();
+        }
+        return result;
+    }
 }
