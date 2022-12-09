@@ -15,6 +15,8 @@ Resources:
       Environment:
         Variables:
           RUST_BACKTRACE: 1
+          STAGE: local
+          LOGGING_LEVEL: debug
       Events:
         TestbedAPIEvent:
           Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api

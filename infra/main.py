@@ -54,6 +54,11 @@ testbed_api_function = aws.lambda_.Function(
     timeout=30,
     memory_size=512,
     tags=tags,
+    environment=aws.lambda_.FunctionEnvironmentArgs(
+        variables={
+            "STAGE": stage,
+        }
+    ),
 )
 
 #
