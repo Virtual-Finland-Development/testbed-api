@@ -121,9 +121,7 @@ async fn request_post_json_request_data<
         let response_body = response
             .text().await
             .unwrap_or("No response body received".to_string());
-        return Err(
-            APIRoutingError::from_status_code_and_message(response_status, response_body.as_str())
-        );
+        return Err(APIRoutingError::from_status_code_and_message(response_status, response_body));
     }
 
     let response_output = response.json::<O>().await.map_err(|e| {

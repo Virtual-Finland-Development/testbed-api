@@ -24,10 +24,8 @@ impl APIRoutingResponse {
             error.get_status_code(),
             json!({
                 "message": error.to_string(),
-            })
-            .to_string()
-            .as_ref(),
-            get_default_headers(),
+            }).to_string().as_ref(),
+            get_default_headers()
         )
     }
 }
@@ -78,15 +76,20 @@ impl APIRoutingError {
         Self::from_status_code_and_message(status_code, "default")
     }
 
-    pub fn from_status_code_and_message(status_code: StatusCode, message: &str) -> Self {
-        let message_string = message.to_string();
+    pub fn from_status_code_and_message(
+        status_code: StatusCode,
+        message: impl Into<String>
+    ) -> Self {
+        let message_string = message.into();
         match status_code {
             StatusCode::BAD_REQUEST => APIRoutingError::BadRequest(message_string),
             StatusCode::UNAUTHORIZED => APIRoutingError::Unauthorized(message_string),
             StatusCode::FORBIDDEN => APIRoutingError::Forbidden(message_string),
             StatusCode::NOT_FOUND => APIRoutingError::NotFound(message_string),
-            StatusCode::UNPROCESSABLE_ENTITY => APIRoutingError::UnprocessableEntity(message_string),
-            StatusCode::INTERNAL_SERVER_ERROR => APIRoutingError::InternalServerError(message_string),
+            StatusCode::UNPROCESSABLE_ENTITY =>
+                APIRoutingError::UnprocessableEntity(message_string),
+            StatusCode::INTERNAL_SERVER_ERROR =>
+                APIRoutingError::InternalServerError(message_string),
             StatusCode::BAD_GATEWAY => APIRoutingError::BadGateway(message_string),
             StatusCode::SERVICE_UNAVAILABLE => APIRoutingError::ServiceUnavailable(message_string),
             StatusCode::GATEWAY_TIMEOUT => APIRoutingError::GatewayTimeout(message_string),
@@ -94,7 +97,6 @@ impl APIRoutingError {
         }
     }
 }
-
 
 impl std::error::Error for APIRoutingError {}
 
@@ -118,15 +120,40 @@ impl From<serde_json::Error> for APIRoutingError {
 impl std::fmt::Display for APIRoutingError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            APIRoutingError::BadRequest(message) => write!(f, "{}", parse_api_routing_error_message(message, "Bad request", "")),
-            APIRoutingError::Unauthorized(message) => write!(f, "{}", parse_api_routing_error_message(message, "Unauthorized", "Access denied: ")),
-            APIRoutingError::Forbidden(message) => write!(f, "{}", parse_api_routing_error_message(message, "Forbidden", "")),
-            APIRoutingError::NotFound(message) => write!(f, "{}", parse_api_routing_error_message(message, "Not found", "")),
-            APIRoutingError::UnprocessableEntity(message) => write!(f, "{}", parse_api_routing_error_message(message, "Unauthorized", "Validation error: ")),
-            APIRoutingError::InternalServerError(message) => write!(f, "{}", parse_api_routing_error_message(message, "Internal server error", "")),
-            APIRoutingError::BadGateway(message) => write!(f, "{}", parse_api_routing_error_message(message, "Bad gateway", "")),
-            APIRoutingError::ServiceUnavailable(message) => write!(f, "{}", parse_api_routing_error_message(message, "Service unavailable", "")),
-            APIRoutingError::GatewayTimeout(message) => write!(f, "{}", parse_api_routing_error_message(message, "Gateway timeout", "")),
+            APIRoutingError::BadRequest(message) =>
+                write!(f, "{}", parse_api_routing_error_message(message, "Bad request", "")),
+            APIRoutingError::Unauthorized(message) =>
+                write!(
+                    f,
+                    "{}",
+                    parse_api_routing_error_message(message, "Unauthorized", "Access denied: ")
+                ),
+            APIRoutingError::Forbidden(message) =>
+                write!(f, "{}", parse_api_routing_error_message(message, "Forbidden", "")),
+            APIRoutingError::NotFound(message) =>
+                write!(f, "{}", parse_api_routing_error_message(message, "Not found", "")),
+            APIRoutingError::UnprocessableEntity(message) =>
+                write!(
+                    f,
+                    "{}",
+                    parse_api_routing_error_message(message, "Unauthorized", "Validation error: ")
+                ),
+            APIRoutingError::InternalServerError(message) =>
+                write!(
+                    f,
+                    "{}",
+                    parse_api_routing_error_message(message, "Internal server error", "")
+                ),
+            APIRoutingError::BadGateway(message) =>
+                write!(f, "{}", parse_api_routing_error_message(message, "Bad gateway", "")),
+            APIRoutingError::ServiceUnavailable(message) =>
+                write!(
+                    f,
+                    "{}",
+                    parse_api_routing_error_message(message, "Service unavailable", "")
+                ),
+            APIRoutingError::GatewayTimeout(message) =>
+                write!(f, "{}", parse_api_routing_error_message(message, "Gateway timeout", "")),
         }
     }
 }
@@ -139,7 +166,8 @@ impl From<reqwest::Error> for APIRoutingError {
             StatusCode::FORBIDDEN => APIRoutingError::Forbidden(e.to_string()),
             StatusCode::NOT_FOUND => APIRoutingError::NotFound(e.to_string()),
             StatusCode::UNPROCESSABLE_ENTITY => APIRoutingError::UnprocessableEntity(e.to_string()),
-            StatusCode::INTERNAL_SERVER_ERROR => APIRoutingError::InternalServerError(e.to_string()),
+            StatusCode::INTERNAL_SERVER_ERROR =>
+                APIRoutingError::InternalServerError(e.to_string()),
             StatusCode::BAD_GATEWAY => APIRoutingError::BadGateway(e.to_string()),
             StatusCode::SERVICE_UNAVAILABLE => APIRoutingError::ServiceUnavailable(e.to_string()),
             StatusCode::GATEWAY_TIMEOUT => APIRoutingError::GatewayTimeout(e.to_string()),
@@ -148,30 +176,33 @@ impl From<reqwest::Error> for APIRoutingError {
     }
 }
 
-fn parse_api_routing_error_message(message: &String, default: &str, prefix: &str) -> String {
-    let mut error_message = default.to_string();
+fn parse_api_routing_error_message(
+    message: &String,
+    default: impl Into<String>,
+    prefix: impl Into<String>
+) -> String {
+    let mut error_message = default.into();
     if message != "default" {
-        error_message = format!("{}{}", prefix, message);
+        error_message = format!("{}{}", prefix.into(), message);
     }
     error_message
 }
 
 pub fn resolve_external_service_bad_response(
     status_code: StatusCode,
-    response_body: String,
+    response_body: String
 ) -> Result<APIRoutingResponse, APIRoutingError> {
-
     // Ensure JSON response
-    let response_json = serde_json::from_str::<serde_json::Value>(&response_body)
-    .unwrap_or(json!({"content": response_body}));
-    
+    let response_json = serde_json
+        ::from_str::<serde_json::Value>(&response_body)
+        .unwrap_or(json!({"content": response_body}));
+
     Ok(APIRoutingResponse {
         status_code: status_code,
         body: json!({
             "message": format!("External service responded with a status: {}", status_code).to_string(),
             "data": response_json,
-        })
-        .to_string(),
+        }).to_string(),
         headers: get_default_headers(),
     })
 }
