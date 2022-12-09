@@ -77,7 +77,7 @@ aws.appautoscaling.ScheduledAction(
     service_namespace="lambda",
     resource_id=provision_autoscaling_target.resource_id,
     scalable_dimension="lambda:function:ProvisionedConcurrency",
-    schedule="0 6 * * ? *",
+    schedule="cron(0 6 * * ? *)",
     scalable_target_action=aws.appautoscaling.ScheduledActionScalableTargetActionArgs(
         min_capacity=1,
         max_capacity=10,
@@ -88,7 +88,7 @@ aws.appautoscaling.ScheduledAction(
     service_namespace="lambda",
     resource_id=provision_autoscaling_target.resource_id,
     scalable_dimension="lambda:function:ProvisionedConcurrency",
-    schedule="0 16 * * ? *",
+    schedule="cron(0 16 * * ? *)",
     scalable_target_action=aws.appautoscaling.ScheduledActionScalableTargetActionArgs(
         min_capacity=0,
         max_capacity=5,
