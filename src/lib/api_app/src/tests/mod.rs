@@ -4,7 +4,14 @@ mod api_utils_test {
     use http::{ HeaderValue, header::{ HeaderMap, HeaderName } };
     use lambda_http::aws_lambda_events::query_map::QueryMap;
     use crate::api::{
-        utils::{ strings::{cut_string_by_delimiter_keep_right, trim_left_slashes}, ParsedRequest },
+        utils::{
+            strings::{
+                cut_string_by_delimiter_keep_right,
+                trim_left_slashes,
+                parse_comma_separated_list,
+            },
+            ParsedRequest,
+        },
         routes::testbed::productizers::job::{
             job_models::{ JobPostingResponse, JobPosting },
             merge_job_posting_results,
@@ -33,7 +40,7 @@ mod api_utils_test {
 
     #[test]
     fn test_request_parsing() {
-        let endpoint_urls = vec!["http1", "http2"];
+        let endpoint_urls = vec![String::from("http1"), String::from("http2")];
 
         let mut headers = HeaderMap::new();
         headers.insert(
@@ -77,5 +84,10 @@ mod api_utils_test {
         assert_eq!(cut_string_by_delimiter_keep_right(test_string, " "), "string");
 
         assert_eq!(trim_left_slashes("//test/test"), "test/test");
+
+        assert_eq!(
+            parse_comma_separated_list("test1,test2, test3"),
+            vec!["test1", "test2", "test3"]
+        );
     }
 }

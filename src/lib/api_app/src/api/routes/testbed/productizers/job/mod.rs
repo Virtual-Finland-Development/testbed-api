@@ -1,11 +1,15 @@
-use std::{ cmp::Ordering, collections::hash_map::DefaultHasher, hash::Hasher };
+use std::{ cmp::Ordering, collections::hash_map::DefaultHasher, hash::Hasher, env };
 use http::{ StatusCode };
 use math::round;
 
 use crate::api::{
     responses::{ APIRoutingError, APIRoutingResponse, resolve_external_service_bad_response },
     requests::request_post_many_json_requests,
-    utils::{ get_default_headers, ParsedRequest, strings::cut_string_by_delimiter_keep_right },
+    utils::{
+        get_default_headers,
+        ParsedRequest,
+        strings::{ cut_string_by_delimiter_keep_right, parse_comma_separated_list },
+    },
 };
 use super::parse_testbed_request_headers;
 
@@ -26,10 +30,10 @@ use job_models::{
 pub async fn find_job_postings(
     request: ParsedRequest
 ) -> Result<APIRoutingResponse, APIRoutingError> {
-    let endpoint_urls = vec![
-        "https://gateway.testbed.fi/test/lassipatanen/Job/JobPosting?source=tyomarkkinatori",
-        "https://gateway.testbed.fi/test/lassipatanen/Job/JobPosting?source=jobs_in_finland"
-    ];
+    let endpoint_urls_as_text = env
+        ::var("JOB_POSTING_PRODUCTIZER_ENDPOINTS")
+        .expect("JOB_POSTING_PRODUCTIZER_ENDPOINTS must be set");
+    let endpoint_urls = parse_comma_separated_list(endpoint_urls_as_text);
 
     let request = construct_productizer_requests(request, endpoint_urls)?;
 
@@ -88,7 +92,7 @@ pub async fn find_job_postings(
 
 pub fn construct_productizer_requests(
     request: ParsedRequest,
-    endpoint_urls: Vec<&str>
+    endpoint_urls: Vec<String>
 ) -> Result<ProductizerRequest, APIRoutingError> {
     let request_input = serde_json::from_str::<JobsRequestFromFrontend>(request.body.as_str())?;
     let originial_input = request_input.clone();
@@ -117,10 +121,7 @@ pub fn construct_productizer_requests(
     };
 
     return Ok(ProductizerRequest {
-        endpoint_urls: endpoint_urls
-            .iter()
-            .map(|s| s.to_string())
-            .collect(),
+        endpoint_urls: endpoint_urls,
         request_input: jobs_request,
         headers: request_headers,
         original_input: originial_input,
