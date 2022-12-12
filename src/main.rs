@@ -29,7 +29,11 @@ mod hot_lib {
 #[tokio::main]
 async fn main() {
     #[cfg(feature = "local-dev")]
-    dotenv::from_filename(".env").ok();
+    {
+        let stage = std::env::var("STAGE").unwrap_or_else(|_| "local".to_string());
+        dotenv::from_filename(format!(".env.{}", stage)).ok(); // override with stage specific env if any
+        dotenv::from_filename(".env").ok();
+    }
 
     // Initialize the logger
     let logging_level: LevelFilter = match std::env::var("LOGGING_LEVEL") {
