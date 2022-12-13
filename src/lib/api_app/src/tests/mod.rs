@@ -57,8 +57,9 @@ mod api_utils_test {
                         "regions": [],
                         "municipalities": []
                     },
-                    "job": {
-                        "occupationCodes": [],
+                    "requirements": {
+                        "occupations": [],
+                        //"skills": [],
                     },
                     "paging": {
                         "itemsPerPage": 25,
