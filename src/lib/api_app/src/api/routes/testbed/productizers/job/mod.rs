@@ -110,6 +110,7 @@ pub fn construct_productizer_requests(
     let jobs_request = JobsRequest {
         query: request_input.query,
         location: request_input.location,
+        occupation_codes: request_input.occupation_codes,
         paging: RequestPaging {
             limit: request_limit,
             offset: offset,
