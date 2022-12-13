@@ -138,6 +138,10 @@ components:
           example: Chef
         location:
           $ref: "#/components/schemas/RequestLocation"
+        occupationCodes:
+          type: array
+          items:
+            type: string
         paging:
           $ref: "#/components/schemas/RequestPagingFromFrontend"
     RequestLocation:
