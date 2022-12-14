@@ -7,6 +7,8 @@ import pulumi_aws as aws
 import pulumi_aws_native as aws_native
 from pulumi_command import local
 
+from infra.utils import get_env_var
+
 name = "testbed-api"
 stage = pulumi.get_stack()
 
@@ -56,7 +58,16 @@ testbed_api_function = aws.lambda_.Function(
     tags=tags,
     environment=aws.lambda_.FunctionEnvironmentArgs(
         variables={
-            "STAGE": stage,
+            "LOGGING_LEVEL": "info",
+            "USERS_PRODUCTIZER_ENDPOINT": get_env_var(
+                "USERS_PRODUCTIZER_ENDPOINT", stage
+            ),
+            "POPULATION_FIGURE_PRODUCTIZER_ENDPOINT": get_env_var(
+                "POPULATION_FIGURE_PRODUCTIZER_ENDPOINT", stage
+            ),
+            "JOB_POSTING_PRODUCTIZER_ENDPOINTS": get_env_var(
+                "JOB_POSTING_PRODUCTIZER_ENDPOINTS", stage
+            ),
         }
     ),
 )
