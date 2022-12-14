@@ -1,5 +1,6 @@
 # @see: https://www.pulumi.com/blog/lambda-urls-launch/
 
+import importlib.util
 import json
 
 import pulumi
@@ -7,7 +8,12 @@ import pulumi_aws as aws
 import pulumi_aws_native as aws_native
 from pulumi_command import local
 
-from .utils import get_env_var
+# Import utils.py by force
+# @see: https://github.com/pulumi/pulumi/issues/1641
+# @see: https://github.com/pulumi/pulumi/issues/7360
+spec = importlib.util.spec_from_file_location("utils", "utils.py")
+utils = importlib.util.module_from_spec(spec)  # type: ignore
+spec.loader.exec_module(utils)  # type: ignore
 
 name = "testbed-api"
 stage = pulumi.get_stack()
@@ -59,13 +65,13 @@ testbed_api_function = aws.lambda_.Function(
     environment=aws.lambda_.FunctionEnvironmentArgs(
         variables={
             "LOGGING_LEVEL": "info",
-            "USERS_PRODUCTIZER_ENDPOINT": get_env_var(
+            "USERS_PRODUCTIZER_ENDPOINT": utils.get_env_var(
                 "USERS_PRODUCTIZER_ENDPOINT", stage
             ),
-            "POPULATION_FIGURE_PRODUCTIZER_ENDPOINT": get_env_var(
+            "POPULATION_FIGURE_PRODUCTIZER_ENDPOINT": utils.get_env_var(
                 "POPULATION_FIGURE_PRODUCTIZER_ENDPOINT", stage
             ),
-            "JOB_POSTING_PRODUCTIZER_ENDPOINTS": get_env_var(
+            "JOB_POSTING_PRODUCTIZER_ENDPOINTS": utils.get_env_var(
                 "JOB_POSTING_PRODUCTIZER_ENDPOINTS", stage
             ),
         }
