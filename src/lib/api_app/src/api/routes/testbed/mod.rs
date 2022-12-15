@@ -1,13 +1,13 @@
-use std::{collections::HashMap};
+use std::{ collections::HashMap };
 
-use http::{HeaderMap};
-use serde::{Deserialize, Serialize};
-use serde_json::{Value as JSONValue};
+use http::{ HeaderMap };
+use serde::{ Deserialize, Serialize };
+use serde_json::{ Value as JSONValue };
 
 use crate::api::{
-    responses::{APIRoutingError, APIRoutingResponse},
+    responses::{ APIRoutingError, APIRoutingResponse },
     routes::application::get_external_service_bad_response,
-    utils::{get_default_headers, ParsedRequest},
+    utils::{ get_cors_response_headers, ParsedRequest },
 };
 
 pub mod productizers;
@@ -21,7 +21,7 @@ struct ProxyRequestInput {
 }
 
 pub async fn engage_reverse_proxy_request(
-    request: ParsedRequest,
+    request: ParsedRequest
 ) -> Result<APIRoutingResponse, APIRoutingError> {
     let request_body_as_text = request.body.as_str();
     log::debug!("Input: {:#?}", request_body_as_text);
@@ -35,14 +35,14 @@ pub async fn engage_reverse_proxy_request(
 
     // Transform headers
     let proxy_headers = HeaderMap::try_from(&request_input.headers)?;
-    
+
     // Execute request
-    let response = reqwest::Client::new()
+    let response = reqwest::Client
+        ::new()
         .post(request_input.url)
         .body(serde_json::to_string(&request_input.data).unwrap())
         .headers(proxy_headers)
-        .send()
-        .await?;
+        .send().await?;
 
     log::debug!("Response: {:#?}", response);
 
@@ -53,7 +53,13 @@ pub async fn engage_reverse_proxy_request(
 
     let response_output = response.json::<JSONValue>().await?;
 
-    Ok(APIRoutingResponse::new(response_status, &serde_json::to_string(&response_output)?, get_default_headers()))
+    Ok(
+        APIRoutingResponse::new(
+            response_status,
+            &serde_json::to_string(&response_output)?,
+            get_cors_response_headers()
+        )
+    )
 }
 
 /**
