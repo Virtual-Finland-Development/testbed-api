@@ -67,8 +67,8 @@ pub async fn request_post_many_json_requests<
     ).await;
 
     // Merge the good responses
-
     let mut good_responses = Vec::<(O, HeaderMap, String)>::new();
+    let mut bad_responses = Vec::<(StatusCode, String)>::new();
 
     for r in response_json_bodies {
         match r {
@@ -84,8 +84,18 @@ pub async fn request_post_many_json_requests<
                         r.to_string(),
                     ));
                 }
+                bad_responses.push((r.get_status_code(), r.to_string()));
             }
         }
+    }
+
+    if good_responses.is_empty() && !bad_responses.is_empty() {
+        // If no responses were good, return the first bad response
+        return Ok((
+            bad_responses[0].0,
+            Vec::<(O, HeaderMap, String)>::new(),
+            format!("Error [1/{}]: {}", bad_responses.len(), bad_responses[0].1.to_owned()),
+        ));
     }
 
     Ok((StatusCode::OK, good_responses, String::new()))
