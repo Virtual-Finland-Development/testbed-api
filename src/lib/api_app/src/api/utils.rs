@@ -1,9 +1,6 @@
 use lambda_http::aws_lambda_events::query_map::QueryMap;
-use http::{
-    HeaderValue,
-    header::{HeaderMap, HeaderName}
-};
-use lambda_http::{Body, Request, RequestExt};
+use http::{ HeaderValue, header::{ HeaderMap, HeaderName } };
+use lambda_http::{ Body, Request, RequestExt };
 
 pub struct ParsedRequest {
     pub path: String,
@@ -46,19 +43,19 @@ pub fn get_cors_response_headers() -> HeaderMap {
 
     headers.insert(
         HeaderName::from_static("access-control-allow-origin"),
-        HeaderValue::from_static("*"),
+        HeaderValue::from_static("*")
     );
 
     headers.insert(
         HeaderName::from_static("access-control-allow-methods"),
-        HeaderValue::from_static("GET, POST, OPTIONS"),
+        HeaderValue::from_static("GET, POST, OPTIONS")
     );
 
     headers.insert(
         HeaderName::from_static("access-control-allow-headers"),
         HeaderValue::from_static(
-            "content-type, authorization, x-authorization-provider, x-authorization-context",
-        ),
+            "content-type, authorization, x-authorization-provider, x-authorization-context"
+        )
     );
 
     return headers;
@@ -69,7 +66,7 @@ pub fn get_default_headers() -> HeaderMap {
 
     cors_headers.insert(
         HeaderName::from_static("content-type"),
-        HeaderValue::from_static("application/json"),
+        HeaderValue::from_static("application/json")
     );
 
     return cors_headers;
@@ -78,25 +75,28 @@ pub fn get_default_headers() -> HeaderMap {
 pub fn get_plain_headers() -> HeaderMap {
     let mut headers = HeaderMap::new();
 
-    headers.insert(
-        HeaderName::from_static("content-type"),
-        HeaderValue::from_static("text/plain"),
-    );
+    headers.insert(HeaderName::from_static("content-type"), HeaderValue::from_static("text/plain"));
 
     return headers;
 }
 
 pub mod strings {
-
-    pub fn truncate_too_long_string(string: impl Into<String>, max_length: usize, postfix: &str) -> String {
+    pub fn truncate_too_long_string(
+        string: impl Into<String>,
+        max_length: usize,
+        postfix: &str
+    ) -> String {
         let text = string.into();
         if text.len() > max_length {
             return text[..max_length].to_string() + postfix;
         }
         return text;
     }
-    
-    pub fn cut_string_by_delimiter_keep_right(string: impl Into<String>, delimiter: &str) -> String {
+
+    pub fn cut_string_by_delimiter_keep_right(
+        string: impl Into<String>,
+        delimiter: &str
+    ) -> String {
         let text = string.into();
         let split = text.split(delimiter);
         let result = split.last().unwrap().to_string();
@@ -109,6 +109,13 @@ pub mod strings {
         while result.starts_with("/") {
             result = result[1..].to_string();
         }
+        return result;
+    }
+
+    pub fn parse_comma_separated_list(string: impl Into<String>) -> Vec<String> {
+        let text = string.into();
+        let split = text.split(",");
+        let result: Vec<String> = split.map(|s| s.trim().to_string()).collect();
         return result;
     }
 }
