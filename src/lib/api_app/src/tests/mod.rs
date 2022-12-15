@@ -57,9 +57,13 @@ mod api_utils_test {
                 {
                     "query": "",
                     "location": {
-                        "countries": vec![""],
-                        "regions": vec![""],
-                        "municipalities": vec![""]
+                        "countries": [],
+                        "regions": [],
+                        "municipalities": []
+                    },
+                    "requirements": {
+                        "occupations": [],
+                        //"skills": [],
                     },
                     "paging": {
                         "itemsPerPage": 25,

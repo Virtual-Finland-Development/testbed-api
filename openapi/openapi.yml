@@ -138,6 +138,8 @@ components:
           example: Chef
         location:
           $ref: "#/components/schemas/RequestLocation"
+        requirements:
+          $ref: "#/components/schemas/RequestRequirements"
         paging:
           $ref: "#/components/schemas/RequestPagingFromFrontend"
     RequestLocation:
@@ -152,6 +154,17 @@ components:
           items:
             type: string
         municipalities:
+          type: array
+          items:
+            type: string
+    RequestRequirements:
+      type: object
+      properties:
+        occupations:
+          type: array
+          items:
+            type: string
+        skills:
           type: array
           items:
             type: string
