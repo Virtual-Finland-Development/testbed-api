@@ -125,8 +125,8 @@ components:
         url:
           type: string
           example: https://gateway.testbed.fi/action
-        data:
-          type: object
+        body:
+          type: string
         headers:
           type: object
     JobsRequestFromFrontend:

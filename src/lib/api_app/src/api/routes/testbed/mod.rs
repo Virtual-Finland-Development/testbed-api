@@ -16,7 +16,7 @@ pub mod productizers;
 struct ProxyRequestInput {
     method: String,
     url: String,
-    data: HashMap<String, String>,
+    body: String,
     headers: HashMap<String, String>,
 }
 
@@ -25,7 +25,9 @@ pub async fn engage_reverse_proxy_request(
 ) -> Result<APIRoutingResponse, APIRoutingError> {
     let request_body_as_text = request.body.as_str();
     log::debug!("Input: {:#?}", request_body_as_text);
-    let request_input: ProxyRequestInput = serde_json::from_str(request_body_as_text).unwrap();
+    let request_input: ProxyRequestInput = serde_json
+        ::from_str(request_body_as_text)
+        .expect("Failed to parse the request body");
 
     // Access control list check
     let access_denied = access_control_check(request_input.url.as_str());
@@ -40,7 +42,7 @@ pub async fn engage_reverse_proxy_request(
     let response = reqwest::Client
         ::new()
         .post(request_input.url)
-        .body(serde_json::to_string(&request_input.data).unwrap())
+        .body(request_input.body)
         .headers(proxy_headers)
         .send().await?;
 
