@@ -17,12 +17,30 @@ spec.loader.exec_module(utils)  # type: ignore
 
 name = "testbed-api"
 stage = pulumi.get_stack()
+organization = pulumi.get_organization()
 
 tags = {
     "Name": name,
     "Environment": stage,
     "Project": "Virtual Finland",
 }
+
+#
+# External API references
+#
+authenticationGWLambdaEndpoint = pulumi.StackReference(
+    f"{organization}/authentication-gw/{stage}"
+).get_output("endpoint")
+usersApiLambdaEndpoint = pulumi.StackReference(
+    f"{organization}/users-api/{stage}"
+).get_output("ApplicationUrl")
+tmtProductizerLambdaEndpoint = pulumi.StackReference(
+    f"{organization}/tmt-productizer/dev"
+).get_output("ApplicationUrl")
+jobsInFinlandProductizerLambdaEndpoint = pulumi.StackReference(
+    f"{organization}/jobs-in-finland-productizer/dev"
+).get_output("ApplicationUrl")
+
 
 #
 # Lambda function
@@ -58,7 +76,6 @@ testbed_api_function = aws.lambda_.Function(
     role=testbed_api_lambda_role.arn,
     handler="bootstrap",  # contents of the zip file
     code=pulumi.FileArchive("./build/rust.zip"),
-    publish=True,  # needed for provisioned concurrency
     timeout=30,
     memory_size=512,
     tags=tags,
@@ -74,46 +91,11 @@ testbed_api_function = aws.lambda_.Function(
             "JOB_POSTING_PRODUCTIZER_ENDPOINTS": utils.get_env_var(
                 "JOB_POSTING_PRODUCTIZER_ENDPOINTS", stage
             ),
+            "AUTHENTICATION_GW_LAMBDA_ENDPOINT": authenticationGWLambdaEndpoint,
+            "USERS_API_LAMBDA_ENDPOINT": usersApiLambdaEndpoint,
+            "TMT_PRODUCTIZER_LAMBDA_ENDPOINT": tmtProductizerLambdaEndpoint,
+            "JOBS_IN_FINLAND_PRODUCTIZER_LAMBDA_ENDPOINT": jobsInFinlandProductizerLambdaEndpoint,
         }
-    ),
-)
-
-#
-# Scheduled provisioned concurrency setup
-#
-lambda_id_for_provisioning = pulumi.Output.concat(
-    "function:", testbed_api_function.name, ":", testbed_api_function.version
-)
-
-provision_autoscaling_target = aws.appautoscaling.Target(
-    f"{name}-provisioned-concurrency-target-{stage}",
-    resource_id=lambda_id_for_provisioning,
-    service_namespace="lambda",
-    scalable_dimension="lambda:function:ProvisionedConcurrency",
-    min_capacity=1,
-    max_capacity=10,
-)
-
-aws.appautoscaling.ScheduledAction(
-    f"{name}-provisioned-concurrency-by-day-{stage}",
-    service_namespace="lambda",
-    resource_id=provision_autoscaling_target.resource_id,
-    scalable_dimension="lambda:function:ProvisionedConcurrency",
-    schedule="cron(0 6 * * ? *)",
-    scalable_target_action=aws.appautoscaling.ScheduledActionScalableTargetActionArgs(
-        min_capacity=1,
-        max_capacity=10,
-    ),
-)
-aws.appautoscaling.ScheduledAction(
-    f"{name}-provisioned-concurrency-by-night-{stage}",
-    service_namespace="lambda",
-    resource_id=provision_autoscaling_target.resource_id,
-    scalable_dimension="lambda:function:ProvisionedConcurrency",
-    schedule="cron(0 16 * * ? *)",
-    scalable_target_action=aws.appautoscaling.ScheduledActionScalableTargetActionArgs(
-        min_capacity=0,
-        max_capacity=5,
     ),
 )
 
