@@ -73,11 +73,14 @@ pub fn get_default_headers() -> HeaderMap {
 }
 
 pub fn get_plain_headers() -> HeaderMap {
-    let mut headers = HeaderMap::new();
+    let mut cors_headers = get_cors_response_headers();
 
-    headers.insert(HeaderName::from_static("content-type"), HeaderValue::from_static("text/plain"));
+    cors_headers.insert(
+        HeaderName::from_static("content-type"),
+        HeaderValue::from_static("text/plain")
+    );
 
-    return headers;
+    return cors_headers;
 }
 
 pub mod strings {
