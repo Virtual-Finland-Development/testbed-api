@@ -1,7 +1,4 @@
-use super::{
-    responses::{APIRoutingResponse, APIRoutingError},
-    utils::ParsedRequest,
-};
+use super::{ responses::{ APIRoutingResponse, APIRoutingError }, utils::ParsedRequest };
 
 pub mod application;
 pub mod testbed;
@@ -11,7 +8,9 @@ pub mod testbed;
  */
 pub async fn exec_router_request(parsed_request: ParsedRequest) -> APIRoutingResponse {
     match get_router_response(parsed_request).await {
-        Ok(response) => return response,
+        Ok(response) => {
+            return response;
+        }
         Err(e) => {
             return APIRoutingResponse::from_routing_error(e);
         }
@@ -22,24 +21,15 @@ pub async fn exec_router_request(parsed_request: ParsedRequest) -> APIRoutingRes
  * API router
  */
 pub async fn get_router_response(
-    parsed_request: ParsedRequest,
+    parsed_request: ParsedRequest
 ) -> Result<APIRoutingResponse, APIRoutingError> {
-   match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
-        ("OPTIONS", _) => {
-            application::cors_preflight_response(parsed_request).await
-        }
-        ("GET", "/") => {
-            application::index(parsed_request).await
-        }
-        ("GET", "/docs") => {
-            application::docs(parsed_request).await
-        }
-        ("GET", "/openapi.yml") => {
-            application::openapi_spec(parsed_request).await
-        }
-        ("GET", "/health") => {
-            application::health_check(parsed_request).await
-        }
+    match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
+        ("OPTIONS", _) => { application::cors_preflight_response(parsed_request).await }
+        ("GET", "/") => { application::index(parsed_request).await }
+        ("GET", "/docs") => { application::docs(parsed_request).await }
+        ("GET", "/openapi.yml") => { application::openapi_spec(parsed_request).await }
+        ("GET", "/health") => { application::health_check(parsed_request).await }
+        ("GET", "/wake-up") => { application::wake_up_external_services(parsed_request).await }
         ("POST", "/testbed/reverse-proxy") => {
             testbed::engage_reverse_proxy_request(parsed_request).await
         }
@@ -52,8 +42,6 @@ pub async fn get_router_response(
         ("POST", "/testbed/productizers/user-profile") => {
             testbed::productizers::user::fetch_user_profile(parsed_request).await
         }
-        _ => {
-            application::not_found(parsed_request).await
-        }
+        _ => { application::not_found(parsed_request).await }
     }
 }
