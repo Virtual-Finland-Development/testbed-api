@@ -19,3 +19,4 @@ services:
       - 3003:3003
     stdin_open: true
     tty: true
+    network_mode: host
