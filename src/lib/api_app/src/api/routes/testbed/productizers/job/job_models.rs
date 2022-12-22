@@ -8,7 +8,7 @@ use serde::{ Deserialize, Serialize };
 pub struct JobsRequestFromFrontend {
     pub query: String,
     pub location: RequestLocation,
-    pub requirements: Option<RequestRequirements>,
+    pub requirements: RequestRequirements,
     pub paging: RequestPagingFromFrontend,
 }
 
@@ -35,7 +35,7 @@ pub struct ProductizerRequest {
 pub struct JobsRequest {
     pub query: String,
     pub location: RequestLocation,
-    pub requirements: Option<RequestRequirements>,
+    pub requirements: RequestRequirements,
     pub paging: RequestPaging,
 }
 #[derive(Deserialize, Serialize, Debug, Clone)]

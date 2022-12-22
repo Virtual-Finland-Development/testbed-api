@@ -24,6 +24,9 @@ use job_models::{
     ProductizerRequest,
 };
 
+mod job_input_extenders;
+use job_input_extenders::extend_job_occupations;
+
 /**
  * Get job postings
  */
@@ -94,8 +97,8 @@ pub fn construct_productizer_requests(
     request: ParsedRequest,
     endpoint_urls: Vec<String>
 ) -> Result<ProductizerRequest, APIRoutingError> {
-    let request_input = serde_json::from_str::<JobsRequestFromFrontend>(request.body.as_str())?;
-    let originial_input = request_input.clone();
+    let original_input = serde_json::from_str::<JobsRequestFromFrontend>(request.body.as_str())?;
+    let request_input = parse_job_request_input(original_input.clone());
 
     let request_headers = parse_testbed_request_headers(request)?;
 
@@ -125,8 +128,21 @@ pub fn construct_productizer_requests(
         endpoint_urls: endpoint_urls,
         request_input: jobs_request,
         headers: request_headers,
-        original_input: originial_input,
+        original_input: original_input,
     });
+}
+
+pub fn parse_job_request_input(request_input: JobsRequestFromFrontend) -> JobsRequestFromFrontend {
+    let mut request_input = request_input;
+
+    // Parse the requirements
+    if request_input.requirements.occupations.is_some() {
+        let occupations = request_input.requirements.occupations.unwrap();
+        let extended_occupations = extend_job_occupations(occupations);
+        request_input.requirements.occupations = Some(extended_occupations);
+    }
+
+    request_input
 }
 
 /**
