@@ -1,4 +1,3 @@
-use std::fs;
 use itertools::Itertools;
 use serde::Deserialize;
 use serde_json::{ from_str as deserialize_json_from_string };
@@ -55,10 +54,7 @@ fn extend_job_occupation_uris(occupation_uri: String, codesets: &Vec<Occupation>
 }
 
 fn get_esco_occupations_codeset() -> Vec<Occupation> {
-    let file_path = "./src/lib/api_app/src/api/resources/testbed/jobs/esco-1.1.0-occupations.json";
-    let contents = fs
-        ::read_to_string(file_path)
-        .expect("Unable to retrieve the ESCO occupations codeset");
+    let contents = include_str!("../../../../resources/testbed/jobs/esco-1.1.0-occupations.json");
     return deserialize_json_from_string::<Vec<Occupation>>(contents.as_ref()).expect(
         "Failed to parse the ESCO occupations codeset"
     );
