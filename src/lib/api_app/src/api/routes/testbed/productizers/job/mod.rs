@@ -98,7 +98,7 @@ pub fn construct_productizer_requests(
     endpoint_urls: Vec<String>
 ) -> Result<ProductizerRequest, APIRoutingError> {
     let original_input = serde_json::from_str::<JobsRequestFromFrontend>(request.body.as_str())?;
-    let request_input = parse_job_request_input(original_input.clone());
+    let request_input = parse_job_request_input(&original_input);
 
     let request_headers = parse_testbed_request_headers(request)?;
 
@@ -132,17 +132,17 @@ pub fn construct_productizer_requests(
     });
 }
 
-pub fn parse_job_request_input(request_input: JobsRequestFromFrontend) -> JobsRequestFromFrontend {
-    let mut request_input = request_input;
+pub fn parse_job_request_input(request_input: &JobsRequestFromFrontend) -> JobsRequestFromFrontend {
+    let mut frontend_input = request_input.clone();
 
     // Parse the requirements
-    if request_input.requirements.occupations.is_some() {
-        let occupations = request_input.requirements.occupations.unwrap();
+    if frontend_input.requirements.occupations.is_some() {
+        let occupations = frontend_input.requirements.occupations.unwrap();
         let extended_occupations = extend_job_occupations(occupations);
-        request_input.requirements.occupations = Some(extended_occupations);
+        frontend_input.requirements.occupations = Some(extended_occupations);
     }
 
-    request_input
+    frontend_input
 }
 
 /**
