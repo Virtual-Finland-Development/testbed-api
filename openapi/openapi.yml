@@ -108,6 +108,22 @@ paths:
                   summary: JSON example
                   value: Loading...
                   externalValue: "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lassipatanen/User/Profile.json"
+  /testbed/jmf-recommendations:
+    post:
+      operationId: jmf-recommendations
+      requestBody:
+        description: Job Market Finland recommended skills and occupations
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JmfRequest"
+      responses:
+        "200":
+          description: The recommendations response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JmfResponse"
 components:
   schemas:
     ProxyRequestInput:
@@ -177,3 +193,60 @@ components:
         pageNumber:
           type: number
           example: 0
+    JmfRequest:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Search phrase / text content for recommendations
+          example: I would like to cook and be the head chef
+        maxNumberOfSkills:
+          type: number
+          example: 1
+        maxNumberOfOccupations:
+          type: number
+          example: 1
+        language:
+          type: string
+          description: ISO 639-1 language code for recommendations
+          example: en
+    JmfResponse:
+      type: object
+      properties:
+        skills:
+          type: array
+          items:
+            type: object
+            properties:
+              uri:
+                type: string
+                example: http://data.europa.eu/esco/skill/f3934441-4bff-4076-9945-e6c51a01c467
+              score:
+                type: number
+                example: 75.28081358264468
+              label:
+                type: string
+                example: use cooking techniques
+              skillType:
+                type: string
+                example: http://data.europa.eu/esco/skill-type/skill
+              reuseLevel:
+                type: string
+                example: http://data.europa.eu/esco/skill-reuse-level/sector-specific
+        occupations:
+          type: array
+          items:
+            type: object
+            properties:
+              uri:
+                type: string
+                example: http://data.europa.eu/esco/occupation/90f75f67-495d-49fa-ab57-2f320e251d7e
+              score:
+                type: number
+                example: 23.38569658935573
+              label:
+                type: string
+                example: cook
+        language:
+          type: string
+          example: en

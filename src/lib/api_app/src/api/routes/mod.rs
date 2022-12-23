@@ -41,6 +41,9 @@ pub async fn get_router_response(
         }
         ("POST", "/testbed/productizers/user-profile") => {
             testbed::productizers::user::fetch_user_profile(parsed_request).await
+        },
+        ("POST", "/testbed/jmf-recommendations") => {
+            testbed::jmf::fetch_jmf_recommendations(parsed_request).await
         }
         _ => { application::not_found(parsed_request).await }
     }
