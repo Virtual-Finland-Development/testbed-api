@@ -108,7 +108,7 @@ paths:
                   summary: JSON example
                   value: Loading...
                   externalValue: "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lassipatanen/User/Profile.json"
-  /testbed/jmf-recommendations:
+  /jmf/recommendations:
     post:
       operationId: jmf-recommendations
       requestBody:
