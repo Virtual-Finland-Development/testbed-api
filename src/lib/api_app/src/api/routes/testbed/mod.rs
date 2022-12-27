@@ -11,7 +11,6 @@ use crate::api::{
 };
 
 pub mod productizers;
-pub mod jmf;
 
 #[derive(Deserialize, Serialize, Debug)]
 struct ProxyRequestInput {
