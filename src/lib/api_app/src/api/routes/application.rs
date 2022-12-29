@@ -1,11 +1,11 @@
-use http::{ HeaderMap, StatusCode, HeaderValue };
+use http::{ HeaderMap, StatusCode, HeaderValue, Method };
 use reqwest::Response;
 use serde_json::{ json, Value as JsonValue };
 use std::{ fs, env };
 
 use crate::api::{
     responses::{ APIRoutingError, APIRoutingResponse, resolve_external_service_bad_response },
-    requests::request_post_many_json_requests,
+    requests::engage_many_plain_requests,
     utils::{ ParsedRequest, get_cors_response_headers, get_default_headers, get_plain_headers },
 };
 
@@ -88,12 +88,23 @@ pub async fn wake_up_external_services(
        "message": "Wake up!".to_string(),
     });
 
-    request_post_many_json_requests::<JsonValue, JsonValue>(
-        endpoints,
-        &wake_up_input,
-        get_default_headers(),
-        true
-    ).await?;
+    let (response_status, good_responses, error_response_body) =
+        engage_many_plain_requests::<JsonValue>(
+            endpoints,
+            Method::GET,
+            &wake_up_input,
+            get_default_headers(),
+            true
+        ).await?;
 
-    Ok(APIRoutingResponse::new(StatusCode::OK, "OK", get_plain_headers()))
+    if response_status == StatusCode::OK {
+        return Ok(
+            APIRoutingResponse::new(
+                StatusCode::OK,
+                &json!({"signals": good_responses.len() }).to_string(),
+                get_default_headers()
+            )
+        );
+    }
+    resolve_external_service_bad_response(response_status, error_response_body)
 }

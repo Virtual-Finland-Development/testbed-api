@@ -1,10 +1,10 @@
 use std::{ cmp::Ordering, collections::hash_map::DefaultHasher, hash::Hasher, env };
-use http::{ StatusCode };
+use http::{ StatusCode, Method };
 use math::round;
 
 use crate::api::{
     responses::{ APIRoutingError, APIRoutingResponse, resolve_external_service_bad_response },
-    requests::request_post_many_json_requests,
+    requests::engage_many_json_requests,
     utils::{
         get_default_headers,
         ParsedRequest,
@@ -41,12 +41,16 @@ pub async fn find_job_postings(
     let request = construct_productizer_requests(request, endpoint_urls)?;
 
     // Fetch the data
-    let (response_status, good_responses, error_response_body) = request_post_many_json_requests::<
+    let (response_status, good_responses, error_response_body) = engage_many_json_requests::<
         JobsRequest,
         JobPostingResponse<JobPosting>
-    >(request.endpoint_urls, &request.request_input, request.headers, true).await.expect(
-        "Something went wrong with the bulk requests"
-    );
+    >(
+        request.endpoint_urls,
+        Method::POST,
+        &request.request_input,
+        request.headers,
+        true
+    ).await.expect("Something went wrong with the bulk requests");
 
     if response_status == StatusCode::OK {
         // Transform the good response results for the frontend

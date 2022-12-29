@@ -18,6 +18,18 @@ paths:
           content:
             text/plain:
               example: "OK"
+  /wake-up:
+    get:
+      responses:
+        "200":
+          description: Wake up response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  signals:
+                    type: number
   /docs:
     get:
       responses:
