@@ -26,10 +26,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  signals:
-                    type: number
+                $ref: "#/components/schemas/WakeUpResponse"
   /docs:
     get:
       responses:
@@ -189,3 +186,15 @@ components:
         pageNumber:
           type: number
           example: 0
+    WakeUpResponse:
+      type: object
+      properties:
+        signals:
+          type: object
+          properties:
+            successful:
+              type: number
+              example: 3
+            total:
+              type: number
+              example: 4

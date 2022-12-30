@@ -83,6 +83,7 @@ pub async fn wake_up_external_services(
             env::var("JOBS_IN_FINLAND_PRODUCTIZER_LAMBDA_ENDPOINT").unwrap_or_default()
         )
     ];
+    let total_endpoints = endpoints.len();
 
     let wake_up_input = json!({
        "message": "Wake up!".to_string(),
@@ -101,7 +102,10 @@ pub async fn wake_up_external_services(
         return Ok(
             APIRoutingResponse::new(
                 StatusCode::OK,
-                &json!({"signals": good_responses.len() }).to_string(),
+                &json!({"signals": {
+                    "successful": good_responses.len(),
+                    "total": total_endpoints,
+                } }).to_string(),
                 get_default_headers()
             )
         );
