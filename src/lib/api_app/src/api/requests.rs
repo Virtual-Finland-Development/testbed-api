@@ -4,6 +4,7 @@ use reqwest;
 use serde::{ Serialize, Deserialize };
 use std::fmt::Debug;
 use futures::future;
+use stopwatch::{ Stopwatch };
 
 use super::{
     responses::{ APIRoutingError, APIRoutingResponse, resolve_external_service_bad_response },
@@ -188,6 +189,7 @@ async fn engage_request<I: Debug + Serialize>(
     log::debug!("Headers: {:#?}", request_headers);
     let requested_url = endpoint_url.clone();
 
+    let stopwatch = Stopwatch::start_new();
     let response = client
         .request(request_method, endpoint_url)
         .json(&request_input)
@@ -198,7 +200,12 @@ async fn engage_request<I: Debug + Serialize>(
     let response_headers = response.headers().clone();
     let response_body = response.text().await.unwrap_or("No response body received".to_string());
 
-    log::debug!("Response status code: {:#?}", response_status);
+    log::debug!(
+        "Request: {}, status code: {:#?}, elapsed time: {}ms",
+        requested_url,
+        response_status,
+        stopwatch.elapsed_ms()
+    );
 
     if response_status != 200 {
         return Err(APIRoutingError::from_status_code_and_message(response_status, response_body));
