@@ -1,10 +1,10 @@
 use std::{ cmp::Ordering, collections::hash_map::DefaultHasher, hash::Hasher, env };
-use http::{ StatusCode };
+use http::{ StatusCode, Method };
 use math::round;
 
 use crate::api::{
     responses::{ APIRoutingError, APIRoutingResponse, resolve_external_service_bad_response },
-    requests::request_post_many_json_requests,
+    requests::engage_many_json_requests,
     utils::{
         get_default_headers,
         ParsedRequest,
@@ -24,6 +24,9 @@ use job_models::{
     ProductizerRequest,
 };
 
+mod job_input_extenders;
+use job_input_extenders::extend_job_occupations;
+
 /**
  * Get job postings
  */
@@ -38,12 +41,16 @@ pub async fn find_job_postings(
     let request = construct_productizer_requests(request, endpoint_urls)?;
 
     // Fetch the data
-    let (response_status, good_responses, error_response_body) = request_post_many_json_requests::<
+    let (response_status, good_responses, error_response_body) = engage_many_json_requests::<
         JobsRequest,
         JobPostingResponse<JobPosting>
-    >(request.endpoint_urls, &request.request_input, request.headers, true).await.expect(
-        "Something went wrong with the bulk requests"
-    );
+    >(
+        request.endpoint_urls,
+        Method::POST,
+        &request.request_input,
+        request.headers,
+        true
+    ).await.expect("Something went wrong with the bulk requests");
 
     if response_status == StatusCode::OK {
         // Transform the good response results for the frontend
@@ -94,8 +101,8 @@ pub fn construct_productizer_requests(
     request: ParsedRequest,
     endpoint_urls: Vec<String>
 ) -> Result<ProductizerRequest, APIRoutingError> {
-    let request_input = serde_json::from_str::<JobsRequestFromFrontend>(request.body.as_str())?;
-    let originial_input = request_input.clone();
+    let original_input = serde_json::from_str::<JobsRequestFromFrontend>(request.body.as_str())?;
+    let request_input = parse_job_request_input(&original_input);
 
     let request_headers = parse_testbed_request_headers(request)?;
 
@@ -125,8 +132,21 @@ pub fn construct_productizer_requests(
         endpoint_urls: endpoint_urls,
         request_input: jobs_request,
         headers: request_headers,
-        original_input: originial_input,
+        original_input: original_input,
     });
+}
+
+pub fn parse_job_request_input(request_input: &JobsRequestFromFrontend) -> JobsRequestFromFrontend {
+    let mut frontend_input = request_input.clone();
+
+    // Parse the requirements
+    if frontend_input.requirements.occupations.is_some() {
+        let occupations = frontend_input.requirements.occupations.unwrap();
+        let extended_occupations = extend_job_occupations(occupations);
+        frontend_input.requirements.occupations = Some(extended_occupations);
+    }
+
+    frontend_input
 }
 
 /**

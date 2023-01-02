@@ -18,6 +18,15 @@ paths:
           content:
             text/plain:
               example: "OK"
+  /wake-up:
+    get:
+      responses:
+        "200":
+          description: Wake up response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WakeUpResponse"
   /docs:
     get:
       responses:
@@ -250,3 +259,15 @@ components:
         language:
           type: string
           example: en
+    WakeUpResponse:
+      type: object
+      properties:
+        signals:
+          type: object
+          properties:
+            successful:
+              type: number
+              example: 3
+            total:
+              type: number
+              example: 4
