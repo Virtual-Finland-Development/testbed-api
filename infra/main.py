@@ -82,18 +82,7 @@ testbed_api_function = aws.lambda_.Function(
     environment=aws.lambda_.FunctionEnvironmentArgs(
         variables={
             "LOGGING_LEVEL": "info",
-            "USERS_PRODUCTIZER_ENDPOINT": utils.get_env_var(
-                "USERS_PRODUCTIZER_ENDPOINT", stage
-            ),
-            "POPULATION_FIGURE_PRODUCTIZER_ENDPOINT": utils.get_env_var(
-                "POPULATION_FIGURE_PRODUCTIZER_ENDPOINT", stage
-            ),
-            "JOB_POSTING_PRODUCTIZER_ENDPOINTS": utils.get_env_var(
-                "JOB_POSTING_PRODUCTIZER_ENDPOINTS", stage
-            ),
-            "JMF_SKILL_RECOMMENDATIONS_ENDPOINT": utils.get_env_var(
-                "JMF_SKILL_RECOMMENDATIONS_ENDPOINT", stage
-            ),
+            **utils.get_dotenv_configuration(stage),  # type: ignore
             "AUTHENTICATION_GW_LAMBDA_ENDPOINT": authenticationGWLambdaEndpoint,
             "USERS_API_LAMBDA_ENDPOINT": usersApiLambdaEndpoint,
             "TMT_PRODUCTIZER_LAMBDA_ENDPOINT": tmtProductizerLambdaEndpoint,
