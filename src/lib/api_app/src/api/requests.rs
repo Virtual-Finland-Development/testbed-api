@@ -5,6 +5,7 @@ use serde::{ Serialize, Deserialize };
 use std::fmt::Debug;
 use futures::future;
 use stopwatch::{ Stopwatch };
+use std::time::Duration;
 
 use super::{
     responses::{ APIRoutingError, APIRoutingResponse, resolve_external_service_bad_response },
@@ -192,6 +193,7 @@ async fn engage_request<I: Debug + Serialize>(
     let stopwatch = Stopwatch::start_new();
     let response = client
         .request(request_method, endpoint_url)
+        .timeout(Duration::from_secs(29))
         .json(&request_input)
         .headers(request_headers)
         .send().await?;
