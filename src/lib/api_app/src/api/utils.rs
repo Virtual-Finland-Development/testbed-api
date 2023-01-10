@@ -54,7 +54,7 @@ pub fn get_cors_response_headers() -> HeaderMap {
     headers.insert(
         HeaderName::from_static("access-control-allow-headers"),
         HeaderValue::from_static(
-            "content-type, authorization, x-authorization-provider, x-authorization-context"
+            "content-type, authorization, x-authorization-provider, x-authorization-context, x-consent-token"
         )
     );
 
