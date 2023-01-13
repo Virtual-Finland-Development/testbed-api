@@ -1,9 +1,6 @@
-use http::{HeaderMap, HeaderValue};
+use http::{ HeaderMap, HeaderValue };
 
-use crate::api::{
-    responses::APIRoutingError,
-    utils::ParsedRequest,
-};
+use crate::api::{ responses::APIRoutingError, utils::ParsedRequest };
 
 pub mod figure;
 pub mod job;
@@ -18,13 +15,22 @@ fn parse_testbed_request_headers(request: ParsedRequest) -> Result<HeaderMap, AP
     request_headers.insert("Content-Type", HeaderValue::from_static("application/json"));
     request_headers.insert(
         "authorization",
-        request
-            .headers
+        request.headers
             .get("authorization")
-            .ok_or(APIRoutingError::UnprocessableEntity(
-                "No authorization header".to_string(),
-            ))?
-            .clone(),
+            .ok_or(APIRoutingError::UnprocessableEntity("No authorization header".to_string()))?
+            .clone()
     );
+
+    if request.headers.contains_key("x-consent-token") {
+        request_headers.insert(
+            "x-consent-token",
+            request.headers
+                .get("x-consent-token")
+                .ok_or(
+                    APIRoutingError::UnprocessableEntity("No x-consent-token header".to_string())
+                )?
+                .clone()
+        );
+    }
     Ok(request_headers)
 }
