@@ -75,12 +75,12 @@ pub async fn wake_up_external_services(
     _request: ParsedRequest
 ) -> Result<APIRoutingResponse, APIRoutingError> {
     let endpoints = vec![
-        format!("{}/health", env::var("AUTHENTICATION_GW_LAMBDA_ENDPOINT").unwrap_or_default()),
-        format!("{}", env::var("USERS_API_LAMBDA_ENDPOINT").unwrap_or_default()),
-        format!("{}/wake-up", env::var("TMT_PRODUCTIZER_LAMBDA_ENDPOINT").unwrap_or_default()),
+        format!("{}/health", env::var("AUTHENTICATION_GW_ENDPOINT_ORIGIN").unwrap_or_default()),
+        format!("{}", env::var("USERS_API_ENDPOINT_ORIGIN").unwrap_or_default()),
+        format!("{}/wake-up", env::var("TMT_PRODUCTIZER_ENDPOINT_ORIGIN").unwrap_or_default()),
         format!(
             "{}/wake-up",
-            env::var("JOBS_IN_FINLAND_PRODUCTIZER_LAMBDA_ENDPOINT").unwrap_or_default()
+            env::var("JOBS_IN_FINLAND_PRODUCTIZER_ENDPOINT_ORIGIN").unwrap_or_default()
         )
     ];
     let total_endpoints = endpoints.len();

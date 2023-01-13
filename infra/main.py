@@ -83,10 +83,10 @@ testbed_api_function = aws.lambda_.Function(
         variables={
             "LOGGING_LEVEL": "info",
             **utils.get_dotenv_configuration(stage),  # type: ignore
-            "AUTHENTICATION_GW_LAMBDA_ENDPOINT": authenticationGWLambdaEndpoint,
-            "USERS_API_LAMBDA_ENDPOINT": usersApiLambdaEndpoint,
-            "TMT_PRODUCTIZER_LAMBDA_ENDPOINT": tmtProductizerLambdaEndpoint,
-            "JOBS_IN_FINLAND_PRODUCTIZER_LAMBDA_ENDPOINT": jobsInFinlandProductizerLambdaEndpoint,
+            "AUTHENTICATION_GW_ENDPOINT_ORIGIN": authenticationGWLambdaEndpoint,
+            "USERS_API_ENDPOINT_ORIGIN": usersApiLambdaEndpoint,
+            "TMT_PRODUCTIZER_ENDPOINT_ORIGIN": tmtProductizerLambdaEndpoint,
+            "JOBS_IN_FINLAND_PRODUCTIZER_ENDPOINT_ORIGIN": jobsInFinlandProductizerLambdaEndpoint,
         }
     ),
 )
