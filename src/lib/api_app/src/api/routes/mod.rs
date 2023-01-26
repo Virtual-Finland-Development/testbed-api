@@ -42,10 +42,14 @@ pub async fn get_router_response(
         }
         ("POST", "/testbed/productizers/user-profile") => {
             testbed::productizers::user::fetch_user_profile(parsed_request).await
-        },
-        ("POST", "/jmf/recommendations") => {
-            jmf::fetch_jmf_recommendations(parsed_request).await
         }
+        ("POST", "/testbed/productizers/fetch-user-status-info") => {
+            testbed::productizers::user::fetch_user_status_info(parsed_request).await
+        }
+        ("POST", "/testbed/productizers/update-user-status-info") => {
+            testbed::productizers::user::update_user_status_info(parsed_request).await
+        }
+        ("POST", "/jmf/recommendations") => { jmf::fetch_jmf_recommendations(parsed_request).await }
         _ => { application::not_found(parsed_request).await }
     }
 }

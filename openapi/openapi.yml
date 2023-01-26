@@ -117,6 +117,58 @@ paths:
                   summary: JSON example
                   value: Loading...
                   externalValue: "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lassipatanen/User/Profile.json"
+  /testbed/productizers/fetch-user-status-info:
+    post:
+      operationId: fetch-user-status-info
+      requestBody:
+        description: Fetch user status info
+        content:
+          application/json:
+            schema:
+              type: object
+            examples:
+              success:
+                summary: JSON example
+                value: Loading...
+                externalValue: "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lsipii/User/StatusInfo.json"
+      responses:
+        "200":
+          description: Status information response
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                success:
+                  summary: JSON example
+                  value: Loading...
+                  externalValue: "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lsipii/User/StatusInfo.json"
+  /testbed/productizers/update-user-status-info:
+    post:
+      operationId: update-user-status-info
+      requestBody:
+        description: Post / update user status info
+        content:
+          application/json:
+            schema:
+              type: object
+            examples:
+              success:
+                summary: JSON example
+                value: Loading...
+                externalValue: "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lsipii/User/StatusInfo/Write.json"
+      responses:
+        "200":
+          description: Status information response
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                success:
+                  summary: JSON example
+                  value: Loading...
+                  externalValue: "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lsipii/User/StatusInfo/Write.json"
   /jmf/recommendations:
     post:
       operationId: jmf-recommendations
