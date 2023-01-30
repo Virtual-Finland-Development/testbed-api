@@ -189,13 +189,24 @@ fn parse_api_routing_error_message(
 }
 
 pub fn resolve_external_service_bad_response(
-    status_code: StatusCode,
+    mut status_code: StatusCode,
     response_body: String
 ) -> Result<APIRoutingResponse, APIRoutingError> {
     // Ensure JSON response
     let response_json = serde_json
         ::from_str::<serde_json::Value>(&response_body)
         .unwrap_or(json!({"content": response_body}));
+
+    // Use the status code from the response if it's a valid HTTP status code
+    if response_json.is_object() {
+        let status = response_json
+            .get("status")
+            .and_then(|v| v.as_i64())
+            .unwrap_or(0);
+        if status != 0 {
+            status_code = StatusCode::from_u16(status as u16).unwrap_or(status_code);
+        }
+    }
 
     Ok(APIRoutingResponse {
         status_code: status_code,
