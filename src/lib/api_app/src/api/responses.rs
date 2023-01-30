@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use super::utils::get_default_headers;
 use http::header::HeaderMap;
 use http::StatusCode;
@@ -203,10 +201,10 @@ pub fn resolve_external_service_bad_response(
     if response_json.is_object() {
         let status = response_json
             .get("status")
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
-        if status != "" {
-            status_code = StatusCode::from_str(status).unwrap_or(status_code);
+            .and_then(|v| v.as_i64())
+            .unwrap_or(0);
+        if status != 0 {
+            status_code = StatusCode::from_u16(status as u16).unwrap_or(status_code);
         }
     }
 
