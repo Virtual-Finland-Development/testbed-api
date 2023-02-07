@@ -8,14 +8,10 @@ pub mod jmf;
  * Exec API routing
  */
 pub async fn exec_router_request(parsed_request: ParsedRequest) -> APIRoutingResponse {
-    match get_router_response(parsed_request).await {
-        Ok(response) => {
-            return response;
-        }
-        Err(e) => {
-            return APIRoutingResponse::from_routing_error(e);
-        }
-    }
+    return match get_router_response(parsed_request).await {
+        Ok(response) => { response }
+        Err(e) => { APIRoutingResponse::from_routing_error(e) }
+    };
 }
 
 /**
