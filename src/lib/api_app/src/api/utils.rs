@@ -14,9 +14,9 @@ pub struct ParsedRequest {
  * Convert the lambda_http::Request to a parsed_request.
  */
 pub fn parse_router_request(request: Request) -> ParsedRequest {
-    let path = format!("/{}", strings::trim_left_slashes(request.uri().path().clone().to_string()));
+    let path = format!("/{}", strings::trim_left_slashes(request.uri().path()));
     let method = request.method().as_str().to_string();
-    let query = request.query_string_parameters().clone();
+    let query = request.query_string_parameters();
     let headers = request.headers().clone();
 
     // Body parsing is left to the route handlers, where the models are defined
@@ -26,13 +26,13 @@ pub fn parse_router_request(request: Request) -> ParsedRequest {
         _ => "".to_string(),
     };
 
-    return ParsedRequest {
+    ParsedRequest {
         path,
         method,
         query,
         headers,
         body,
-    };
+    }
 }
 
 /**
@@ -58,7 +58,7 @@ pub fn get_cors_response_headers() -> HeaderMap {
         )
     );
 
-    return headers;
+    headers
 }
 
 pub fn get_default_headers() -> HeaderMap {
@@ -69,7 +69,7 @@ pub fn get_default_headers() -> HeaderMap {
         HeaderValue::from_static("application/json")
     );
 
-    return cors_headers;
+    cors_headers
 }
 
 pub fn get_plain_headers() -> HeaderMap {
@@ -80,7 +80,7 @@ pub fn get_plain_headers() -> HeaderMap {
         HeaderValue::from_static("text/plain")
     );
 
-    return cors_headers;
+    cors_headers
 }
 
 pub mod strings {
@@ -93,7 +93,7 @@ pub mod strings {
         if text.len() > max_length {
             return text[..max_length].to_string() + postfix;
         }
-        return text;
+        text
     }
 
     pub fn cut_string_by_delimiter_keep_right(
@@ -102,23 +102,21 @@ pub mod strings {
     ) -> String {
         let text = string.into();
         let split = text.split(delimiter);
-        let result = split.last().unwrap().to_string();
-        return result;
+        split.last().unwrap().to_string()
     }
 
-    pub fn trim_left_slashes(string: impl Into<String>) -> String {
-        let text = string.into();
-        let mut result = text.clone();
-        while result.starts_with("/") {
+    pub fn trim_left_slashes(text: impl Into<String>) -> String {
+        let mut result = text.into();
+        while result.starts_with('/') {
             result = result[1..].to_string();
         }
-        return result;
+        result
     }
 
     pub fn parse_comma_separated_list(string: impl Into<String>) -> Vec<String> {
         let text = string.into();
-        let split = text.split(",");
+        let split = text.split(',');
         let result: Vec<String> = split.map(|s| s.trim().to_string()).collect();
-        return result;
+        result
     }
 }

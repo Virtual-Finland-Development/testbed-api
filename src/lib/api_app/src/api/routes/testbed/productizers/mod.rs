@@ -17,7 +17,7 @@ fn parse_testbed_request_headers(request: ParsedRequest) -> Result<HeaderMap, AP
         "authorization",
         request.headers
             .get("authorization")
-            .ok_or(APIRoutingError::UnprocessableEntity("No authorization header".to_string()))?
+            .ok_or_else(|| APIRoutingError::UnprocessableEntity("No authorization header".to_string()))?
             .clone()
     );
 
@@ -26,7 +26,7 @@ fn parse_testbed_request_headers(request: ParsedRequest) -> Result<HeaderMap, AP
             "x-consent-token",
             request.headers
                 .get("x-consent-token")
-                .ok_or(
+                .ok_or_else(||
                     APIRoutingError::UnprocessableEntity("No x-consent-token header".to_string())
                 )?
                 .clone()
