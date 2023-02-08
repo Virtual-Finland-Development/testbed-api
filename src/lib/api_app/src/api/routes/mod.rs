@@ -47,10 +47,14 @@ pub async fn get_router_response(
         }
         ("POST", "/jmf/recommendations") => { jmf::fetch_jmf_recommendations(parsed_request).await }
         
-        ("GET", "/testbed/productizer/person/basic-information") => { testbed::productizers::person::basic_information::get_basic_information(parsed_request).await }
-        ("POST", "/testbed/productizer/person/basic-information") => { testbed::productizers::person::basic_information::post_basic_information(parsed_request).await }
-        ("GET", "/testbed/productizer/person/job-applicant-information") => { testbed::productizers::person::job_applicant_profile::get_job_applicant_profile(parsed_request).await }
-        ("POST", "/testbed/productizer/person/job-applicant-information") => { testbed::productizers::person::job_applicant_profile::post_job_applicant_profile(parsed_request).await }
+        ("GET", "/testbed/productizer/person/basic-information") => 
+            { testbed::productizers::person::basic_information::get_basic_information(parsed_request).await }
+        ("POST", "/testbed/productizer/person/basic-information") => 
+            { testbed::productizers::person::basic_information::write_basic_information(parsed_request).await }
+        ("GET", "/testbed/productizer/person/job-applicant-information") => 
+            { testbed::productizers::person::job_applicant_profile::get_job_applicant_profile(parsed_request).await }
+        ("POST", "/testbed/productizer/person/job-applicant-information") => 
+            { testbed::productizers::person::job_applicant_profile::post_job_applicant_profile(parsed_request).await }
 
         _ => { application::not_found(parsed_request).await }
     }
