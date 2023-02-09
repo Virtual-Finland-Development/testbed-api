@@ -1,10 +1,11 @@
 use http::HeaderMap;
 use serde::{ Deserialize, Serialize };
+use utoipa::ToSchema;
 
 //
 // Inputs from the frontend
 //
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, ToSchema)]
 pub struct JobsRequestFromFrontend {
     pub query: String,
     pub location: RequestLocation,
@@ -12,7 +13,7 @@ pub struct JobsRequestFromFrontend {
     pub paging: RequestPagingFromFrontend,
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, ToSchema)]
 pub struct RequestPagingFromFrontend {
     #[serde(rename = "itemsPerPage")]
     pub items_per_page: i32,

@@ -1,4 +1,5 @@
 use super::{ responses::{ APIRoutingResponse, APIRoutingError }, utils::ParsedRequest };
+use utoipa::OpenApi;
 
 pub mod application;
 pub mod testbed;
@@ -18,6 +19,19 @@ pub async fn exec_router_request(parsed_request: ParsedRequest) -> APIRoutingRes
     }
 }
 
+#[derive(OpenApi)]
+#[openapi(
+    paths(
+        application::index,
+        application::docs,
+        application::health_check,
+        application::wake_up_external_services
+    ),
+    components(),
+    tags((name = "testbed-api", description = "Access to testbed product gateway APIs"))
+)]
+struct ApiDoc;
+
 /**
  * API router
  */
@@ -28,7 +42,11 @@ pub async fn get_router_response(
         ("OPTIONS", _) => { application::cors_preflight_response(parsed_request).await }
         ("GET", "/") => { application::index(parsed_request).await }
         ("GET", "/docs") => { application::docs(parsed_request).await }
-        ("GET", "/openapi.yml") => { application::openapi_spec(parsed_request).await }
+        ("GET", "/openapi.json") => {
+            application::openapi_spec(
+                ApiDoc::openapi().to_json().expect("Failed to parse openapi spec")
+            ).await
+        }
         ("GET", "/health") => { application::health_check(parsed_request).await }
         ("GET", "/wake-up") => { application::wake_up_external_services(parsed_request).await }
         ("POST", "/testbed/reverse-proxy") => {

@@ -12,15 +12,16 @@ pub mod utils;
  * The handler function for the lambda.
  */
 pub async fn handler(
-    request: Request,
+    request: Request
 ) -> Result<lambda_http::Response<String>, std::convert::Infallible> {
     let parsed_request = utils::parse_router_request(request);
 
     log::info!("{} {}", parsed_request.method, parsed_request.path);
     let router_response = routes::exec_router_request(parsed_request).await;
-    log::debug!("Response: {:#?},\nBody: {:#?},\nHeaders: {:#?}", 
-        router_response.status_code, 
-        utils::strings::truncate_too_long_string(router_response.body.to_string(), 5000, "..."), 
+    log::debug!(
+        "Response: {:#?},\nBody: {:#?},\nHeaders: {:#?}",
+        router_response.status_code,
+        utils::strings::truncate_too_long_string(router_response.body.to_string(), 5000, "..."),
         router_response.headers
     );
 
