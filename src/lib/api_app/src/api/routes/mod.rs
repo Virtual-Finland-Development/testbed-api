@@ -1,4 +1,4 @@
-use super::{ responses::{ APIRoutingResponse, APIRoutingError }, utils::ParsedRequest };
+use super::{responses::{APIRoutingError, APIRoutingResponse}, utils::ParsedRequest};
 
 pub mod application;
 pub mod testbed;
@@ -9,12 +9,8 @@ pub mod jmf;
  */
 pub async fn exec_router_request(parsed_request: ParsedRequest) -> APIRoutingResponse {
     match get_router_response(parsed_request).await {
-        Ok(response) => {
-            response
-        }
-        Err(e) => {
-            APIRoutingResponse::from_routing_error(e)
-        }
+        Ok(response) => { response }
+        Err(e) => { APIRoutingResponse::from_routing_error(e) }
     }
 }
 
@@ -50,6 +46,16 @@ pub async fn get_router_response(
             testbed::productizers::user::update_user_status_info(parsed_request).await
         }
         ("POST", "/jmf/recommendations") => { jmf::fetch_jmf_recommendations(parsed_request).await }
+        
+        ("GET", "/testbed/productizer/person/basic-information") => 
+            { testbed::productizers::person::basic_information::get_basic_information(parsed_request).await }
+        ("POST", "/testbed/productizer/person/basic-information") => 
+            { testbed::productizers::person::basic_information::write_basic_information(parsed_request).await }
+        ("GET", "/testbed/productizer/person/job-applicant-information") => 
+            { testbed::productizers::person::job_applicant_profile::get_job_applicant_profile(parsed_request).await }
+        ("POST", "/testbed/productizer/person/job-applicant-information") => 
+            { testbed::productizers::person::job_applicant_profile::post_job_applicant_profile(parsed_request).await }
+
         _ => { application::not_found(parsed_request).await }
     }
 }

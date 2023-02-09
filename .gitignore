@@ -13,3 +13,6 @@ Cargo.lock
 infra/build/*
 !infra/build/.gitkeep
 .cargo_home
+
+# idea
+.idea
