@@ -82,7 +82,7 @@ pub async fn get_external_service_bad_response(
 ) -> Result<APIRoutingResponse, APIRoutingError> {
     let status_code = response.status();
     let response_body = response.text().await?;
-    return resolve_external_service_bad_response(status_code, response_body);
+    resolve_external_service_bad_response(status_code, response_body)
 }
 
 #[utoipa::path(

@@ -65,7 +65,7 @@ pub struct JobPostingResponse<T> {
     #[serde(rename = "totalCount")]
     pub total_count: i32,
 }
-#[derive(Deserialize, Serialize, Debug, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
 pub struct JobPosting {
     pub employer: String,
     pub location: Location,
@@ -79,13 +79,13 @@ pub struct JobPosting {
     pub application_url: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Debug, PartialEq, Clone)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq, Clone)]
 pub struct Location {
     pub municipality: String,
     pub postcode: String,
 }
 
-#[derive(Deserialize, Serialize, Debug, PartialEq, Clone)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq, Clone)]
 pub struct BasicInfo {
     pub title: String,
     pub description: String,
@@ -97,7 +97,7 @@ pub struct BasicInfo {
 // Transformed outputs for the frontend app
 // @TODO: there must be a better way to do this in rust
 //
-#[derive(Deserialize, Serialize, Debug, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
 pub struct JobPostingForFrontend {
     pub id: String,
     #[serde(rename = "jobsSource")]

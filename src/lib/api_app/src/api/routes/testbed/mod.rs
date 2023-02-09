@@ -89,5 +89,5 @@ fn access_control_check(proxy_destination_url: &str) -> bool {
         }
     }
 
-    return !acl_is_satisfied;
+    !acl_is_satisfied
 }

@@ -31,7 +31,7 @@ pub async fn fetch_user_status_info(
     let endpoint_url = env
         ::var("USER_STATUS_INFO_PRODUCTIZER_ENDPOINT")
         .expect("USER_STATUS_INFO_PRODUCTIZER_ENDPOINT must be set");
-    let request_input: JSONValue = serde_json::from_str(request.body.as_str()).unwrap_or(json!({})); // Pass through body
+    let request_input: JSONValue = serde_json::from_str(request.body.as_str()).unwrap_or_else(|_| json!({})); // Pass through body
     let request_headers = parse_testbed_request_headers(request)?;
     let response = post_json_request::<JSONValue, JSONValue>(
         endpoint_url.to_string(),
@@ -47,7 +47,7 @@ pub async fn update_user_status_info(
     let endpoint_url = env
         ::var("USER_STATUS_INFO_WRITE_PRODUCTIZER_ENDPOINT")
         .expect("USER_STATUS_INFO_WRITE_PRODUCTIZER_ENDPOINT must be set");
-    let request_input: JSONValue = serde_json::from_str(request.body.as_str()).unwrap_or(json!({})); // Pass through body
+    let request_input: JSONValue = serde_json::from_str(request.body.as_str()).unwrap_or_else(|_| json!({})); // Pass through body
     let request_headers = parse_testbed_request_headers(request)?;
     let response = post_json_request::<JSONValue, JSONValue>(
         endpoint_url.to_string(),

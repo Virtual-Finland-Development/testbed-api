@@ -33,7 +33,7 @@ fn extend_job_occupation_uris(occupation_uri: String, codesets: &Vec<Occupation>
     let mut extended_occupation_uris: Vec<String> = Vec::new();
 
     for codeset in codesets {
-        if !codeset.uri.is_some() || !codeset.broader.is_some() {
+        if codeset.uri.is_none() || codeset.broader.is_none() {
             continue;
         }
 
@@ -55,7 +55,7 @@ fn extend_job_occupation_uris(occupation_uri: String, codesets: &Vec<Occupation>
 
 fn get_esco_occupations_codeset() -> Vec<Occupation> {
     let contents = include_str!("../../../../resources/testbed/jobs/esco-1.1.0-occupations.json");
-    return deserialize_json_from_string::<Vec<Occupation>>(contents.as_ref()).expect(
+    deserialize_json_from_string::<Vec<Occupation>>(contents).expect(
         "Failed to parse the ESCO occupations codeset"
-    );
+    )
 }
