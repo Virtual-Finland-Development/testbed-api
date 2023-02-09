@@ -72,7 +72,7 @@ fn build_data_product_uri(data_product: &str, data_source: &str) -> String {
     }
 
     // Remove trailing slash from base url
-    if testbed_base_url.ends_with("/") {
+    if testbed_base_url.ends_with('/') {
         testbed_base_url.pop();
     }
 

@@ -25,7 +25,7 @@ pub async fn get_data_product(data_product: &str, data_source: &str, request: Pa
 }
 
 pub async fn write_data_product(data_product: &str, data_source: &str, request: ParsedRequest) -> Result<APIRoutingResponse, APIRoutingError> {
-    let request_input: JSONValue = serde_json::from_str(request.body.as_str()).unwrap_or(json!({}));
+    let request_input: JSONValue = serde_json::from_str(request.body.as_str()).unwrap_or_else(|_| json!({}));
     let request_headers = parse_testbed_request_headers(request)?;
     let response = post_json_request::<JSONValue, JSONValue>(
         build_data_product_uri(data_product, data_source),
