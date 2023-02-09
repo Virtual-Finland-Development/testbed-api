@@ -20,7 +20,9 @@ fn parse_testbed_request_headers(request: ParsedRequest) -> Result<HeaderMap, AP
         "authorization",
         request.headers
             .get("authorization")
-            .ok_or_else(|| APIRoutingError::UnprocessableEntity("No authorization header".to_string()))?
+            .ok_or_else(||
+                APIRoutingError::UnprocessableEntity("No authorization header".to_string())
+            )?
             .clone()
     );
 
@@ -65,11 +67,7 @@ fn build_data_product_uri(data_product: &str, data_source: &str) -> String {
                     ::var("USER_STATUS_INFO_PRODUCTIZER_ENDPOINT")
                     .expect("USER_STATUS_INFO_PRODUCTIZER_ENDPOINT must be set");
             }
-            _ => {
-                testbed_base_url = env
-                    ::var("TESTBED_BASE_URL")
-                    .expect("TESTBED_BASE_URL must be set");
-            }
+            _ => {}
         }
     }
 
