@@ -29,7 +29,7 @@ pub async fn index(_request: ParsedRequest) -> Result<APIRoutingResponse, APIRou
 #[utoipa::path(
     get,
     path = "/docs",
-    responses((status = 200, description = "API documentation", body = String))
+    responses((status = 200, description = "API documentation", content_type = "text/html"))
 )]
 pub async fn docs(_request: ParsedRequest) -> Result<APIRoutingResponse, APIRoutingError> {
     let body = fs::read_to_string("./openapi/index.html").expect("Unable to read index.html file");
@@ -55,7 +55,13 @@ pub async fn openapi_spec(json_spec: String) -> Result<APIRoutingResponse, APIRo
 #[utoipa::path(
     get,
     path = "/health",
-    responses((status = 200, description = "Health check", body = String))
+    responses((
+        status = 200,
+        description = "Health check",
+        body = String,
+        content_type = "text/plain",
+        example = json!("OK"),
+    ))
 )]
 pub async fn health_check(_request: ParsedRequest) -> Result<APIRoutingResponse, APIRoutingError> {
     Ok(APIRoutingResponse::new(StatusCode::OK, "OK", get_plain_headers()))
@@ -82,7 +88,18 @@ pub async fn get_external_service_bad_response(
 #[utoipa::path(
     get,
     path = "/wake-up",
-    responses((status = 200, description = "Wake signal handler", body = String))
+    responses((
+        status = 200,
+        description = "Wake signal handler",
+        body = String,
+        content_type = "application/json",
+        example = json!({
+            "signals": {
+                "successful": 4,
+                "total": 4,
+            }
+        }),
+    ))
 )]
 pub async fn wake_up_external_services(
     _request: ParsedRequest
