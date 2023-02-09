@@ -19,3 +19,10 @@ services:
       - 3003:3003
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - vfd-network
+
+networks:
+  vfd-network:
+    driver: bridge
+    external: true

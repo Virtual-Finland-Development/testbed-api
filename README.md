@@ -13,6 +13,16 @@ A backend service for frontend client calls to testbed
 - Docker: https://docs.docker.com/get-docker/
 - make: https://www.gnu.org/software/make/ (optional)
 
+#### Docker requirements
+
+If using docker compose, the following network must be created: `vfd-network`.
+
+Create the network with the following command:
+
+```
+docker network create vfd-network
+```
+
 ### Run with docker with hot reloading
 
 with docker-compose:
