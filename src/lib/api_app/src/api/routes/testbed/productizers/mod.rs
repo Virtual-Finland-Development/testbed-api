@@ -5,9 +5,10 @@ use crate::api::{ responses::APIRoutingError, utils::ParsedRequest };
 pub mod figure;
 pub mod job;
 pub mod user;
+pub mod person;
 
 /**
- * Parses the authorization headers fromn the input request
+ * Parses the authorization headers from the input request
  */
 fn parse_testbed_request_headers(request: ParsedRequest) -> Result<HeaderMap, APIRoutingError> {
     // Prep auth header forwarding
