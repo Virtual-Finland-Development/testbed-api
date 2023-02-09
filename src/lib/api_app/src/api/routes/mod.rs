@@ -21,13 +21,27 @@ pub async fn exec_router_request(parsed_request: ParsedRequest) -> APIRoutingRes
 
 #[derive(OpenApi)]
 #[openapi(
+    info(title = "Testbed API", description = "API documentation for the testbed API"),
     paths(
         application::index,
         application::docs,
         application::health_check,
-        application::wake_up_external_services
+        application::wake_up_external_services,
+        testbed::engage_reverse_proxy_request,
+        testbed::productizers::figure::get_population
+        /*testbed::productizers::job::find_job_postings,
+        testbed::productizers::user::fetch_user_profile,
+        testbed::productizers::user::fetch_user_status_info,
+        testbed::productizers::user::update_user_status_info,
+        jmf::fetch_jmf_recommendations */
     ),
-    components(),
+    components(
+        schemas(
+            testbed::ProxyRequestInput,
+            testbed::productizers::figure::figure_models::PopulationQuery,
+            testbed::productizers::figure::figure_models::PopulationResponse
+        )
+    ),
     tags((name = "testbed-api", description = "Access to testbed product gateway APIs"))
 )]
 struct ApiDoc;

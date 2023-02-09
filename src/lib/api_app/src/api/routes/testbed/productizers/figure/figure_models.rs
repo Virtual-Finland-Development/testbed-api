@@ -1,9 +1,10 @@
 use serde::{ Deserialize, Serialize };
+use utoipa::ToSchema;
 
 /**
  * Population query parameters
  */
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, ToSchema)]
 pub struct PopulationQuery {
     city: String,
     year: String, // Note: front apps send strings, not numbers
@@ -12,7 +13,7 @@ pub struct PopulationQuery {
 /**
  * Population response
  */
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, ToSchema)]
 pub struct PopulationResponse {
     description: String,
     #[serde(rename = "sourceName")]

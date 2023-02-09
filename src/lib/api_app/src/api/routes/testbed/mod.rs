@@ -1,4 +1,5 @@
 use std::{ collections::HashMap };
+use utoipa::ToSchema;
 
 use http::{ HeaderMap };
 use serde::{ Deserialize, Serialize };
@@ -12,14 +13,20 @@ use crate::api::{
 
 pub mod productizers;
 
-#[derive(Deserialize, Serialize, Debug)]
-struct ProxyRequestInput {
+#[derive(Deserialize, Serialize, Debug, ToSchema)]
+pub struct ProxyRequestInput {
     method: String,
     url: String,
     body: String,
     headers: HashMap<String, String>,
 }
 
+#[utoipa::path(
+    post,
+    path = "/testbed/reverse-proxy",
+    request_body(content = ProxyRequestInput, description = "Proxy request"),
+    responses((status = 200, description = "Proxy response", content_type = "application/json"))
+)]
 pub async fn engage_reverse_proxy_request(
     request: ParsedRequest
 ) -> Result<APIRoutingResponse, APIRoutingError> {
