@@ -195,7 +195,7 @@ pub fn resolve_external_service_bad_response(
     // Ensure JSON response
     let response_json = serde_json
         ::from_str::<serde_json::Value>(&response_body)
-        .unwrap_or(json!({"content": response_body}));
+        .unwrap_or_else(|_| json!({"content": response_body}));
 
     // Use the status code from the response if it's a valid HTTP status code
     if response_json.is_object() {
@@ -209,9 +209,9 @@ pub fn resolve_external_service_bad_response(
     }
 
     Ok(APIRoutingResponse {
-        status_code: status_code,
+        status_code,
         body: json!({
-            "message": format!("External service responded with a status: {}", status_code).to_string(),
+            "message": format!("External service responded with a status: {}", status_code),
             "data": response_json,
         }).to_string(),
         headers: get_default_headers(),

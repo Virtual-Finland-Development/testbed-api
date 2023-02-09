@@ -28,8 +28,7 @@ pub async fn fetch_user_status_info(
     request: ParsedRequest
 ) -> Result<APIRoutingResponse, APIRoutingError> {
     let endpoint_url = build_data_product_uri("test/lsipii/User/StatusInfo", "virtual_finland");
-
-    let request_input: JSONValue = serde_json::from_str(request.body.as_str()).unwrap_or(json!({})); // Pass through body
+    let request_input: JSONValue = serde_json::from_str(request.body.as_str()).unwrap_or_else(|_| json!({})); // Pass through body
     let request_headers = parse_testbed_request_headers(request)?;
     let response = post_json_request::<JSONValue, JSONValue>(
         endpoint_url.to_string(),
@@ -47,7 +46,7 @@ pub async fn update_user_status_info(
         "virtual_finland"
     );
 
-    let request_input: JSONValue = serde_json::from_str(request.body.as_str()).unwrap_or(json!({})); // Pass through body
+    let request_input: JSONValue = serde_json::from_str(request.body.as_str()).unwrap_or_else(|_| json!({})); // Pass through body
     let request_headers = parse_testbed_request_headers(request)?;
     let response = post_json_request::<JSONValue, JSONValue>(
         endpoint_url.to_string(),

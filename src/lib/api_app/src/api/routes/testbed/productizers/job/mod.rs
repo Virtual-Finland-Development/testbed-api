@@ -124,16 +124,16 @@ pub fn construct_productizer_requests(
         requirements: request_input.requirements,
         paging: RequestPaging {
             limit: request_limit,
-            offset: offset,
+            offset,
         },
     };
 
-    return Ok(ProductizerRequest {
-        endpoint_urls: endpoint_urls,
+    Ok(ProductizerRequest {
+        endpoint_urls,
         request_input: jobs_request,
         headers: request_headers,
-        original_input: original_input,
-    });
+        original_input,
+    })
 }
 
 pub fn parse_job_request_input(request_input: &JobsRequestFromFrontend) -> JobsRequestFromFrontend {
@@ -153,7 +153,7 @@ pub fn parse_job_request_input(request_input: &JobsRequestFromFrontend) -> JobsR
  * Merge the job posting results, by mutation
  */
 pub fn merge_job_posting_results(results: &mut Vec<JobPostingForFrontend>) {
-    results.sort_by(|a, b| job_postings_sort_comparator(a, b));
+    results.sort_by(job_postings_sort_comparator);
     results.dedup_by(|a, b| is_job_postings_the_same(a, b));
 }
 
@@ -174,10 +174,10 @@ fn is_job_postings_the_same(a: &JobPostingForFrontend, b: &JobPostingForFrontend
  */
 pub fn transform_job_posting_results(
     jobs_source: String,
-    results: &mut Vec<JobPosting>
+    results: &mut [JobPosting]
 ) -> Vec<JobPostingForFrontend> {
     results
-        .into_iter()
+        .iter_mut()
         .map(|job_posting| JobPostingForFrontend {
             id: generate_job_posting_id(job_posting),
             jobs_source: jobs_source.to_string(),
@@ -198,9 +198,9 @@ pub fn transform_job_posting_results(
 // Generate ID for the job posting
 
 fn generate_job_posting_id(job_posting: &JobPosting) -> String {
-    let job_now = job_posting.clone();
+    let job_now = job_posting;
     let app_url = job_now.application_url.clone();
-    let url_part = app_url.unwrap_or("".to_string());
+    let url_part = app_url.unwrap_or_default();
 
     let mut hasher = DefaultHasher::new();
     let mut id_parts = String::new();

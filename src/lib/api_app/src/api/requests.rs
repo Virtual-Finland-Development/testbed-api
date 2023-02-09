@@ -200,7 +200,7 @@ async fn engage_request<I: Debug + Serialize>(
 
     let response_status = response.status();
     let response_headers = response.headers().clone();
-    let response_body = response.text().await.unwrap_or("No response body received".to_string());
+    let response_body = response.text().await.unwrap_or_else(|_| "No response body received".to_string());
 
     log::debug!(
         "Request: {}, status code: {:#?}, elapsed time: {}ms",
