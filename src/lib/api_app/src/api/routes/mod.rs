@@ -97,7 +97,7 @@ pub async fn get_router_response(
                 "write_basic_information" => testbed::productizers::person::basic_information::write_basic_information(parsed_request).await,
                 "get_job_applicant_profile" => testbed::productizers::person::job_applicant_profile::get_job_applicant_profile(parsed_request).await,
                 "write_job_applicant_profile" => testbed::productizers::person::job_applicant_profile::write_job_applicant_profile(parsed_request).await,
-                _ => application::not_found(parsed_request).await,
+                _ => application::not_found(parsed_request).await, // Catch all 404
             }
         }
     }
