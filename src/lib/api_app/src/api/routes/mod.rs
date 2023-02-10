@@ -64,6 +64,7 @@ pub async fn get_router_response(
     let openapi = ApiDoc::openapi();
 
     match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
+        // System routes
         ("OPTIONS", _) => application::cors_preflight_response(parsed_request).await,
         ("GET", "/openapi.json") => {
             application::openapi_spec(
@@ -73,13 +74,14 @@ pub async fn get_router_response(
             )
             .await
         }
+        // API routes
         _ => {
             let operation_id = get_openapi_operation_id(
                 openapi,
                 parsed_request.method.as_str(),
                 parsed_request.path.as_str(),
             );
-            match operation_id.as_str() {
+            match operation_id.as_str() { // would be nice to auto-generate this match
                 "index" => application::index(parsed_request).await,
                 "docs" => application::docs(parsed_request).await,
                 "health_check" => application::health_check(parsed_request).await,
@@ -98,15 +100,5 @@ pub async fn get_router_response(
                 _ => application::not_found(parsed_request).await,
             }
         }
-    }
-}
-
-/**
- * Exec API routing
- */
-pub async fn exec_router_request(parsed_request: ParsedRequest) -> APIRoutingResponse {
-    match get_router_response(parsed_request).await {
-        Ok(response) => response,
-        Err(e) => APIRoutingResponse::from_routing_error(e),
     }
 }

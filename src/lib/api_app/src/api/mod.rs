@@ -2,6 +2,8 @@ use http::Response;
 use lambda_http::Request;
 use log;
 
+use self::{responses::APIRoutingResponse, routes::get_router_response, utils::ParsedRequest};
+
 mod requests;
 mod responses;
 pub mod routes;
@@ -17,7 +19,7 @@ pub async fn handler(
     let parsed_request = utils::parse_router_request(request);
 
     log::info!("{} {}", parsed_request.method, parsed_request.path);
-    let router_response = routes::exec_router_request(parsed_request).await;
+    let router_response = exec_router_request(parsed_request).await;
     log::debug!(
         "Response: {:#?},\nBody: {:#?},\nHeaders: {:#?}",
         router_response.status_code,
@@ -37,4 +39,14 @@ pub async fn handler(
     }
 
     Ok(api_response)
+}
+
+/**
+ * Exec API routing
+ */
+async fn exec_router_request(parsed_request: ParsedRequest) -> APIRoutingResponse {
+    match get_router_response(parsed_request).await {
+        Ok(response) => response,
+        Err(e) => APIRoutingResponse::from_routing_error(e),
+    }
 }
