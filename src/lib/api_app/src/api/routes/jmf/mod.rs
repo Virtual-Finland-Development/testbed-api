@@ -6,9 +6,22 @@ use crate::api::{
     utils::{get_default_headers, ParsedRequest},
 };
 
-mod models;
+pub mod models;
 use models::{RecommendationsRequest, RecommendationsResponse};
 
+#[utoipa::path(
+    post,
+    path = "/testbed/productizers/user-profile",
+    request_body(
+        content = RecommendationsRequest,
+        description = "Job Market Finland recommended skills and occupations"
+    ),
+    responses((
+        status = 200,
+        body = RecommendationsResponse,
+        description = "The recommendations response",
+    ))
+)]
 pub async fn fetch_jmf_recommendations(
     request: ParsedRequest,
 ) -> Result<APIRoutingResponse, APIRoutingError> {

@@ -1,24 +1,25 @@
 #[cfg(test)]
 mod api_utils_test {
-    use serde_json::json;
-    use http::{ HeaderValue, header::{ HeaderMap, HeaderName } };
-    use lambda_http::aws_lambda_events::query_map::QueryMap;
     use crate::api::{
+        routes::testbed::productizers::job::{
+            construct_productizer_requests,
+            job_models::{JobPosting, JobPostingResponse},
+            merge_job_posting_results, transform_job_posting_results,
+        },
         utils::{
             strings::{
-                cut_string_by_delimiter_keep_right,
+                cut_string_by_delimiter_keep_right, parse_comma_separated_list,
                 trim_left_slashes,
-                parse_comma_separated_list,
             },
             ParsedRequest,
         },
-        routes::testbed::productizers::job::{
-            job_models::{ JobPostingResponse, JobPosting },
-            merge_job_posting_results,
-            transform_job_posting_results,
-            construct_productizer_requests,
-        },
     };
+    use http::{
+        header::{HeaderMap, HeaderName},
+        HeaderValue,
+    };
+    use lambda_http::aws_lambda_events::query_map::QueryMap;
+    use serde_json::json;
 
     #[test]
     fn test_jobs_response_handlings() {
@@ -32,7 +33,7 @@ mod api_utils_test {
         // Test mergeing
         let mut transformed_results = transform_job_posting_results(
             "tyomarkkinatori".to_string(),
-            &mut mock_response.results
+            &mut mock_response.results,
         );
         merge_job_posting_results(&mut transformed_results);
         assert_eq!(transformed_results.len(), 3);
@@ -45,7 +46,7 @@ mod api_utils_test {
         let mut headers = HeaderMap::new();
         headers.insert(
             HeaderName::from_static("authorization"),
-            HeaderValue::from_static("Bearer 123")
+            HeaderValue::from_static("Bearer 123"),
         );
 
         let request_input = ParsedRequest {
@@ -70,12 +71,12 @@ mod api_utils_test {
                         "pageNumber": 0
                     }
                 }
-            ).to_string(),
+            )
+            .to_string(),
         };
 
-        let request = construct_productizer_requests(request_input, endpoint_urls).expect(
-            "Failed to construct the productizer requests"
-        );
+        let request = construct_productizer_requests(request_input, endpoint_urls)
+            .expect("Failed to construct the productizer requests");
 
         assert_eq!(request.endpoint_urls.len(), 2);
         assert_eq!(request.original_input.paging.items_per_page, 25);
@@ -85,7 +86,10 @@ mod api_utils_test {
     #[test]
     fn string_util_tests() {
         let test_string = "test string";
-        assert_eq!(cut_string_by_delimiter_keep_right(test_string, " "), "string");
+        assert_eq!(
+            cut_string_by_delimiter_keep_right(test_string, " "),
+            "string"
+        );
 
         assert_eq!(trim_left_slashes("//test/test"), "test/test");
 

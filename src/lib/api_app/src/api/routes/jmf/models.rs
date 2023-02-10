@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
-#[derive(Deserialize, Serialize, Debug, PartialEq, Clone)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Clone, ToSchema)]
 pub struct Skill {
     pub uri: String,
     pub score: f64,
@@ -11,7 +12,7 @@ pub struct Skill {
     pub reuse_level: String,
 }
 
-#[derive(Deserialize, Serialize, Debug, PartialEq, Clone)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Clone, ToSchema)]
 pub struct Occupation {
     pub uri: String,
     pub score: f64,
@@ -21,7 +22,7 @@ pub struct Occupation {
 /**
  * Request model
  */
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, ToSchema)]
 pub struct RecommendationsRequest {
     text: String,
     #[serde(rename = "maxNumberOfSkills")]
@@ -34,7 +35,7 @@ pub struct RecommendationsRequest {
 /**
  * Response model
  */
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, ToSchema)]
 pub struct RecommendationsResponse {
     skills: Vec<Skill>,
     occupations: Vec<Occupation>,

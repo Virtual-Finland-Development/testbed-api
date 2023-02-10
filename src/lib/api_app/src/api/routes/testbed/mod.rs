@@ -1,14 +1,14 @@
-use std::{ collections::HashMap };
+use std::collections::HashMap;
 use utoipa::ToSchema;
 
-use http::{ HeaderMap };
-use serde::{ Deserialize, Serialize };
-use serde_json::{ Value as JSONValue };
+use http::HeaderMap;
+use serde::{Deserialize, Serialize};
+use serde_json::Value as JSONValue;
 
 use crate::api::{
-    responses::{ APIRoutingError, APIRoutingResponse },
+    responses::{APIRoutingError, APIRoutingResponse},
     routes::application::get_external_service_bad_response,
-    utils::{ get_cors_response_headers, ParsedRequest },
+    utils::{get_cors_response_headers, ParsedRequest},
 };
 
 pub mod productizers;
@@ -28,30 +28,31 @@ pub struct ProxyRequestInput {
     responses((status = 200, description = "Proxy response", content_type = "application/json"))
 )]
 pub async fn engage_reverse_proxy_request(
-    request: ParsedRequest
+    request: ParsedRequest,
 ) -> Result<APIRoutingResponse, APIRoutingError> {
     let request_body_as_text = request.body.as_str();
     log::debug!("Input: {:#?}", request_body_as_text);
-    let request_input: ProxyRequestInput = serde_json
-        ::from_str(request_body_as_text)
-        .expect("Failed to parse the request body");
+    let request_input: ProxyRequestInput =
+        serde_json::from_str(request_body_as_text).expect("Failed to parse the request body");
 
     // Access control list check
     let access_denied = access_control_check(request_input.url.as_str());
     if access_denied {
-        return Err(APIRoutingError::Unauthorized("Unknown destination".to_string()));
+        return Err(APIRoutingError::Unauthorized(
+            "Unknown destination".to_string(),
+        ));
     }
 
     // Transform headers
     let proxy_headers = HeaderMap::try_from(&request_input.headers)?;
 
     // Execute request
-    let response = reqwest::Client
-        ::new()
+    let response = reqwest::Client::new()
         .post(request_input.url)
         .body(request_input.body)
         .headers(proxy_headers)
-        .send().await?;
+        .send()
+        .await?;
 
     log::debug!("Response: {:#?}", response);
 
@@ -62,13 +63,11 @@ pub async fn engage_reverse_proxy_request(
 
     let response_output = response.json::<JSONValue>().await?;
 
-    Ok(
-        APIRoutingResponse::new(
-            response_status,
-            &serde_json::to_string(&response_output)?,
-            get_cors_response_headers()
-        )
-    )
+    Ok(APIRoutingResponse::new(
+        response_status,
+        &serde_json::to_string(&response_output)?,
+        get_cors_response_headers(),
+    ))
 }
 
 /**

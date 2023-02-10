@@ -1,6 +1,9 @@
+use http::{
+    header::{HeaderMap, HeaderName},
+    HeaderValue,
+};
 use lambda_http::aws_lambda_events::query_map::QueryMap;
-use http::{ HeaderValue, header::{ HeaderMap, HeaderName } };
-use lambda_http::{ Body, Request, RequestExt };
+use lambda_http::{Body, Request, RequestExt};
 
 pub struct ParsedRequest {
     pub path: String,
@@ -43,12 +46,12 @@ pub fn get_cors_response_headers() -> HeaderMap {
 
     headers.insert(
         HeaderName::from_static("access-control-allow-origin"),
-        HeaderValue::from_static("*")
+        HeaderValue::from_static("*"),
     );
 
     headers.insert(
         HeaderName::from_static("access-control-allow-methods"),
-        HeaderValue::from_static("GET, POST, OPTIONS")
+        HeaderValue::from_static("GET, POST, OPTIONS"),
     );
 
     headers.insert(
@@ -66,7 +69,7 @@ pub fn get_default_headers() -> HeaderMap {
 
     cors_headers.insert(
         HeaderName::from_static("content-type"),
-        HeaderValue::from_static("application/json")
+        HeaderValue::from_static("application/json"),
     );
 
     cors_headers
@@ -77,7 +80,7 @@ pub fn get_plain_headers() -> HeaderMap {
 
     cors_headers.insert(
         HeaderName::from_static("content-type"),
-        HeaderValue::from_static("text/plain")
+        HeaderValue::from_static("text/plain"),
     );
 
     cors_headers
@@ -87,7 +90,7 @@ pub mod strings {
     pub fn truncate_too_long_string(
         string: impl Into<String>,
         max_length: usize,
-        postfix: &str
+        postfix: &str,
     ) -> String {
         let text = string.into();
         if text.len() > max_length {
@@ -98,7 +101,7 @@ pub mod strings {
 
     pub fn cut_string_by_delimiter_keep_right(
         string: impl Into<String>,
-        delimiter: &str
+        delimiter: &str,
     ) -> String {
         let text = string.into();
         let split = text.split(delimiter);

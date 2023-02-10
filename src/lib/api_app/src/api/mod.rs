@@ -2,9 +2,9 @@ use http::Response;
 use lambda_http::Request;
 use log;
 
-pub mod routes;
-mod responses;
 mod requests;
+mod responses;
+pub mod routes;
 
 pub mod utils;
 
@@ -12,7 +12,7 @@ pub mod utils;
  * The handler function for the lambda.
  */
 pub async fn handler(
-    request: Request
+    request: Request,
 ) -> Result<lambda_http::Response<String>, std::convert::Infallible> {
     let parsed_request = utils::parse_router_request(request);
 
