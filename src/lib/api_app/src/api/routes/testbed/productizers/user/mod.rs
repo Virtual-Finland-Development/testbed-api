@@ -1,7 +1,5 @@
-use std::env;
 use serde_json::{json, Value as JSONValue};
 
-use super::parse_testbed_request_headers;
 use crate::api::{
     requests::post_json_request,
     responses::{APIRoutingError, APIRoutingResponse},
