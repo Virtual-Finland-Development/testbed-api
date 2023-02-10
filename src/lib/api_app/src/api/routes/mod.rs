@@ -2,7 +2,21 @@ use super::{
     responses::{APIRoutingError, APIRoutingResponse},
     utils::ParsedRequest,
 };
-use utoipa::OpenApi;
+use utoipa::{openapi::PathItemType, OpenApi};
+
+pub fn get_path_item_type(parsed_type: &str) -> PathItemType {
+    match parsed_type {
+        "get" => PathItemType::Get,
+        "post" => PathItemType::Post,
+        "put" => PathItemType::Put,
+        "delete" => PathItemType::Delete,
+        "options" => PathItemType::Options,
+        "head" => PathItemType::Head,
+        "patch" => PathItemType::Patch,
+        "trace" => PathItemType::Trace,
+        _ => PathItemType::Get,
+    }
+}
 
 pub mod application;
 pub mod jmf;
@@ -37,9 +51,13 @@ pub async fn exec_router_request(parsed_request: ParsedRequest) -> APIRoutingRes
         testbed::productizers::user::fetch_user_profile,
         testbed::productizers::user::fetch_user_status_info,
         testbed::productizers::user::update_user_status_info,
-        jmf::fetch_jmf_recommendations
+        jmf::fetch_jmf_recommendations,
+        testbed::productizers::person::basic_information::get_basic_information,
+        testbed::productizers::person::basic_information::write_basic_information,
+        testbed::productizers::person::job_applicant_profile::get_job_applicant_profile,
+        testbed::productizers::person::job_applicant_profile::write_job_applicant_profile
     ),
-    components(schemas(
+    components(schemas( // would be very nice to auto-generate schemas
         testbed::ProxyRequestInput,
         testbed::productizers::figure::figure_models::PopulationQuery,
         testbed::productizers::figure::figure_models::PopulationResponse,
@@ -54,7 +72,7 @@ pub async fn exec_router_request(parsed_request: ParsedRequest) -> APIRoutingRes
         jmf::models::RecommendationsRequest,
         jmf::models::RecommendationsResponse,
         jmf::models::Occupation,
-        jmf::models::Skill
+        jmf::models::Skill,
     ))
 )]
 struct ApiDoc;
@@ -65,17 +83,27 @@ struct ApiDoc;
 pub async fn get_router_response(
     parsed_request: ParsedRequest,
 ) -> Result<APIRoutingResponse, APIRoutingError> {
+    let openapi = ApiDoc::openapi();
+
+    /*  let path = openapi.paths.get_path_item(parsed_request.path.as_str());
+    match path {
+        Some(path) => {
+            let path_item_type = get_path_item_type(parsed_request.method.as_str());
+            let operation = path.operations.get(&path_item_type).expect("BOOM");
+            log::debug!("operation: {:?}", operation.operation_id);
+        }
+        None => {
+            log::debug!("Not found: {}", parsed_request.path);
+        }
+    } */
+
     match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
         ("OPTIONS", _) => application::cors_preflight_response(parsed_request).await,
         ("GET", "/") => application::index(parsed_request).await,
         ("GET", "/docs") => application::docs(parsed_request).await,
         ("GET", "/openapi.json") => {
-            application::openapi_spec(
-                ApiDoc::openapi()
-                    .to_json()
-                    .expect("Failed to parse openapi spec"),
-            )
-            .await
+            application::openapi_spec(openapi.to_json().expect("Failed to parse openapi spec"))
+                .await
         }
         ("GET", "/health") => application::health_check(parsed_request).await,
         ("GET", "/wake-up") => application::wake_up_external_services(parsed_request).await,
@@ -120,7 +148,7 @@ pub async fn get_router_response(
             .await
         }
         ("POST", "/testbed/productizer/person/job-applicant-information") => {
-            testbed::productizers::person::job_applicant_profile::post_job_applicant_profile(
+            testbed::productizers::person::job_applicant_profile::write_job_applicant_profile(
                 parsed_request,
             )
             .await

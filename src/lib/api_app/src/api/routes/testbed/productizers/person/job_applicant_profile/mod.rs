@@ -3,6 +3,29 @@ use crate::api::{
     utils::ParsedRequest,
 };
 
+#[utoipa::path(
+    get,
+    path = "/testbed/productizer/person/job-applicant-information",
+    request_body(
+        content = Object, 
+        description = "Get persons job applicant profile", 
+        examples(( "Success" = (
+            summary = "JSON example",
+            value = json!("Loading.."),
+            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/JobApplicantProfile.json",
+        )))
+    ),
+    responses((
+        status = 200, 
+        body = Object, 
+        description = "Job applicant profile response", 
+        examples(( "Success" = (
+            summary = "JSON example",
+            value = json!("Loading.."),
+            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/JobApplicantProfile.json",
+        )))
+    ))
+)]
 pub async fn get_job_applicant_profile(
     request: ParsedRequest,
 ) -> Result<APIRoutingResponse, APIRoutingError> {
@@ -12,7 +35,30 @@ pub async fn get_job_applicant_profile(
     Ok(result)
 }
 
-pub async fn post_job_applicant_profile(
+#[utoipa::path(
+    post,
+    path = "/testbed/productizer/person/job-applicant-information",
+    request_body(
+        content = Object, 
+        description = "Get persons job applicant profile",
+        examples(( "Success" = (
+            summary = "JSON example",
+            value = json!("Loading.."),
+            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/JobApplicantProfile/Write.json",
+        )))
+    ),
+    responses((
+        status = 200, 
+        body = Object, 
+        description = "Job applicant profile response", 
+        examples(( "Success" = (
+            summary = "JSON example",
+            value = json!("Loading.."),
+            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/JobApplicantProfile/Write.json",
+        )))
+    ))
+)]
+pub async fn write_job_applicant_profile(
     request: ParsedRequest,
 ) -> Result<APIRoutingResponse, APIRoutingError> {
     let data_product = "draft/Person/JobApplicantProfile/Write";

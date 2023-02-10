@@ -62,7 +62,8 @@
                             } else {
                                 const resolveData = (data) => {
                                     // Dirtly parse content
-                                    const ref = data.paths[Object.keys(data.paths)[0]].post.requestBody.content[contentType].schema["$ref"];
+                                    const method = "post";
+                                    const ref = data.paths[Object.keys(data.paths)[0]][method].requestBody.content[contentType].schema["$ref"];
                                     const component = ref.split("/").pop();
                                     // Put downloaded file content into the examples map
                                     examples[externalValueUrlKey] = {
@@ -100,7 +101,11 @@
                                 props.response = parseSchemaObject(props.response, examples[externalValueUrlKey].schema, contentType)
                             } else {
                                 const resolveData = (data) => {
-                                    const ref = data.paths[Object.keys(data.paths)[0]][props.method].responses[Number(props.code)].content[contentType].schema["$ref"];
+                                    let method = props.method;
+                                    if (method === "get" && props.path.startsWith("/testbed/productizer")) {
+                                        method = "post";
+                                    }
+                                    const ref = data.paths[Object.keys(data.paths)[0]][method].responses[Number(props.code)].content[contentType].schema["$ref"];
                                     const component = ref.split("/").pop();
                                     // Put downloaded file content into the examples map
                                     examples[externalValueUrlKey] = {

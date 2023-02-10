@@ -12,8 +12,25 @@ use crate::api::{
 #[utoipa::path(
     post,
     path = "/testbed/productizers/user-profile",
-    request_body(content = Object, description = "User profile query"),
-    responses((status = 200, body = Object, description = "User profile response"))
+    request_body(
+        content = Object, 
+        description = "User profile query",
+        examples(( "Success" = (
+            summary = "JSON example",
+            value = json!("Loading.."),
+            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lassipatanen/User/Profile.json",
+        )))
+    ),
+    responses((
+        status = 200,
+        body = Object,
+        description = "User profile response",
+        examples(( "Success" = (
+            summary = "JSON example",
+            value = json!("Loading.."),
+            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lassipatanen/User/Profile.json",
+        )))
+    ))
 )]
 pub async fn fetch_user_profile(
     request: ParsedRequest,
@@ -34,20 +51,25 @@ pub async fn fetch_user_profile(
 #[utoipa::path(
     post,
     path = "/testbed/productizers/fetch-user-status-info",
-    request_body(content = Object, description = "Fetch user status info", examples(
-        ( "Success" = (
+    request_body(
+        content = Object,
+        description = "Fetch user status info",
+        examples(( "Success" = (
             summary = "JSON example",
             value = json!("Loading.."),
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lsipii/User/StatusInfo.json",
-        ) )
-    )),
-    responses((status = 200, body = Object, description = "Status information response", examples(
-        ( "Success" = (
+        )))
+    ),
+    responses((
+        status = 200,
+        body = Object,
+        description = "Status information response",
+        examples(( "Success" = (
             summary = "JSON example",
             value = json!("Loading.."),
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lsipii/User/StatusInfo.json",
-        ) )
-    ),))
+        )))
+    ))
 )]
 pub async fn fetch_user_status_info(
     request: ParsedRequest,
@@ -69,24 +91,24 @@ pub async fn fetch_user_status_info(
 #[utoipa::path(
     post,
     path = "/testbed/productizers/update-user-status-info",
-    request_body(content = Object, description = "Update user status info", examples(
-        ( "Success" = (
+    request_body(
+        content = Object,
+        description = "Update user status info",
+        examples(( "Success" = (
             summary = "JSON example",
             value = json!("Loading.."),
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lsipii/User/StatusInfo/Write.json",
-        ) )
-    )),
+        )))
+    ),
     responses((
         status = 200,
         body = Object,
         description = "Status information response",
-        examples(
-            ( "Success" = (
-                summary = "JSON example",
-                value = json!("Loading.."),
-                external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lsipii/User/StatusInfo/Write.json",
-            ) )
-        ),
+        examples(( "Success" = (
+            summary = "JSON example",
+            value = json!("Loading.."),
+            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lsipii/User/StatusInfo/Write.json",
+        )))
     ))
 )]
 pub async fn update_user_status_info(
