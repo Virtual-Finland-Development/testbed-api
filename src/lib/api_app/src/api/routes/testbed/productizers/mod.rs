@@ -1,6 +1,8 @@
+use std::env;
+
 use http::{ HeaderMap, HeaderValue };
 
-use crate::api::{ responses::APIRoutingError, utils::ParsedRequest };
+use crate::api::{ responses::{ APIRoutingError }, utils::{ ParsedRequest, get_stage } };
 
 pub mod figure;
 pub mod job;
@@ -18,7 +20,9 @@ fn parse_testbed_request_headers(request: ParsedRequest) -> Result<HeaderMap, AP
         "authorization",
         request.headers
             .get("authorization")
-            .ok_or_else(|| APIRoutingError::UnprocessableEntity("No authorization header".to_string()))?
+            .ok_or_else(||
+                APIRoutingError::UnprocessableEntity("No authorization header".to_string())
+            )?
             .clone()
     );
 
@@ -34,4 +38,43 @@ fn parse_testbed_request_headers(request: ParsedRequest) -> Result<HeaderMap, AP
         );
     }
     Ok(request_headers)
+}
+
+/**
+ * Builds the URI for the testbed data product
+ */
+fn build_data_product_uri(data_product: &str, data_source: &str) -> String {
+    let mut testbed_base_url = env::var("TESTBED_BASE_URL").expect("TESTBED_BASE_URL must be set");
+    let testbed_environment = env
+        ::var("TESTBED_ENVIRONMENT")
+        .expect("TESTBED_ENVIRONMENT must be set");
+
+    if get_stage() == "local" {
+        // @TODO: needs a local testbed data product gw simulation
+        match data_product {
+            "test/lassipatanen/User/Profile" => {
+                testbed_base_url = env
+                    ::var("USER_PROFILE_PRODUCTIZER_ENDPOINT")
+                    .expect("USER_PROFILE_PRODUCTIZER_ENDPOINT must be set");
+            }
+            "test/lsipii/User/StatusInfo" => {
+                testbed_base_url = env
+                    ::var("USER_STATUS_INFO_PRODUCTIZER_ENDPOINT")
+                    .expect("USER_STATUS_INFO_PRODUCTIZER_ENDPOINT must be set");
+            }
+            "test/lsipii/User/StatusInfo/Write" => {
+                testbed_base_url = env
+                    ::var("USER_STATUS_INFO_PRODUCTIZER_ENDPOINT")
+                    .expect("USER_STATUS_INFO_PRODUCTIZER_ENDPOINT must be set");
+            }
+            _ => {}
+        }
+    }
+
+    // Remove trailing slash from base url
+    if testbed_base_url.ends_with('/') {
+        testbed_base_url.pop();
+    }
+
+    format!("{testbed_base_url}/{data_product}?source={data_source}:{testbed_environment}")
 }
