@@ -74,7 +74,7 @@ pub async fn get_router_response(
             )
             .await
         }
-        // API routes
+        // OpenAPI specified routes
         _ => {
             let operation_id = get_openapi_operation_id(
                 openapi,
