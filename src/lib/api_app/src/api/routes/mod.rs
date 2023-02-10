@@ -35,7 +35,7 @@ pub mod testbed;
         testbed::productizers::person::job_applicant_profile::get_job_applicant_profile,
         testbed::productizers::person::job_applicant_profile::write_job_applicant_profile
     ),
-    components(schemas( // would be very nice to auto-generate schemas
+    components(schemas( // @TODO: would be very nice to auto-generate schemas
         testbed::ProxyRequestInput,
         testbed::productizers::figure::figure_models::PopulationQuery,
         testbed::productizers::figure::figure_models::PopulationResponse,
@@ -56,12 +56,12 @@ pub mod testbed;
 struct ApiDoc;
 
 /**
- * API router - would be nice to auto-generate routes from openapi spec
+ * API router - // @TODO: would be nice to auto-generate routes from openapi spec
  */
 pub async fn get_router_response(
     parsed_request: ParsedRequest,
 ) -> Result<APIRoutingResponse, APIRoutingError> {
-    let openapi = ApiDoc::openapi();
+    let openapi = ApiDoc::openapi(); // @TODO: ensure as singelton
 
     match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
         // System routes
@@ -81,7 +81,7 @@ pub async fn get_router_response(
                 parsed_request.method.as_str(),
                 parsed_request.path.as_str(),
             );
-            match operation_id.as_str() { // would be nice to auto-generate this match
+            match operation_id.as_str() { // @TODO: would be nice to auto-generate this match
                 "index" => application::index(parsed_request).await,
                 "docs" => application::docs(parsed_request).await,
                 "health_check" => application::health_check(parsed_request).await,
