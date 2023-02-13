@@ -87,6 +87,7 @@ testbed_api_function = aws.lambda_.Function(
             "USERS_API_ENDPOINT_ORIGIN": usersApiLambdaEndpoint,
             "TMT_PRODUCTIZER_ENDPOINT_ORIGIN": tmtProductizerLambdaEndpoint,
             "JOBS_IN_FINLAND_PRODUCTIZER_ENDPOINT_ORIGIN": jobsInFinlandProductizerLambdaEndpoint,
+            "STAGE": stage,
         }
     ),
 )
