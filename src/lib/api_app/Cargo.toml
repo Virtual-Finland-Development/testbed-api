@@ -19,3 +19,4 @@ itertools = "^0.10.5"
 libmath = "^0.2.1"
 stopwatch = "^0.0.7"
 utoipa = "3"
+macros = { path = "./src/lib/macros" }

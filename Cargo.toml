@@ -3,6 +3,7 @@ name = "testbed_api"
 version = "1.0.0"
 edition = "2021"
 
+
 [dependencies]
 hot-lib-reloader = { version = "^0.6", optional = true }
 tokio = { version = "^1.21.2", features = ["full"] }
@@ -10,6 +11,7 @@ dotenv = "^0.15.0"
 api_app = { path = "./src/lib/api_app" }
 http_server = { path = "./src/lib/http_server" }
 lambda_service = { path = "./src/lib/lambda_service" }
+
 
 [[bin]]
 name = "bootstrap"

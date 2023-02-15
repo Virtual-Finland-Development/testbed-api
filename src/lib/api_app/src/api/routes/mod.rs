@@ -10,6 +10,8 @@ pub mod application;
 pub mod jmf;
 pub mod testbed;
 
+use macros::my_custom_attribute;
+
 #[derive(OpenApi)]
 #[openapi(
     info(
@@ -53,6 +55,7 @@ pub mod testbed;
         jmf::models::Skill,
     ))
 )]
+#[my_custom_attribute]
 struct ApiDoc;
 
 /**
