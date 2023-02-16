@@ -13,8 +13,7 @@ pub fn derive_openapi_router(input: TokenStream) -> TokenStream {
         .find(|a| a.path.is_ident("openapi"))
         .expect("Expected #[openapi(...)] attribute");
 
-    // Resolve actual function paths to strings
-
+    // Resolve actual function paths
     let mut operation_function_paths = Vec::new();
     if let Ok(Meta::List(MetaList { nested, .. })) = openapi_attr.parse_meta() {
         for item in nested {
@@ -39,6 +38,7 @@ pub fn derive_openapi_router(input: TokenStream) -> TokenStream {
         .collect::<Vec<String>>()
         .join(", ");
 
+    // @TODO: gerenerate function calls for each path
     let expanded = quote! {
         impl OpenApiRouter for #ident {
             fn handle_operation(operation_id: String) {
