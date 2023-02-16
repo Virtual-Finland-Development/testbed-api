@@ -1,0 +1,7 @@
+[package]
+name = "openapi_router"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+openapi_router_derive = { path = "../openapi_router_derive" }

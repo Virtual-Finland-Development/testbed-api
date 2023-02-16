@@ -4,15 +4,14 @@ use super::{
 };
 mod openapi_helpers;
 use openapi_helpers::get_openapi_operation_id;
+use openapi_router::OpenApiRouter;
 use utoipa::OpenApi;
 
 pub mod application;
 pub mod jmf;
 pub mod testbed;
 
-use macros::my_custom_attribute;
-
-#[derive(OpenApi)]
+#[derive(OpenApi, OpenApiRouter)]
 #[openapi(
     info(
         title = "Testbed API",
@@ -55,8 +54,7 @@ use macros::my_custom_attribute;
         jmf::models::Skill,
     ))
 )]
-#[my_custom_attribute]
-struct ApiDoc;
+struct API;
 
 /**
  * API router - // @TODO: would be nice to auto-generate routes from openapi spec
@@ -64,14 +62,14 @@ struct ApiDoc;
 pub async fn get_router_response(
     parsed_request: ParsedRequest,
 ) -> Result<APIRoutingResponse, APIRoutingError> {
-    let openapi = ApiDoc::openapi(); // @TODO: ensure as singelton
+    let openapi = API::openapi(); // @TODO: ensure as singelton
 
     match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
         // System routes
         ("OPTIONS", _) => application::cors_preflight_response(parsed_request).await,
         ("GET", "/openapi.json") => {
             application::openapi_spec(
-                ApiDoc::openapi()
+                API::openapi()
                     .to_json()
                     .expect("Failed to parse openapi spec"),
             )
@@ -84,6 +82,9 @@ pub async fn get_router_response(
                 parsed_request.method.as_str(),
                 parsed_request.path.as_str(),
             );
+
+            API::handle_operation(operation_id.clone()); // WIP
+
             match operation_id.as_str() { // @TODO: would be nice to auto-generate this match
                 "index" => application::index(parsed_request).await,
                 "docs" => application::docs(parsed_request).await,
