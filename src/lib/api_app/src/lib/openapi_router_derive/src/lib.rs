@@ -51,9 +51,6 @@ pub fn derive_openapi_router(input: TokenStream) -> TokenStream {
                 println!("hello from operation: {}", operation_id);
 
                 Box::new(move || async move {
-                    // This inner function will return a future that resolves to a String.
-                    // Use the `arg` variable here to do something based on the argument.
-                    // Replace this with your own asynchronous code.
                     application::health_check().await
                 }.boxed())
            }

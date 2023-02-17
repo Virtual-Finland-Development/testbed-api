@@ -1,5 +1,3 @@
-use std::pin::Pin;
-
 use http::header::HeaderMap;
 use http::StatusCode;
 use serde_json::json;
