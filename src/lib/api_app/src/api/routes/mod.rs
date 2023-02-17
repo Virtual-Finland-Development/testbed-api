@@ -1,8 +1,6 @@
-use super::{
-    responses::{APIRoutingError, APIRoutingResponse},
-    utils::ParsedRequest,
-};
+use openapi_router::{requests::ParsedRequest, responses::APIResponse};
 mod openapi_helpers;
+use futures::{executor::block_on, future::BoxFuture, FutureExt};
 use openapi_helpers::get_openapi_operation_id;
 use openapi_router::OpenApiRouter;
 use utoipa::OpenApi;
@@ -59,12 +57,23 @@ struct API;
 /**
  * API router - // @TODO: would be nice to auto-generate routes from openapi spec
  */
-pub async fn get_router_response(
-    parsed_request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
     let openapi = API::openapi(); // @TODO: ensure as singelton
+    let operation_id = get_openapi_operation_id(
+        openapi,
+        parsed_request.method.as_str(),
+        parsed_request.path.as_str(),
+    );
 
-    match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
+    // WIP
+    let router = API;
+    let closure = router.get_operation(operation_id);
+    let future = closure();
+    let response = block_on(future);
+
+    response
+
+    /*  match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
         // System routes
         ("OPTIONS", _) => application::cors_preflight_response(parsed_request).await,
         ("GET", "/openapi.json") => {
@@ -83,9 +92,9 @@ pub async fn get_router_response(
                 parsed_request.path.as_str(),
             );
 
-            API::handle_operation(operation_id.clone()); // WIP
+            API::handle_operation(operation_id, parsed_request) // WIP
 
-            match operation_id.as_str() { // @TODO: would be nice to auto-generate this match
+             match operation_id.as_str() { // @TODO: would be nice to auto-generate this match
                 "index" => application::index(parsed_request).await,
                 "docs" => application::docs(parsed_request).await,
                 "health_check" => application::health_check(parsed_request).await,
@@ -104,5 +113,5 @@ pub async fn get_router_response(
                 _ => application::not_found(parsed_request).await, // Catch all 404
             }
         }
-    }
+    } */
 }

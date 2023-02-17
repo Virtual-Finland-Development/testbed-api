@@ -1,6 +1,6 @@
 // lib.rs
 use proc_macro::TokenStream;
-use quote::{quote, ToTokens};
+use quote::quote;
 use syn::{parse_macro_input, DeriveInput, Meta, MetaList, NestedMeta};
 
 #[proc_macro_derive(OpenApiRouter)]
@@ -32,18 +32,30 @@ pub fn derive_openapi_router(input: TokenStream) -> TokenStream {
     }
 
     // Generate a comma separated list of function paths
-    let operation_function_paths_str = operation_function_paths
-        .iter()
-        .map(|path| path.to_token_stream().to_string())
-        .collect::<Vec<String>>()
-        .join(", ");
+    /* let operation_function_paths_as_str = operation_function_paths
+    .iter()
+    .map(|path| path.to_token_stream().to_string())
+    .collect::<Vec<String>>(); */
 
     // @TODO: gerenerate function calls for each path
     let expanded = quote! {
         impl OpenApiRouter for #ident {
-            fn handle_operation(operation_id: String) {
-                println!("all operation paths: {}", #operation_function_paths_str);
+            type FutureType = BoxFuture<'static, APIResponse>;
+
+            fn get_operation(&self, operation_id: String) -> Box<dyn FnOnce() -> Self::FutureType + Send> {
+                //let operation_function_paths_as_str = #operation_function_paths_as_str;
+                /* let operation = operation_function_paths_as_str.iter().find(|path| path.ends_with(&operation_id));
+                if operation.is_none() {
+                    panic!("Operation not found: {}", operation_id);
+                } */
                 println!("hello from operation: {}", operation_id);
+
+                Box::new(move || async move {
+                    // This inner function will return a future that resolves to a String.
+                    // Use the `arg` variable here to do something based on the argument.
+                    // Replace this with your own asynchronous code.
+                    application::health_check().await
+                }.boxed())
            }
         }
     };

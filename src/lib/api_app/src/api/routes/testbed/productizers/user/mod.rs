@@ -2,9 +2,13 @@ use serde_json::{json, Value as JSONValue};
 
 use crate::api::{
     requests::post_json_request,
-    responses::{APIRoutingError, APIRoutingResponse},
-    utils::ParsedRequest,
 };
+use openapi_router::{
+    requests::ParsedRequest,
+    responses::APIResponse,
+};
+
+
 use super::{ parse_testbed_request_headers, build_data_product_uri };
 
 #[utoipa::path(
@@ -32,7 +36,7 @@ use super::{ parse_testbed_request_headers, build_data_product_uri };
 )]
 pub async fn fetch_user_profile(
     request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+) -> APIResponse {
     let endpoint_url = build_data_product_uri(
         "test/lassipatanen/User/Profile",
         "access_to_finland"
@@ -73,7 +77,7 @@ pub async fn fetch_user_profile(
 )]
 pub async fn fetch_user_status_info(
     request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+) -> APIResponse {
     let endpoint_url = build_data_product_uri("test/lsipii/User/StatusInfo", "virtual_finland");
     let request_input: JSONValue = serde_json::from_str(request.body.as_str()).unwrap_or_else(|_| json!({})); // Pass through body
     let request_headers = parse_testbed_request_headers(request)?;
@@ -111,7 +115,7 @@ pub async fn fetch_user_status_info(
 )]
 pub async fn update_user_status_info(
     request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+) -> APIResponse {
     let endpoint_url = build_data_product_uri(
         "test/lsipii/User/StatusInfo/Write",
         "virtual_finland"

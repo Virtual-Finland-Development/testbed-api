@@ -5,11 +5,13 @@ use http::HeaderMap;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JSONValue;
 
-use crate::api::{
-    responses::{APIRoutingError, APIRoutingResponse},
-    routes::application::get_external_service_bad_response,
-    utils::{get_cors_response_headers, ParsedRequest},
+use crate::api::routes::application::get_external_service_bad_response;
+
+use openapi_router::{
+    requests::ParsedRequest,
+    responses::{APIResponse, APIRoutingError, APIRoutingResponse},
 };
+use utils::api::get_cors_response_headers;
 
 pub mod productizers;
 
@@ -27,9 +29,7 @@ pub struct ProxyRequestInput {
     request_body(content = ProxyRequestInput, description = "Proxy request"),
     responses((status = 200, description = "Proxy response", content_type = "application/json"))
 )]
-pub async fn engage_reverse_proxy_request(
-    request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+pub async fn engage_reverse_proxy_request(request: ParsedRequest) -> APIResponse {
     let request_body_as_text = request.body.as_str();
     log::debug!("Input: {:#?}", request_body_as_text);
     let request_input: ProxyRequestInput =

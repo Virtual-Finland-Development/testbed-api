@@ -3,14 +3,17 @@ use math::round;
 use std::{cmp::Ordering, collections::hash_map::DefaultHasher, env, hash::Hasher};
 
 use super::parse_testbed_request_headers;
-use crate::api::{
-    requests::engage_many_json_requests,
-    responses::{resolve_external_service_bad_response, APIRoutingError, APIRoutingResponse},
-    utils::{
-        get_default_headers,
-        strings::{cut_string_by_delimiter_keep_right, parse_comma_separated_list},
-        ParsedRequest,
+use crate::api::requests::engage_many_json_requests;
+
+use openapi_router::{
+    requests::ParsedRequest,
+    responses::{
+        resolve_external_service_bad_response, APIResponse, APIRoutingError, APIRoutingResponse,
     },
+};
+use utils::{
+    api::get_default_headers,
+    strings::{cut_string_by_delimiter_keep_right, parse_comma_separated_list},
 };
 
 pub mod job_models;
@@ -35,9 +38,7 @@ use job_input_extenders::extend_job_occupations;
         description = "Job postigs response",
     ))
 )]
-pub async fn find_job_postings(
-    request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+pub async fn find_job_postings(request: ParsedRequest) -> APIResponse {
     let endpoint_urls_as_text = env::var("JOB_POSTING_PRODUCTIZER_ENDPOINTS")
         .expect("JOB_POSTING_PRODUCTIZER_ENDPOINTS must be set");
     let endpoint_urls = parse_comma_separated_list(endpoint_urls_as_text);

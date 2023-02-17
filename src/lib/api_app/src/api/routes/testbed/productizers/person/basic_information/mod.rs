@@ -1,6 +1,6 @@
-use crate::api::{
-    responses::{APIRoutingError, APIRoutingResponse},
-    utils::ParsedRequest,
+use openapi_router::{
+    requests::ParsedRequest,
+    responses::APIResponse,
 };
 
 #[utoipa::path(
@@ -28,7 +28,7 @@ use crate::api::{
 )]
 pub async fn get_basic_information(
     request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+) -> APIResponse {
     let data_product = "draft/Person/BasicInformation";
     let data_source = "virtualfinland";
     let result = super::get_data_product(data_product, data_source, request).await?;
@@ -60,7 +60,7 @@ pub async fn get_basic_information(
 )]
 pub async fn write_basic_information(
     request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+) -> APIResponse {
     let data_product = "draft/Person/BasicInformation/Write";
     let data_source = "virtualfinland";
     let result = super::write_data_product(data_product, data_source, request).await?;

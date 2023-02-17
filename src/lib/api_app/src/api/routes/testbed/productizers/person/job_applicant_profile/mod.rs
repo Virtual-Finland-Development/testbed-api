@@ -1,7 +1,8 @@
-use crate::api::{
-    responses::{APIRoutingError, APIRoutingResponse},
-    utils::ParsedRequest,
+use openapi_router::{
+    requests::ParsedRequest,
+    responses::APIResponse,
 };
+
 
 #[utoipa::path(
     get,
@@ -28,7 +29,7 @@ use crate::api::{
 )]
 pub async fn get_job_applicant_profile(
     request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+) -> APIResponse {
     let data_product = "draft/Person/JobApplicantProfile";
     let data_source = "virtualfinland";
     let result = super::get_data_product(data_product, data_source, request).await?;
@@ -60,7 +61,7 @@ pub async fn get_job_applicant_profile(
 )]
 pub async fn write_job_applicant_profile(
     request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+) -> APIResponse {
     let data_product = "draft/Person/JobApplicantProfile/Write";
     let data_source = "virtualfinland";
     let result = super::write_data_product(data_product, data_source, request).await?;

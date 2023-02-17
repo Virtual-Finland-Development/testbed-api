@@ -1,10 +1,8 @@
 use std::env;
 
-use crate::api::{
-    requests::post_json_request,
-    responses::{APIRoutingError, APIRoutingResponse},
-    utils::{get_default_headers, ParsedRequest},
-};
+use crate::api::requests::post_json_request;
+use openapi_router::{requests::ParsedRequest, responses::APIResponse};
+use utils::api::get_default_headers;
 
 pub mod models;
 use models::{RecommendationsRequest, RecommendationsResponse};
@@ -22,9 +20,7 @@ use models::{RecommendationsRequest, RecommendationsResponse};
         description = "The recommendations response",
     ))
 )]
-pub async fn fetch_jmf_recommendations(
-    request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+pub async fn fetch_jmf_recommendations(request: ParsedRequest) -> APIResponse {
     let endpoint_url = env::var("JMF_SKILL_RECOMMENDATIONS_ENDPOINT")
         .expect("JMF_SKILL_RECOMMENDATIONS_ENDPOINT must be set");
     let request_input: RecommendationsRequest = serde_json::from_str(request.body.as_str())?;

@@ -7,10 +7,10 @@ use std::fmt::Debug;
 use std::time::Duration;
 use stopwatch::Stopwatch;
 
-use super::{
-    responses::{resolve_external_service_bad_response, APIRoutingError, APIRoutingResponse},
-    utils::get_default_headers,
+use openapi_router::responses::{
+    resolve_external_service_bad_response, APIResponse, APIRoutingError, APIRoutingResponse,
 };
+use utils::api::get_default_headers;
 
 pub async fn post_json_request<
     I: Debug + Serialize,
@@ -19,7 +19,7 @@ pub async fn post_json_request<
     endpoint_url: String,
     request_input: &I,
     request_headers: HeaderMap,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+) -> APIResponse {
     let client = reqwest::Client::new();
     let response = engage_json_data_request::<I, O>(
         &client,
