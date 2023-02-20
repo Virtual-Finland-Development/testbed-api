@@ -1,6 +1,6 @@
 use openapi_router::{requests::ParsedRequest, responses::APIResponse};
 mod openapi_helpers;
-use futures::{executor::block_on, future::BoxFuture, FutureExt};
+use futures::{future::BoxFuture, FutureExt};
 use openapi_helpers::get_openapi_operation_id;
 use openapi_router::OpenApiRouter;
 use utoipa::OpenApi;
@@ -82,7 +82,7 @@ pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
             let router = Api;
             let closure = router.get_operation(operation_id, parsed_request);
             let future = closure();
-            block_on(future)
+            future.await
         }
     }
 }
