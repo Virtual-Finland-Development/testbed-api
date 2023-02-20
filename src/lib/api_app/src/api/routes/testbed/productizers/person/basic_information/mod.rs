@@ -1,5 +1,5 @@
 use openapi_router::{
-    requests::ParsedRequest,
+    router::ParsedRequest,
     responses::APIResponse,
 };
 

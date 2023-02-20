@@ -1,7 +1,8 @@
 use std::env;
 
-use crate::api::requests::post_json_request;
-use openapi_router::{requests::ParsedRequest, responses::APIResponse};
+use openapi_router::{
+    requests::post_json_request, responses::APIResponse, router::ParsedRequest,
+};
 use utils::api::get_default_headers;
 
 pub mod models;

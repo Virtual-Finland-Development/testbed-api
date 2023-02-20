@@ -8,8 +8,8 @@ use serde_json::Value as JSONValue;
 use crate::api::routes::application::get_external_service_bad_response;
 
 use openapi_router::{
-    requests::ParsedRequest,
     responses::{APIResponse, APIRoutingError, APIRoutingResponse},
+    router::ParsedRequest,
 };
 use utils::api::get_cors_response_headers;
 

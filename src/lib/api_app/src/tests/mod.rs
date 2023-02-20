@@ -10,7 +10,7 @@ mod api_utils_test {
         HeaderValue,
     };
     use lambda_http::aws_lambda_events::query_map::QueryMap;
-    use openapi_router::requests::ParsedRequest;
+    use openapi_router::router::ParsedRequest;
     use serde_json::json;
     use utils::strings::{
         cut_string_by_delimiter_keep_right, parse_comma_separated_list, trim_left_slashes,

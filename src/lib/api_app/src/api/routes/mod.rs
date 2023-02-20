@@ -1,4 +1,4 @@
-use openapi_router::{requests::ParsedRequest, responses::APIResponse};
+use openapi_router::{responses::APIResponse, router::ParsedRequest};
 mod openapi_helpers;
 use futures::{future::BoxFuture, FutureExt};
 use openapi_helpers::get_openapi_operation_id;

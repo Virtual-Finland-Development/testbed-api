@@ -1,7 +1,7 @@
 use http::{HeaderMap, HeaderValue};
 use std::env;
 
-use openapi_router::{requests::ParsedRequest, responses::APIRoutingError};
+use openapi_router::{responses::APIRoutingError, router::ParsedRequest};
 use utils::environment::get_stage;
 
 pub mod figure;

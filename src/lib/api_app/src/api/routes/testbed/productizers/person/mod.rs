@@ -1,7 +1,8 @@
 use serde_json::{json, Value as JSONValue};
 
-use crate::api::requests::post_json_request;
-use openapi_router::{requests::ParsedRequest, responses::APIResponse};
+use openapi_router::{
+    requests::post_json_request, responses::APIResponse, router::ParsedRequest,
+};
 
 use super::{build_data_product_uri, parse_testbed_request_headers};
 

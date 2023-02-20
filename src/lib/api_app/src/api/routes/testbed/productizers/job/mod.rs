@@ -3,13 +3,13 @@ use math::round;
 use std::{cmp::Ordering, collections::hash_map::DefaultHasher, env, hash::Hasher};
 
 use super::parse_testbed_request_headers;
-use crate::api::requests::engage_many_json_requests;
 
 use openapi_router::{
-    requests::ParsedRequest,
+    requests::engage_many_json_requests,
     responses::{
         resolve_external_service_bad_response, APIResponse, APIRoutingError, APIRoutingResponse,
     },
+    router::ParsedRequest,
 };
 use utils::{
     api::get_default_headers,

@@ -3,11 +3,10 @@ use reqwest::Response;
 use serde_json::{json, Value as JsonValue};
 use std::{env, fs};
 
-use crate::api::requests::engage_many_plain_requests;
-
 use openapi_router::{
-    requests::ParsedRequest,
+    requests::engage_many_plain_requests,
     responses::{resolve_external_service_bad_response, APIResponse, APIRoutingResponse},
+    router::ParsedRequest,
 };
 use utils::api::{get_cors_response_headers, get_default_headers, get_plain_headers};
 

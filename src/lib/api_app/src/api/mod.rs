@@ -3,11 +3,12 @@ use lambda_http::Request;
 use log;
 
 use self::routes::get_router_response;
-use openapi_router::requests::{parse_router_request, ParsedRequest};
-use openapi_router::responses::APIRoutingResponse;
+use openapi_router::{
+    responses::APIRoutingResponse,
+    router::{parse_router_request, ParsedRequest},
+};
 use utils::strings;
 
-mod requests;
 pub mod routes;
 
 /**
