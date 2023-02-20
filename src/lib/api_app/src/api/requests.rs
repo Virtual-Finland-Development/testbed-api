@@ -69,7 +69,7 @@ pub async fn engage_many_json_requests<
         }))
         .await;
 
-    merge_many_request_responses::<I, O>(response_json_bodies, allow_failures).await
+    merge_many_request_responses::<O>(response_json_bodies, allow_failures).await
 }
 
 // Requests many requests
@@ -98,14 +98,11 @@ pub async fn engage_many_plain_requests<I: Debug + Serialize>(
         )
         .await;
 
-    merge_many_request_responses::<I, String>(response_bodies, allow_failures).await
+    merge_many_request_responses::<String>(response_bodies, allow_failures).await
 }
 
 // Merges many request responses
-async fn merge_many_request_responses<
-    I: Debug + Serialize,
-    O: Debug + Serialize + for<'a> Deserialize<'a>,
->(
+async fn merge_many_request_responses<O: Debug + Serialize + for<'a> Deserialize<'a>>(
     response_bodies: Vec<Result<(O, StatusCode, HeaderMap, String), APIRoutingError>>,
     allow_failures: bool,
 ) -> Result<(StatusCode, Vec<(O, HeaderMap, String)>, String), APIRoutingError> {

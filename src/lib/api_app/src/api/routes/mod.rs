@@ -52,13 +52,13 @@ pub mod testbed;
         jmf::models::Skill,
     ))
 )]
-struct API;
+struct Api;
 
 /**
  * API router
  */
 pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
-    let openapi = API::openapi(); // @TODO: ensure as singelton
+    let openapi = Api::openapi(); // @TODO: ensure as singelton
     match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
         // System routes
         ("OPTIONS", _) => application::cors_preflight_response(parsed_request).await,
@@ -74,12 +74,12 @@ pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
                 parsed_request.path.as_str(),
             );
 
-            if operation_id.len() == 0 {
+            if operation_id.is_empty() {
                 return application::not_found(parsed_request).await;
             }
 
             // Route to operation
-            let router = API;
+            let router = Api;
             let closure = router.get_operation(operation_id, parsed_request);
             let future = closure();
             block_on(future)
