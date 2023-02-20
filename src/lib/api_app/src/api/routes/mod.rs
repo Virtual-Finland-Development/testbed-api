@@ -1,6 +1,6 @@
 use app::{
     responses::APIResponse,
-    router::{openapi::get_openapi_operation_id, OpenApiRouter, ParsedRequest},
+    router::{OpenApiRouter, ParsedRequest},
 };
 use futures::{future::BoxFuture, FutureExt};
 use utoipa::OpenApi;
@@ -59,6 +59,8 @@ struct Api;
  */
 pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
     let openapi = Api::openapi(); // @TODO: ensure as singelton
+    let router = Api;
+
     match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
         // System routes
         ("OPTIONS", _) => application::cors_preflight_response(parsed_request).await,
@@ -67,17 +69,6 @@ pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
                 .await
         }
         // OpenAPI specified routes
-        _ => {
-            // Resolve the operation id
-            let operation_id = get_openapi_operation_id(
-                openapi,
-                parsed_request.method.as_str(),
-                parsed_request.path.as_str(),
-            );
-
-            // Exec the operation
-            let router = Api;
-            router.run_operation(operation_id, parsed_request).await
-        }
+        _ => router.handle(openapi, parsed_request).await,
     }
 }

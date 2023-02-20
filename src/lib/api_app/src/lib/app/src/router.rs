@@ -1,6 +1,8 @@
+use self::openapi::get_openapi_operation_id;
 use futures::Future;
 use http::header::HeaderMap;
 use lambda_http::{aws_lambda_events::query_map::QueryMap, Body, Request, RequestExt};
+use utoipa::openapi::OpenApi;
 
 use super::responses::APIResponse;
 pub use openapi_router_derive::*;
@@ -23,6 +25,16 @@ pub trait OpenApiRouter {
     ) -> Self::FutureType {
         let closure = self.get_operation(operation_id, parsed_request);
         closure()
+    }
+
+    fn handle(&self, openapi: OpenApi, parsed_request: ParsedRequest) -> Self::FutureType {
+        // Resolve the operation id
+        let operation_id = get_openapi_operation_id(
+            openapi,
+            parsed_request.method.as_str(),
+            parsed_request.path.as_str(),
+        );
+        self.run_operation(operation_id, parsed_request)
     }
 }
 
