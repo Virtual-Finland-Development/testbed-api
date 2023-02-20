@@ -20,5 +20,5 @@ libmath = { workspace = true }
 stopwatch = { workspace = true }
 utoipa = { workspace = true }
 
-openapi_router = { path = "./src/lib/openapi_router" }
+app = { path = "./src/lib/app" }
 utils = { path = "./src/lib/utils" }

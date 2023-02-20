@@ -1,6 +1,6 @@
 use serde_json::{json, Value as JSONValue};
 
-use openapi_router::{
+use app::{
     router::ParsedRequest,
     requests::post_json_request,
     responses::APIResponse,

@@ -1,4 +1,4 @@
-use openapi_router::{
+use app::{
     router::ParsedRequest,
     responses::APIResponse,
 };

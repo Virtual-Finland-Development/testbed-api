@@ -2,9 +2,7 @@ use std::env;
 
 use super::parse_testbed_request_headers;
 
-use openapi_router::{
-    requests::post_json_request, responses::APIResponse, router::ParsedRequest,
-};
+use app::{requests::post_json_request, responses::APIResponse, router::ParsedRequest};
 
 pub mod figure_models;
 use figure_models::{PopulationQuery, PopulationResponse};

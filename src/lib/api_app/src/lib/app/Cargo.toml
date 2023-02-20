@@ -1,5 +1,5 @@
 [package]
-name = "openapi_router"
+name = "app"
 version = "1.0.0"
 edition = "2021"
 

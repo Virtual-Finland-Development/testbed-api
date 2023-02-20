@@ -1,3 +1,3 @@
 pub mod api;
-pub use openapi_router;
+pub use app;
 mod tests;

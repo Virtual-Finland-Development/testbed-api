@@ -5,12 +5,12 @@ mod api_utils_test {
         job_models::{JobPosting, JobPostingResponse},
         merge_job_posting_results, transform_job_posting_results,
     };
+    use app::router::ParsedRequest;
     use http::{
         header::{HeaderMap, HeaderName},
         HeaderValue,
     };
     use lambda_http::aws_lambda_events::query_map::QueryMap;
-    use openapi_router::router::ParsedRequest;
     use serde_json::json;
     use utils::strings::{
         cut_string_by_delimiter_keep_right, parse_comma_separated_list, trim_left_slashes,
