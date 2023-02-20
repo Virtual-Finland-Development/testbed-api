@@ -1,9 +1,11 @@
+use futures::{future::BoxFuture, FutureExt};
+use lazy_static::lazy_static;
+use utoipa::OpenApi;
+
 use app::{
     responses::APIResponse,
     router::{OpenApiRouter, ParsedRequest},
 };
-use futures::{future::BoxFuture, FutureExt};
-use utoipa::OpenApi;
 
 pub mod application;
 pub mod jmf;
@@ -54,12 +56,18 @@ pub mod testbed;
 )]
 struct Api;
 
+// Create a singleton instance of the router components
+lazy_static! {
+    static ref OPENAPI_INSTANCE: utoipa::openapi::OpenApi = Api::openapi();
+    static ref ROUTER_INSTANCE: Api = Api;
+}
+
 /**
  * API router
  */
 pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
-    let openapi = Api::openapi(); // @TODO: ensure as singelton
-    let router = Api;
+    let openapi = &*OPENAPI_INSTANCE;
+    let router = &*ROUTER_INSTANCE;
 
     match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
         // System routes

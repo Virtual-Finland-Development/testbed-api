@@ -47,7 +47,7 @@ pub async fn docs(_request: ParsedRequest) -> APIResponse {
     }))
 }
 
-pub async fn openapi_spec(openapi: OpenApi) -> APIResponse {
+pub async fn openapi_spec(openapi: &OpenApi) -> APIResponse {
     let json_spec_orig_serialized = openapi.to_json().expect("Failed to parse openapi spec");
 
     // Inject the app specific securitySchemas to the spec as a workaround for utoipa::OpenApi zeroing the parse_meta output of derived OpenApi structs when using the security attribute

@@ -27,7 +27,7 @@ pub trait OpenApiRouter {
         closure()
     }
 
-    fn handle(&self, openapi: OpenApi, parsed_request: ParsedRequest) -> Self::FutureType {
+    fn handle(&self, openapi: &OpenApi, parsed_request: ParsedRequest) -> Self::FutureType {
         // Resolve the operation id
         let operation_id = get_openapi_operation_id(
             openapi,
@@ -77,7 +77,7 @@ pub fn parse_router_request(request: Request) -> ParsedRequest {
 pub mod openapi {
     use utoipa::openapi::{OpenApi, PathItem, PathItemType};
 
-    pub fn get_openapi_operation_id(openapi: OpenApi, method: &str, path: &str) -> String {
+    pub fn get_openapi_operation_id(openapi: &OpenApi, method: &str, path: &str) -> String {
         let path = openapi.paths.get_path_item(path);
         match path {
             Some(path) => resolve_operation_id(path, method),
