@@ -59,30 +59,12 @@ struct API;
  */
 pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
     let openapi = API::openapi(); // @TODO: ensure as singelton
-    let operation_id = get_openapi_operation_id(
-        openapi,
-        parsed_request.method.as_str(),
-        parsed_request.path.as_str(),
-    );
-
-    // WIP
-    let router = API;
-    let closure = router.get_operation(operation_id);
-    let future = closure();
-    let response = block_on(future);
-
-    response
-
-    /*  match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
+    match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
         // System routes
         ("OPTIONS", _) => application::cors_preflight_response(parsed_request).await,
         ("GET", "/openapi.json") => {
-            application::openapi_spec(
-                API::openapi()
-                    .to_json()
-                    .expect("Failed to parse openapi spec"),
-            )
-            .await
+            application::openapi_spec(openapi.to_json().expect("Failed to parse openapi spec"))
+                .await
         }
         // OpenAPI specified routes
         _ => {
@@ -92,9 +74,17 @@ pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
                 parsed_request.path.as_str(),
             );
 
-            API::handle_operation(operation_id, parsed_request) // WIP
+            if operation_id.len() == 0 {
+                return application::not_found(parsed_request).await;
+            }
 
-             match operation_id.as_str() { // @TODO: would be nice to auto-generate this match
+            // WIP
+            let router = API;
+            let closure = router.get_operation(operation_id, parsed_request);
+            let future = closure();
+            block_on(future)
+
+            /*  match operation_id.as_str() { // @TODO: would be nice to auto-generate this match
                 "index" => application::index(parsed_request).await,
                 "docs" => application::docs(parsed_request).await,
                 "health_check" => application::health_check(parsed_request).await,
@@ -111,7 +101,7 @@ pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
                 "get_job_applicant_profile" => testbed::productizers::person::job_applicant_profile::get_job_applicant_profile(parsed_request).await,
                 "write_job_applicant_profile" => testbed::productizers::person::job_applicant_profile::write_job_applicant_profile(parsed_request).await,
                 _ => application::not_found(parsed_request).await, // Catch all 404
-            }
+            } */
         }
-    } */
+    }
 }

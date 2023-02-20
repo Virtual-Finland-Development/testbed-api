@@ -20,7 +20,7 @@ pub async fn cors_preflight_response(_request: ParsedRequest) -> APIResponse {
 }
 
 #[utoipa::path(get, path = "/", responses((status = 303, description = "Redirect to /docs")))]
-pub async fn index() -> APIResponse {
+pub async fn index(_request: ParsedRequest) -> APIResponse {
     Ok(APIRoutingResponse::new(
         StatusCode::TEMPORARY_REDIRECT,
         "Redirecting to /docs",
@@ -70,7 +70,7 @@ pub async fn openapi_spec(json_spec: String) -> APIResponse {
         example = json!("OK"),
     ))
 )]
-pub async fn health_check() -> APIResponse {
+pub async fn health_check(_request: ParsedRequest) -> APIResponse {
     Ok(APIRoutingResponse::new(
         StatusCode::OK,
         "OK",

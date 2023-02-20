@@ -1,6 +1,9 @@
+//#![feature(trace_macros)]
+//trace_macros!(true);
+
 // lib.rs
 use proc_macro::TokenStream;
-use quote::quote;
+use quote::{quote, ToTokens};
 use syn::{parse_macro_input, DeriveInput, Meta, MetaList, NestedMeta};
 
 #[proc_macro_derive(OpenApiRouter)]
@@ -31,28 +34,37 @@ pub fn derive_openapi_router(input: TokenStream) -> TokenStream {
         }
     }
 
-    // Generate a comma separated list of function paths
-    /* let operation_function_paths_as_str = operation_function_paths
-    .iter()
-    .map(|path| path.to_token_stream().to_string())
-    .collect::<Vec<String>>(); */
+    // Map the operation_id to the function path
+    let operations = operation_function_paths
+        .iter()
+        .map(|path| {
+            let operation_id = path
+                .segments
+                .last()
+                .expect("Expected at least one segment")
+                .ident
+                .to_string();
+            let operation = path.to_token_stream();
+            // output eg: "index" => application::index(parsed_request).await,
+            quote! {
+                #operation_id => #operation(parsed_request).await,
+            }
+        })
+        .collect::<Vec<_>>();
 
-    // @TODO: gerenerate function calls for each path
     let expanded = quote! {
         impl OpenApiRouter for #ident {
             type FutureType = BoxFuture<'static, APIResponse>;
 
-            fn get_operation(&self, operation_id: String) -> Box<dyn FnOnce() -> Self::FutureType + Send> {
-                //let operation_function_paths_as_str = #operation_function_paths_as_str;
-                /* let operation = operation_function_paths_as_str.iter().find(|path| path.ends_with(&operation_id));
-                if operation.is_none() {
-                    panic!("Operation not found: {}", operation_id);
-                } */
+            fn get_operation(&self, operation_id: String, parsed_request: ParsedRequest) -> Box<dyn FnOnce() -> Self::FutureType + Send> {
                 println!("hello from operation: {}", operation_id);
-
                 Box::new(move || async move {
-                    application::health_check().await
-                }.boxed())
+                        match operation_id.as_str() {
+                            #(#operations)*
+                            _ => application::not_found(parsed_request).await, // Catch all 404
+                        }
+                    }.boxed()
+                )
            }
         }
     };
