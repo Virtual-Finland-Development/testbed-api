@@ -55,7 +55,7 @@ pub mod testbed;
 struct API;
 
 /**
- * API router - // @TODO: would be nice to auto-generate routes from openapi spec
+ * API router
  */
 pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
     let openapi = API::openapi(); // @TODO: ensure as singelton
@@ -78,30 +78,11 @@ pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
                 return application::not_found(parsed_request).await;
             }
 
-            // WIP
+            // Route to operation
             let router = API;
             let closure = router.get_operation(operation_id, parsed_request);
             let future = closure();
             block_on(future)
-
-            /*  match operation_id.as_str() { // @TODO: would be nice to auto-generate this match
-                "index" => application::index(parsed_request).await,
-                "docs" => application::docs(parsed_request).await,
-                "health_check" => application::health_check(parsed_request).await,
-                "wake_up_external_services" => application::wake_up_external_services(parsed_request).await,
-                "engage_reverse_proxy_request" => testbed::engage_reverse_proxy_request(parsed_request).await,
-                "get_population" => testbed::productizers::figure::get_population(parsed_request).await,
-                "find_job_postings" => testbed::productizers::job::find_job_postings(parsed_request).await,
-                "fetch_user_profile" => testbed::productizers::user::fetch_user_profile(parsed_request).await,
-                "fetch_user_status_info" => testbed::productizers::user::fetch_user_status_info(parsed_request).await,
-                "update_user_status_info" => testbed::productizers::user::update_user_status_info(parsed_request).await,
-                "fetch_jmf_recommendations" => jmf::fetch_jmf_recommendations(parsed_request).await,
-                "get_basic_information" => testbed::productizers::person::basic_information::get_basic_information(parsed_request).await,
-                "write_basic_information" => testbed::productizers::person::basic_information::write_basic_information(parsed_request).await,
-                "get_job_applicant_profile" => testbed::productizers::person::job_applicant_profile::get_job_applicant_profile(parsed_request).await,
-                "write_job_applicant_profile" => testbed::productizers::person::job_applicant_profile::write_job_applicant_profile(parsed_request).await,
-                _ => application::not_found(parsed_request).await, // Catch all 404
-            } */
         }
     }
 }

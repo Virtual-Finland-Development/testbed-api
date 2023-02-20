@@ -34,7 +34,7 @@ pub fn derive_openapi_router(input: TokenStream) -> TokenStream {
         }
     }
 
-    // Map the operation_id to the function path
+    // Map the operation_id to the operation function
     let operations = operation_function_paths
         .iter()
         .map(|path| {
@@ -52,12 +52,11 @@ pub fn derive_openapi_router(input: TokenStream) -> TokenStream {
         })
         .collect::<Vec<_>>();
 
+    // Create the impl block
     let expanded = quote! {
         impl OpenApiRouter for #ident {
             type FutureType = BoxFuture<'static, APIResponse>;
-
             fn get_operation(&self, operation_id: String, parsed_request: ParsedRequest) -> Box<dyn FnOnce() -> Self::FutureType + Send> {
-                println!("hello from operation: {}", operation_id);
                 Box::new(move || async move {
                         match operation_id.as_str() {
                             #(#operations)*
