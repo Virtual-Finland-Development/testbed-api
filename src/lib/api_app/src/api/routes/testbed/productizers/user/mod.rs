@@ -30,7 +30,7 @@ use super::{ parse_testbed_request_headers, build_data_product_uri };
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lassipatanen/User/Profile.json",
         )))
     )),
-    security(( "testbed" = [] ))
+    security(( "BearerAuth" = [] ))
 )]
 pub async fn fetch_user_profile(
     request: ParsedRequest,
@@ -72,7 +72,7 @@ pub async fn fetch_user_profile(
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lsipii/User/StatusInfo.json",
         )))
     )),
-    security(( "testbed" = [] ))
+    security(( "BearerAuth" = [] ))
 )]
 pub async fn fetch_user_status_info(
     request: ParsedRequest,
@@ -111,7 +111,7 @@ pub async fn fetch_user_status_info(
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/test/lsipii/User/StatusInfo/Write.json",
         )))
     )),
-    security(( "testbed" = [] ))
+    security(( "BearerAuth" = [] ))
 )]
 pub async fn update_user_status_info(
     request: ParsedRequest,

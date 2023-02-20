@@ -25,7 +25,7 @@ use app::{
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/BasicInformation.json",
         )))
     )),
-    security(( "testbed" = [] ))
+    security(( "BearerAuth" = [] ))
 )]
 pub async fn get_basic_information(
     request: ParsedRequest,
@@ -58,7 +58,7 @@ pub async fn get_basic_information(
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/BasicInformation/Write.json",
         ))
     ))),
-    security(( "testbed" = [] ))
+    security(( "BearerAuth" = [] ))
 )]
 pub async fn write_basic_information(
     request: ParsedRequest,

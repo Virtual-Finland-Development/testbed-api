@@ -2,6 +2,7 @@ use http::{HeaderMap, HeaderValue, Method, StatusCode};
 use reqwest::Response;
 use serde_json::{json, Value as JsonValue};
 use std::{env, fs};
+use utoipa::openapi::OpenApi;
 
 use app::{
     requests::engage_many_plain_requests,
@@ -46,10 +47,20 @@ pub async fn docs(_request: ParsedRequest) -> APIResponse {
     }))
 }
 
-pub async fn openapi_spec(json_spec: String) -> APIResponse {
+pub async fn openapi_spec(openapi: OpenApi) -> APIResponse {
+    let json_spec_orig_serialized = openapi.to_json().expect("Failed to parse openapi spec");
+
+    // Inject the app specific securitySchemas to the spec as a workaround for utoipa::OpenApi zeroing the parse_meta output of derived OpenApi structs when using the security attribute
+    let mut json_spec: JsonValue =
+        serde_json::from_str(&json_spec_orig_serialized).expect("Failed to parse openapi spec");
+    json_spec["components"]["securitySchemes"] = json!({
+        "BearerAuth": { "scheme": "bearer", "type": "http" }
+    });
+    let json_spec_serialized = json_spec.to_string();
+
     Ok(APIRoutingResponse::new(
         StatusCode::OK,
-        json_spec.as_ref(),
+        json_spec_serialized.as_ref(),
         {
             let mut headers = HeaderMap::new();
             headers.insert("Content-Type", HeaderValue::from_static("application/json"));

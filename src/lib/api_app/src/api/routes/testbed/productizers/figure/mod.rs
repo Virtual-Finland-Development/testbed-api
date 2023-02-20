@@ -15,7 +15,7 @@ use figure_models::{PopulationQuery, PopulationResponse};
     path = "/testbed/productizers/get-population",
     request_body(content = PopulationQuery, description = "The population figure query"),
     responses((status = 200, body = PopulationResponse, description = "Population figure response")),
-    security(( "testbed" = [] ))
+    security(( "BearerAuth" = [] ))
 )]
 pub async fn get_population(request: ParsedRequest) -> APIResponse {
     let endpoint_url = env::var("POPULATION_FIGURE_PRODUCTIZER_ENDPOINT")

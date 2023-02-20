@@ -26,7 +26,7 @@ use app::{
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/JobApplicantProfile.json",
         )))
     )),
-    security(( "testbed" = [] ))
+    security(( "BearerAuth" = [] ))
 )]
 pub async fn get_job_applicant_profile(
     request: ParsedRequest,
@@ -59,7 +59,7 @@ pub async fn get_job_applicant_profile(
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/JobApplicantProfile/Write.json",
         )))
     )),
-    security(( "testbed" = [] ))
+    security(( "BearerAuth" = [] ))
 )]
 pub async fn write_job_applicant_profile(
     request: ParsedRequest,

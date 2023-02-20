@@ -50,7 +50,7 @@ pub mod testbed;
         jmf::models::RecommendationsResponse,
         jmf::models::Occupation,
         jmf::models::Skill,
-    )),
+    ))
 )]
 struct Api;
 
@@ -64,10 +64,7 @@ pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
     match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
         // System routes
         ("OPTIONS", _) => application::cors_preflight_response(parsed_request).await,
-        ("GET", "/openapi.json") => {
-            application::openapi_spec(openapi.to_json().expect("Failed to parse openapi spec"))
-                .await
-        }
+        ("GET", "/openapi.json") => application::openapi_spec(openapi).await,
         // OpenAPI specified routes
         _ => router.handle(openapi, parsed_request).await,
     }

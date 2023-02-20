@@ -37,7 +37,7 @@ use job_input_extenders::extend_job_occupations;
         body = JobPostingResponseForFrontend,
         description = "Job postigs response",
     )),
-    security(( "testbed" = [] ))
+    security(( "BearerAuth" = [] ))
 )]
 pub async fn find_job_postings(request: ParsedRequest) -> APIResponse {
     let endpoint_urls_as_text = env::var("JOB_POSTING_PRODUCTIZER_ENDPOINTS")
