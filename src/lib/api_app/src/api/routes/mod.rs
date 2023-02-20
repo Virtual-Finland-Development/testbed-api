@@ -1,8 +1,9 @@
-use openapi_router::{responses::APIResponse, router::ParsedRequest};
-mod openapi_helpers;
 use futures::{future::BoxFuture, FutureExt};
-use openapi_helpers::get_openapi_operation_id;
 use openapi_router::OpenApiRouter;
+use openapi_router::{
+    responses::APIResponse,
+    router::{openapi::get_openapi_operation_id, ParsedRequest},
+};
 use utoipa::OpenApi;
 
 pub mod application;

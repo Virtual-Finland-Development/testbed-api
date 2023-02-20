@@ -16,3 +16,4 @@ simple_logger = { workspace = true }
 lambda_http = { workspace = true }
 futures = { workspace = true }
 stopwatch = { workspace = true }
+utoipa = { workspace = true }
