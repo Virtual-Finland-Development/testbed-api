@@ -34,6 +34,7 @@ pub fn derive_openapi_router(input: TokenStream) -> TokenStream {
         .expect("Expected #[openapi(...)] attribute");
 
     // Resolve actual function paths
+    // @BUG: debug and refactor: the parse_meta() call returns zero paths if "security" is present in the utoipa::OpenApi input
     let mut operation_function_paths = Vec::new();
     if let Ok(Meta::List(MetaList { nested, .. })) = openapi_attr.parse_meta() {
         for item in nested {
