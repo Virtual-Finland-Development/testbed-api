@@ -24,7 +24,8 @@ use app::{
             value = json!("Loading.."),
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/BasicInformation.json",
         )))
-    ))
+    )),
+    security(( "testbed" = [] ))
 )]
 pub async fn get_basic_information(
     request: ParsedRequest,
@@ -56,7 +57,8 @@ pub async fn get_basic_information(
             value = json!("Loading.."),
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/BasicInformation/Write.json",
         ))
-    )))
+    ))),
+    security(( "testbed" = [] ))
 )]
 pub async fn write_basic_information(
     request: ParsedRequest,

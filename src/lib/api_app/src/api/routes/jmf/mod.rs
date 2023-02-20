@@ -8,7 +8,7 @@ use models::{RecommendationsRequest, RecommendationsResponse};
 
 #[utoipa::path(
     post,
-    path = "/testbed/productizers/user-profile",
+    path = "/jmf/recommendations",
     request_body(
         content = RecommendationsRequest,
         description = "Job Market Finland recommended skills and occupations"

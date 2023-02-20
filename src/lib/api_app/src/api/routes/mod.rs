@@ -50,7 +50,7 @@ pub mod testbed;
         jmf::models::RecommendationsResponse,
         jmf::models::Occupation,
         jmf::models::Skill,
-    ))
+    )),
 )]
 struct Api;
 

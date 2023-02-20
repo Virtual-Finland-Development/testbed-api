@@ -25,7 +25,8 @@ use app::{
             value = json!("Loading.."),
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/JobApplicantProfile.json",
         )))
-    ))
+    )),
+    security(( "testbed" = [] ))
 )]
 pub async fn get_job_applicant_profile(
     request: ParsedRequest,
@@ -57,7 +58,8 @@ pub async fn get_job_applicant_profile(
             value = json!("Loading.."),
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/JobApplicantProfile/Write.json",
         )))
-    ))
+    )),
+    security(( "testbed" = [] ))
 )]
 pub async fn write_job_applicant_profile(
     request: ParsedRequest,
