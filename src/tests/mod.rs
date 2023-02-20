@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod utils_tests {
-    use api_app::lambda_http::{Body, Request};
     use api_app::openapi_router::requests::parse_router_request;
+    use lambda_http::{Body, Request};
 
     #[test]
     fn test_router_request_parsing() {

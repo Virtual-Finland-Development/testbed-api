@@ -1,5 +1,5 @@
-use api_app::lambda_http::{service_fn, run as lambda_run};
 use api_app::api::handler;
+use lambda_http::{run as lambda_run, service_fn};
 
 pub async fn run() {
     let service = service_fn(handler);

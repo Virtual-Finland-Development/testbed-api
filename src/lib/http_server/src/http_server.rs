@@ -1,17 +1,22 @@
 use hyper::service::{make_service_fn, service_fn};
 use hyper::{
-    Body as HyperBody, Request as HyperRequest, Response as HyperResponse, Server as HyperServer,
+    Body as HyperBody, Request as HyperRequest, Response as HyperResponse,
+    Server as HyperServer,
 };
-use api_app::lambda_http::{Body as LambdaBody, Request as LambdaRequest};
+use lambda_http::{Body as LambdaBody, Request as LambdaRequest};
 use std::convert::Infallible;
 use std::net::SocketAddr;
 
 use api_app::api;
 
-async fn handle(request: HyperRequest<HyperBody>) -> Result<HyperResponse<HyperBody>, Infallible> {
+async fn handle(
+    request: HyperRequest<HyperBody>,
+) -> Result<HyperResponse<HyperBody>, Infallible> {
     // Transform Hyper request into Lambda request
     let (parts, body) = request.into_parts();
-    let body_bytes = hyper::body::to_bytes(body).await.expect("Should read body bytes");
+    let body_bytes = hyper::body::to_bytes(body)
+        .await
+        .expect("Should read body bytes");
     let body_text = String::from_utf8(body_bytes.to_vec()).expect("Should read body text");
     let lambda_body = LambdaBody::from(body_text);
     let mut lambda_request = LambdaRequest::new(lambda_body);
@@ -44,7 +49,8 @@ pub async fn run() {
     let addr = SocketAddr::from(([0, 0, 0, 0], 3003));
 
     // And a MakeService to handle each connection...
-    let make_service = make_service_fn(|_conn| async { Ok::<_, Infallible>(service_fn(handle)) });
+    let make_service =
+        make_service_fn(|_conn| async { Ok::<_, Infallible>(service_fn(handle)) });
 
     // Then bind and serve...
     let server = HyperServer::bind(&addr).serve(make_service);

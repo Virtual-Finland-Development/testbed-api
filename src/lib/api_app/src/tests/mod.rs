@@ -1,31 +1,26 @@
 #[cfg(test)]
 mod api_utils_test {
-    use crate::api::{
-        routes::testbed::productizers::job::{
-            construct_productizer_requests,
-            job_models::{JobPosting, JobPostingResponse},
-            merge_job_posting_results, transform_job_posting_results,
-        },
-        utils::{
-            strings::{
-                cut_string_by_delimiter_keep_right, parse_comma_separated_list,
-                trim_left_slashes,
-            },
-            ParsedRequest,
-        },
+    use crate::api::routes::testbed::productizers::job::{
+        construct_productizer_requests,
+        job_models::{JobPosting, JobPostingResponse},
+        merge_job_posting_results, transform_job_posting_results,
     };
     use http::{
         header::{HeaderMap, HeaderName},
         HeaderValue,
     };
     use lambda_http::aws_lambda_events::query_map::QueryMap;
+    use openapi_router::requests::ParsedRequest;
     use serde_json::json;
+    use utils::strings::{
+        cut_string_by_delimiter_keep_right, parse_comma_separated_list, trim_left_slashes,
+    };
 
     #[test]
     fn test_jobs_response_handlings() {
         let mut mock_response = {
             let input_path = "./src/tests/mock_data/job_postings_response.json";
-            let text = std::fs::read_to_string(&input_path).unwrap();
+            let text = std::fs::read_to_string(input_path).unwrap();
             serde_json::from_str::<JobPostingResponse<JobPosting>>(&text).unwrap()
         };
         assert_eq!(mock_response.results.len(), 4);
@@ -53,7 +48,7 @@ mod api_utils_test {
             path: "/".to_string(),
             method: "POST".to_string(),
             query: QueryMap::default(),
-            headers: headers,
+            headers,
             body: json!(
                 {
                     "query": "",

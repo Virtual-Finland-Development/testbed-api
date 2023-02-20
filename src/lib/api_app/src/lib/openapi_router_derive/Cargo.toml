@@ -10,4 +10,3 @@ proc-macro = true
 syn = { version="1.0.82", features=["full","fold"] }
 quote = "1.0.9"
 proc-macro2 = "1.0"
-async-trait = "^0.1.64"
