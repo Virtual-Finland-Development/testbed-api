@@ -7,6 +7,23 @@ use quote::{quote, ToTokens};
 use syn::{parse_macro_input, DeriveInput, Meta, MetaList, NestedMeta};
 
 #[proc_macro_derive(OpenApiRouter)]
+/// Generate route handlers from the `#[openapi(paths(...))]` attribute.
+///
+/// Example:
+///
+/// ```rust
+/// #[derive(OpenApiRouter)]
+/// #[openapi( paths( application::index, application::docs ) )]
+/// struct Api;
+///
+/// async fn test() {
+///    let operation_id = "index".to_string();
+///    let parsed_request = ParsedRequest::default();
+///
+///    let router = Api;
+///    let result = router.run_operation(operation_id, parsed_request).await;
+/// }
+/// ```
 pub fn derive_openapi_router(input: TokenStream) -> TokenStream {
     let DeriveInput { attrs, ident, .. } = parse_macro_input!(input);
 

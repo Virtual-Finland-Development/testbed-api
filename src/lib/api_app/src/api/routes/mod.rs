@@ -78,11 +78,9 @@ pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
                 return application::not_found(parsed_request).await;
             }
 
-            // Route to operation
+            // Exec the operation
             let router = Api;
-            let closure = router.get_operation(operation_id, parsed_request);
-            let future = closure();
-            future.await
+            router.run_operation(operation_id, parsed_request).await
         }
     }
 }

@@ -16,4 +16,13 @@ pub trait OpenApiRouter {
         operation_id: String,
         parsed_request: ParsedRequest,
     ) -> Box<dyn FnOnce() -> Self::FutureType + Send>;
+
+    fn run_operation(
+        &self,
+        operation_id: String,
+        parsed_request: ParsedRequest,
+    ) -> Self::FutureType {
+        let closure = self.get_operation(operation_id, parsed_request);
+        closure()
+    }
 }
