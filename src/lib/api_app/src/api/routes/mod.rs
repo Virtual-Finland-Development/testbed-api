@@ -1,16 +1,15 @@
-use super::{
-    responses::{APIRoutingError, APIRoutingResponse},
-    utils::ParsedRequest,
+use app::{
+    responses::APIResponse,
+    router::{OpenApiRouter, ParsedRequest},
 };
-mod openapi_helpers;
-use openapi_helpers::get_openapi_operation_id;
+use futures::{future::BoxFuture, FutureExt};
 use utoipa::OpenApi;
 
 pub mod application;
 pub mod jmf;
 pub mod testbed;
 
-#[derive(OpenApi)]
+#[derive(OpenApi, OpenApiRouter)]
 #[openapi(
     info(
         title = "Testbed API",
@@ -53,52 +52,20 @@ pub mod testbed;
         jmf::models::Skill,
     ))
 )]
-struct ApiDoc;
+struct Api;
 
 /**
- * API router - // @TODO: would be nice to auto-generate routes from openapi spec
+ * API router
  */
-pub async fn get_router_response(
-    parsed_request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
-    let openapi = ApiDoc::openapi(); // @TODO: ensure as singelton
+pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
+    let openapi = Api::openapi(); // @TODO: ensure as singelton
+    let router = Api;
 
     match (parsed_request.method.as_str(), parsed_request.path.as_str()) {
         // System routes
         ("OPTIONS", _) => application::cors_preflight_response(parsed_request).await,
-        ("GET", "/openapi.json") => {
-            application::openapi_spec(
-                ApiDoc::openapi()
-                    .to_json()
-                    .expect("Failed to parse openapi spec"),
-            )
-            .await
-        }
+        ("GET", "/openapi.json") => application::openapi_spec(openapi).await,
         // OpenAPI specified routes
-        _ => {
-            let operation_id = get_openapi_operation_id(
-                openapi,
-                parsed_request.method.as_str(),
-                parsed_request.path.as_str(),
-            );
-            match operation_id.as_str() { // @TODO: would be nice to auto-generate this match
-                "index" => application::index(parsed_request).await,
-                "docs" => application::docs(parsed_request).await,
-                "health_check" => application::health_check(parsed_request).await,
-                "wake_up_external_services" => application::wake_up_external_services(parsed_request).await,
-                "engage_reverse_proxy_request" => testbed::engage_reverse_proxy_request(parsed_request).await,
-                "get_population" => testbed::productizers::figure::get_population(parsed_request).await,
-                "find_job_postings" => testbed::productizers::job::find_job_postings(parsed_request).await,
-                "fetch_user_profile" => testbed::productizers::user::fetch_user_profile(parsed_request).await,
-                "fetch_user_status_info" => testbed::productizers::user::fetch_user_status_info(parsed_request).await,
-                "update_user_status_info" => testbed::productizers::user::update_user_status_info(parsed_request).await,
-                "fetch_jmf_recommendations" => jmf::fetch_jmf_recommendations(parsed_request).await,
-                "get_basic_information" => testbed::productizers::person::basic_information::get_basic_information(parsed_request).await,
-                "write_basic_information" => testbed::productizers::person::basic_information::write_basic_information(parsed_request).await,
-                "get_job_applicant_profile" => testbed::productizers::person::job_applicant_profile::get_job_applicant_profile(parsed_request).await,
-                "write_job_applicant_profile" => testbed::productizers::person::job_applicant_profile::write_job_applicant_profile(parsed_request).await,
-                _ => application::not_found(parsed_request).await, // Catch all 404
-            }
-        }
+        _ => router.handle(openapi, parsed_request).await,
     }
 }

@@ -1,6 +1,6 @@
-use crate::api::{
-    responses::{APIRoutingError, APIRoutingResponse},
-    utils::ParsedRequest,
+use app::{
+    router::ParsedRequest,
+    responses::APIResponse,
 };
 
 #[utoipa::path(
@@ -24,11 +24,12 @@ use crate::api::{
             value = json!("Loading.."),
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/BasicInformation.json",
         )))
-    ))
+    )),
+    security(( "BearerAuth" = [] ))
 )]
 pub async fn get_basic_information(
     request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+) -> APIResponse {
     let data_product = "draft/Person/BasicInformation";
     let data_source = "virtualfinland";
     let result = super::get_data_product(data_product, data_source, request).await?;
@@ -56,11 +57,12 @@ pub async fn get_basic_information(
             value = json!("Loading.."),
             external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/BasicInformation/Write.json",
         ))
-    )))
+    ))),
+    security(( "BearerAuth" = [] ))
 )]
 pub async fn write_basic_information(
     request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+) -> APIResponse {
     let data_product = "draft/Person/BasicInformation/Write";
     let data_source = "virtualfinland";
     let result = super::write_data_product(data_product, data_source, request).await?;

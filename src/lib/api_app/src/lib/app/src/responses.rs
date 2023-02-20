@@ -1,7 +1,9 @@
-use super::utils::get_default_headers;
 use http::header::HeaderMap;
 use http::StatusCode;
 use serde_json::json;
+use utils::api::get_default_headers;
+
+pub type APIResponse = Result<APIRoutingResponse, APIRoutingError>;
 
 #[derive(Debug)]
 pub struct APIRoutingResponse {
@@ -213,7 +215,7 @@ fn parse_api_routing_error_message(
 pub fn resolve_external_service_bad_response(
     mut status_code: StatusCode,
     response_body: String,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+) -> APIResponse {
     // Ensure JSON response
     let response_json = serde_json::from_str::<serde_json::Value>(&response_body)
         .unwrap_or_else(|_| json!({ "content": response_body }));

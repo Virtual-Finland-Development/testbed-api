@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="SwaggerUI" />
     <title>SwaggerUI</title>
-    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css" />
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui.css" />
 </head>
 
 <body>
     <div id="swagger-ui"></div>
-    <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js" crossorigin></script>
+    <script src="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-bundle.js" crossorigin></script>
     <script>
         // @see: https://stackoverflow.com/a/68871496
         // Examples map
@@ -46,7 +46,7 @@
         }
 
         // Custom plugin for the logic that happens before the response element is created
-        const CustomPlugin = () => {
+        const ExtrenalSchemaPopulatePlugin = () => {
             return {
                 wrapComponents: {
                     RequestBody: (Original, { React, oas3Actions, oas3Selectors }) => (props) => {
@@ -155,7 +155,13 @@
                 plugins: [
                     SwaggerUIBundle.plugins.DownloadUrl,
                     // Add custom plugin
-                    CustomPlugin
+                    ExtrenalSchemaPopulatePlugin
+                ],
+                layout: "BaseLayout",
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIBundle.SwaggerUIStandalonePreset
                 ],
             });
         };

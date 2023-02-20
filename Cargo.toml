@@ -3,10 +3,29 @@ name = "testbed_api"
 version = "1.0.0"
 edition = "2021"
 
+[workspace]
+
+[workspace.dependencies]
+serde_json = "^1.0.87"
+serde = { version = "^1.0.147", features = ["derive"] }
+log = "^0.4.17"
+http = "^0.2.8"
+reqwest = { version = "^0.11.12", features = ["json"] }
+simple_logger = "^4.0.0"
+lambda_http = "^0.7.1"
+futures = "^0.3.18"
+itertools = "^0.10.5"
+libmath = "^0.2.1"
+stopwatch = "^0.0.7"
+utoipa = "3"
+
 [dependencies]
 hot-lib-reloader = { version = "^0.6", optional = true }
 tokio = { version = "^1.21.2", features = ["full"] }
 dotenv = "^0.15.0"
+log = { workspace = true }
+simple_logger = { workspace = true }
+lambda_http = { workspace = true }
 api_app = { path = "./src/lib/api_app" }
 http_server = { path = "./src/lib/http_server" }
 lambda_service = { path = "./src/lib/lambda_service" }

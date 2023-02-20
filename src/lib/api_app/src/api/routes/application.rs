@@ -2,16 +2,16 @@ use http::{HeaderMap, HeaderValue, Method, StatusCode};
 use reqwest::Response;
 use serde_json::{json, Value as JsonValue};
 use std::{env, fs};
+use utoipa::openapi::OpenApi;
 
-use crate::api::{
+use app::{
     requests::engage_many_plain_requests,
-    responses::{resolve_external_service_bad_response, APIRoutingError, APIRoutingResponse},
-    utils::{get_cors_response_headers, get_default_headers, get_plain_headers, ParsedRequest},
+    responses::{resolve_external_service_bad_response, APIResponse, APIRoutingResponse},
+    router::ParsedRequest,
 };
+use utils::api::{get_cors_response_headers, get_default_headers, get_plain_headers};
 
-pub async fn cors_preflight_response(
-    _request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+pub async fn cors_preflight_response(_request: ParsedRequest) -> APIResponse {
     Ok(APIRoutingResponse::new(
         StatusCode::OK,
         "",
@@ -20,7 +20,7 @@ pub async fn cors_preflight_response(
 }
 
 #[utoipa::path(get, path = "/", responses((status = 303, description = "Redirect to /docs")))]
-pub async fn index(_request: ParsedRequest) -> Result<APIRoutingResponse, APIRoutingError> {
+pub async fn index(_request: ParsedRequest) -> APIResponse {
     Ok(APIRoutingResponse::new(
         StatusCode::TEMPORARY_REDIRECT,
         "Redirecting to /docs",
@@ -37,7 +37,7 @@ pub async fn index(_request: ParsedRequest) -> Result<APIRoutingResponse, APIRou
     path = "/docs",
     responses((status = 200, description = "API documentation", content_type = "text/html"))
 )]
-pub async fn docs(_request: ParsedRequest) -> Result<APIRoutingResponse, APIRoutingError> {
+pub async fn docs(_request: ParsedRequest) -> APIResponse {
     let body =
         fs::read_to_string("./openapi/index.html").expect("Unable to read index.html file");
     Ok(APIRoutingResponse::new(StatusCode::OK, body.as_ref(), {
@@ -47,10 +47,20 @@ pub async fn docs(_request: ParsedRequest) -> Result<APIRoutingResponse, APIRout
     }))
 }
 
-pub async fn openapi_spec(json_spec: String) -> Result<APIRoutingResponse, APIRoutingError> {
+pub async fn openapi_spec(openapi: OpenApi) -> APIResponse {
+    let json_spec_orig_serialized = openapi.to_json().expect("Failed to parse openapi spec");
+
+    // Inject the app specific securitySchemas to the spec as a workaround for utoipa::OpenApi zeroing the parse_meta output of derived OpenApi structs when using the security attribute
+    let mut json_spec: JsonValue =
+        serde_json::from_str(&json_spec_orig_serialized).expect("Failed to parse openapi spec");
+    json_spec["components"]["securitySchemes"] = json!({
+        "BearerAuth": { "scheme": "bearer", "type": "http" }
+    });
+    let json_spec_serialized = json_spec.to_string();
+
     Ok(APIRoutingResponse::new(
         StatusCode::OK,
-        json_spec.as_ref(),
+        json_spec_serialized.as_ref(),
         {
             let mut headers = HeaderMap::new();
             headers.insert("Content-Type", HeaderValue::from_static("application/json"));
@@ -70,9 +80,7 @@ pub async fn openapi_spec(json_spec: String) -> Result<APIRoutingResponse, APIRo
         example = json!("OK"),
     ))
 )]
-pub async fn health_check(
-    _request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+pub async fn health_check(_request: ParsedRequest) -> APIResponse {
     Ok(APIRoutingResponse::new(
         StatusCode::OK,
         "OK",
@@ -80,7 +88,7 @@ pub async fn health_check(
     ))
 }
 
-pub async fn not_found(_request: ParsedRequest) -> Result<APIRoutingResponse, APIRoutingError> {
+pub async fn not_found(_request: ParsedRequest) -> APIResponse {
     Ok(APIRoutingResponse {
         status_code: StatusCode::NOT_FOUND,
         body: json!({
@@ -91,9 +99,7 @@ pub async fn not_found(_request: ParsedRequest) -> Result<APIRoutingResponse, AP
     })
 }
 
-pub async fn get_external_service_bad_response(
-    response: Response,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+pub async fn get_external_service_bad_response(response: Response) -> APIResponse {
     let status_code = response.status();
     let response_body = response.text().await?;
     resolve_external_service_bad_response(status_code, response_body)
@@ -115,9 +121,7 @@ pub async fn get_external_service_bad_response(
         }),
     ))
 )]
-pub async fn wake_up_external_services(
-    _request: ParsedRequest,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+pub async fn wake_up_external_services(_request: ParsedRequest) -> APIResponse {
     let endpoints = vec![
         format!(
             "{}/health",

@@ -3,14 +3,13 @@ use http::{header::HeaderMap, Method, StatusCode};
 use log;
 use reqwest;
 use serde::{Deserialize, Serialize};
-use std::fmt::Debug;
-use std::time::Duration;
+use std::{fmt::Debug, time::Duration};
 use stopwatch::Stopwatch;
 
-use super::{
-    responses::{resolve_external_service_bad_response, APIRoutingError, APIRoutingResponse},
-    utils::get_default_headers,
+use super::responses::{
+    resolve_external_service_bad_response, APIResponse, APIRoutingError, APIRoutingResponse,
 };
+use utils::api::get_default_headers;
 
 pub async fn post_json_request<
     I: Debug + Serialize,
@@ -19,7 +18,7 @@ pub async fn post_json_request<
     endpoint_url: String,
     request_input: &I,
     request_headers: HeaderMap,
-) -> Result<APIRoutingResponse, APIRoutingError> {
+) -> APIResponse {
     let client = reqwest::Client::new();
     let response = engage_json_data_request::<I, O>(
         &client,
@@ -69,7 +68,7 @@ pub async fn engage_many_json_requests<
         }))
         .await;
 
-    merge_many_request_responses::<I, O>(response_json_bodies, allow_failures).await
+    merge_many_request_responses::<O>(response_json_bodies, allow_failures).await
 }
 
 // Requests many requests
@@ -98,14 +97,11 @@ pub async fn engage_many_plain_requests<I: Debug + Serialize>(
         )
         .await;
 
-    merge_many_request_responses::<I, String>(response_bodies, allow_failures).await
+    merge_many_request_responses::<String>(response_bodies, allow_failures).await
 }
 
 // Merges many request responses
-async fn merge_many_request_responses<
-    I: Debug + Serialize,
-    O: Debug + Serialize + for<'a> Deserialize<'a>,
->(
+async fn merge_many_request_responses<O: Debug + Serialize + for<'a> Deserialize<'a>>(
     response_bodies: Vec<Result<(O, StatusCode, HeaderMap, String), APIRoutingError>>,
     allow_failures: bool,
 ) -> Result<(StatusCode, Vec<(O, HeaderMap, String)>, String), APIRoutingError> {

@@ -8,4 +8,5 @@ crate-type = ["rlib", "dylib"]
 path = "src/lambda_service.rs"
 
 [dependencies]
+lambda_http = { workspace = true }
 api_app = { path = "../api_app" }

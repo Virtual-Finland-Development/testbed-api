@@ -83,3 +83,7 @@ make run-sam
 ### Docker
 
 - https://hub.docker.com/_/rust/
+
+### OpenAPI
+
+ - Automatic generation of OpenAPI spec: https://github.com/juhaku/utoipa

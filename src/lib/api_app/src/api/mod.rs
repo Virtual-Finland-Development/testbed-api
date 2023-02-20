@@ -2,13 +2,14 @@ use http::Response;
 use lambda_http::Request;
 use log;
 
-use self::{responses::APIRoutingResponse, routes::get_router_response, utils::ParsedRequest};
+use self::routes::get_router_response;
+use app::{
+    responses::APIRoutingResponse,
+    router::{parse_router_request, ParsedRequest},
+};
+use utils::strings;
 
-mod requests;
-mod responses;
 pub mod routes;
-
-pub mod utils;
 
 /**
  * The handler function for the lambda.
@@ -16,14 +17,14 @@ pub mod utils;
 pub async fn handler(
     request: Request,
 ) -> Result<lambda_http::Response<String>, std::convert::Infallible> {
-    let parsed_request = utils::parse_router_request(request);
+    let parsed_request = parse_router_request(request);
 
     log::info!("{} {}", parsed_request.method, parsed_request.path);
     let router_response = exec_router_request(parsed_request).await;
     log::debug!(
         "Response: {:#?},\nBody: {:#?},\nHeaders: {:#?}",
         router_response.status_code,
-        utils::strings::truncate_too_long_string(router_response.body.to_string(), 5000, "..."),
+        strings::truncate_too_long_string(router_response.body.to_string(), 5000, "..."),
         router_response.headers
     );
 
