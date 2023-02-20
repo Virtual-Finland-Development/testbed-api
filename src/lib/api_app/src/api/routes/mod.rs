@@ -68,15 +68,12 @@ pub async fn get_router_response(parsed_request: ParsedRequest) -> APIResponse {
         }
         // OpenAPI specified routes
         _ => {
+            // Resolve the operation id
             let operation_id = get_openapi_operation_id(
                 openapi,
                 parsed_request.method.as_str(),
                 parsed_request.path.as_str(),
             );
-
-            if operation_id.is_empty() {
-                return application::not_found(parsed_request).await;
-            }
 
             // Exec the operation
             let router = Api;
