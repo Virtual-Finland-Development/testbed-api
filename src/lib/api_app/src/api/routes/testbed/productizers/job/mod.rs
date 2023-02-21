@@ -1,27 +1,25 @@
-use std::{ cmp::Ordering, collections::hash_map::DefaultHasher, hash::Hasher, env };
-use http::{ StatusCode, Method };
+use http::{Method, StatusCode};
 use math::round;
+use std::{cmp::Ordering, collections::hash_map::DefaultHasher, env, hash::Hasher};
 
-use crate::api::{
-    responses::{ APIRoutingError, APIRoutingResponse, resolve_external_service_bad_response },
-    requests::engage_many_json_requests,
-    utils::{
-        get_default_headers,
-        ParsedRequest,
-        strings::{ cut_string_by_delimiter_keep_right, parse_comma_separated_list },
-    },
-};
 use super::parse_testbed_request_headers;
+
+use app::{
+    requests::engage_many_json_requests,
+    responses::{
+        resolve_external_service_bad_response, APIResponse, APIRoutingError, APIRoutingResponse,
+    },
+    router::ParsedRequest,
+};
+use utils::{
+    api::get_default_headers,
+    strings::{cut_string_by_delimiter_keep_right, parse_comma_separated_list},
+};
 
 pub mod job_models;
 use job_models::{
-    JobsRequestFromFrontend,
-    JobsRequest,
-    RequestPaging,
-    JobPostingResponse,
-    JobPosting,
-    JobPostingForFrontend,
-    ProductizerRequest,
+    JobPosting, JobPostingForFrontend, JobPostingResponse, JobsRequest,
+    JobsRequestFromFrontend, ProductizerRequest, RequestPaging,
 };
 
 mod job_input_extenders;
@@ -30,37 +28,43 @@ use job_input_extenders::extend_job_occupations;
 /**
  * Get job postings
  */
-pub async fn find_job_postings(
-    request: ParsedRequest
-) -> Result<APIRoutingResponse, APIRoutingError> {
-    let endpoint_urls_as_text = env
-        ::var("JOB_POSTING_PRODUCTIZER_ENDPOINTS")
+#[utoipa::path(
+    post,
+    path = "/testbed/productizers/find-job-postings",
+    request_body(content = JobsRequestFromFrontend, description = "Job postings query"),
+    responses((
+        status = 200,
+        body = JobPostingResponseForFrontend,
+        description = "Job postigs response",
+    )),
+    security(( "BearerAuth" = [] ))
+)]
+pub async fn find_job_postings(request: ParsedRequest) -> APIResponse {
+    let endpoint_urls_as_text = env::var("JOB_POSTING_PRODUCTIZER_ENDPOINTS")
         .expect("JOB_POSTING_PRODUCTIZER_ENDPOINTS must be set");
     let endpoint_urls = parse_comma_separated_list(endpoint_urls_as_text);
 
     let request = construct_productizer_requests(request, endpoint_urls)?;
 
     // Fetch the data
-    let (response_status, good_responses, error_response_body) = engage_many_json_requests::<
-        JobsRequest,
-        JobPostingResponse<JobPosting>
-    >(
-        request.endpoint_urls,
-        Method::POST,
-        &request.request_input,
-        request.headers,
-        true
-    ).await.expect("Something went wrong with the bulk requests");
+    let (response_status, good_responses, error_response_body) =
+        engage_many_json_requests::<JobsRequest, JobPostingResponse<JobPosting>>(
+            request.endpoint_urls,
+            Method::POST,
+            &request.request_input,
+            request.headers,
+            true,
+        )
+        .await
+        .expect("Something went wrong with the bulk requests");
 
     if response_status == StatusCode::OK {
         // Transform the good response results for the frontend
         let mut good_results = Vec::<JobPostingForFrontend>::new();
         for mut r in good_responses {
             let jobs_source = cut_string_by_delimiter_keep_right(r.2, "?source=");
-            let mut transformed_results = transform_job_posting_results(
-                jobs_source,
-                &mut r.0.results
-            );
+            let mut transformed_results =
+                transform_job_posting_results(jobs_source, &mut r.0.results);
             good_results.append(&mut transformed_results);
         }
 
@@ -85,13 +89,11 @@ pub async fn find_job_postings(
             total_count: final_count,
         };
 
-        Ok(
-            APIRoutingResponse::new(
-                response_status,
-                &serde_json::to_string(&response_output)?,
-                get_default_headers()
-            )
-        )
+        Ok(APIRoutingResponse::new(
+            response_status,
+            &serde_json::to_string(&response_output)?,
+            get_default_headers(),
+        ))
     } else {
         resolve_external_service_bad_response(response_status, error_response_body)
     }
@@ -99,9 +101,10 @@ pub async fn find_job_postings(
 
 pub fn construct_productizer_requests(
     request: ParsedRequest,
-    endpoint_urls: Vec<String>
+    endpoint_urls: Vec<String>,
 ) -> Result<ProductizerRequest, APIRoutingError> {
-    let original_input = serde_json::from_str::<JobsRequestFromFrontend>(request.body.as_str())?;
+    let original_input =
+        serde_json::from_str::<JobsRequestFromFrontend>(request.body.as_str())?;
     let request_input = parse_job_request_input(&original_input);
 
     let request_headers = parse_testbed_request_headers(request)?;
@@ -136,7 +139,9 @@ pub fn construct_productizer_requests(
     })
 }
 
-pub fn parse_job_request_input(request_input: &JobsRequestFromFrontend) -> JobsRequestFromFrontend {
+pub fn parse_job_request_input(
+    request_input: &JobsRequestFromFrontend,
+) -> JobsRequestFromFrontend {
     let mut frontend_input = request_input.clone();
 
     // Parse the requirements
@@ -157,7 +162,10 @@ pub fn merge_job_posting_results(results: &mut Vec<JobPostingForFrontend>) {
     results.dedup_by(|a, b| is_job_postings_the_same(a, b));
 }
 
-fn job_postings_sort_comparator(a: &JobPostingForFrontend, b: &JobPostingForFrontend) -> Ordering {
+fn job_postings_sort_comparator(
+    a: &JobPostingForFrontend,
+    b: &JobPostingForFrontend,
+) -> Ordering {
     if is_job_postings_the_same(a, b) {
         Ordering::Equal
     } else {
@@ -174,7 +182,7 @@ fn is_job_postings_the_same(a: &JobPostingForFrontend, b: &JobPostingForFrontend
  */
 pub fn transform_job_posting_results(
     jobs_source: String,
-    results: &mut [JobPosting]
+    results: &mut [JobPosting],
 ) -> Vec<JobPostingForFrontend> {
     results
         .iter_mut()

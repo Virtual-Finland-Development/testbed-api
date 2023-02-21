@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
-use api_app::log::LevelFilter;
-use api_app::simple_logger::SimpleLogger;
+use log::LevelFilter;
+use simple_logger::SimpleLogger;
 mod tests;
 #[cfg(feature = "local-dev")]
 use dotenv;
@@ -41,7 +41,10 @@ async fn main() {
         Err(_) => LevelFilter::Info,
     };
 
-    SimpleLogger::new().with_level(logging_level).init().unwrap();
+    SimpleLogger::new()
+        .with_level(logging_level)
+        .init()
+        .unwrap();
 
     #[allow(clippy::never_loop)] // Allow the loop to be skipped in a not-local dev
     loop {

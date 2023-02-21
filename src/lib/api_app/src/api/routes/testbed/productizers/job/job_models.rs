@@ -1,10 +1,11 @@
 use http::HeaderMap;
-use serde::{ Deserialize, Serialize };
+use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 //
 // Inputs from the frontend
 //
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, ToSchema)]
 pub struct JobsRequestFromFrontend {
     pub query: String,
     pub location: RequestLocation,
@@ -12,7 +13,7 @@ pub struct JobsRequestFromFrontend {
     pub paging: RequestPagingFromFrontend,
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, ToSchema)]
 pub struct RequestPagingFromFrontend {
     #[serde(rename = "itemsPerPage")]
     pub items_per_page: i32,
@@ -38,13 +39,13 @@ pub struct JobsRequest {
     pub requirements: RequestRequirements,
     pub paging: RequestPaging,
 }
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, ToSchema)]
 pub struct RequestLocation {
     pub countries: Vec<String>,
     pub regions: Vec<String>,
     pub municipalities: Vec<String>,
 }
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, ToSchema)]
 pub struct RequestRequirements {
     pub occupations: Option<Vec<String>>,
     pub skills: Option<Vec<String>>,
@@ -58,7 +59,8 @@ pub struct RequestPaging {
 //
 // Outputs from the productizer APIs
 //
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, ToSchema)]
+#[aliases(JobPostingResponseForFrontend = JobPostingResponse<JobPostingForFrontend>)]
 pub struct JobPostingResponse<T> {
     pub results: Vec<T>,
     #[serde(rename = "totalCount")]
@@ -78,13 +80,13 @@ pub struct JobPosting {
     pub application_url: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Debug, PartialEq, Eq, Clone)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq, Clone, ToSchema)]
 pub struct Location {
     pub municipality: String,
     pub postcode: String,
 }
 
-#[derive(Deserialize, Serialize, Debug, PartialEq, Eq, Clone)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq, Clone, ToSchema)]
 pub struct BasicInfo {
     pub title: String,
     pub description: String,
@@ -96,7 +98,7 @@ pub struct BasicInfo {
 // Transformed outputs for the frontend app
 // @TODO: there must be a better way to do this in rust
 //
-#[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq, ToSchema)]
 pub struct JobPostingForFrontend {
     pub id: String,
     #[serde(rename = "jobsSource")]

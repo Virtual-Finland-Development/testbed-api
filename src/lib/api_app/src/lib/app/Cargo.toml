@@ -1,12 +1,12 @@
 [package]
-name = "api_app"
+name = "app"
 version = "1.0.0"
 edition = "2021"
 
-[lib]
-crate-type = ["rlib", "dylib"]
-
 [dependencies]
+openapi_router_derive = { path = "../openapi_router_derive" }
+utils = { path = "../utils" }
+
 serde_json = { workspace = true }
 serde = { workspace = true }
 log = { workspace = true }
@@ -15,11 +15,5 @@ reqwest = { workspace = true }
 simple_logger = { workspace = true }
 lambda_http = { workspace = true }
 futures = { workspace = true }
-itertools = { workspace = true }
-libmath = { workspace = true }
 stopwatch = { workspace = true }
 utoipa = { workspace = true }
-lazy_static = "1.4.0"
-
-app = { path = "./src/lib/app" }
-utils = { path = "./src/lib/utils" }

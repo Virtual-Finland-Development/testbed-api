@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="SwaggerUI" />
     <title>SwaggerUI</title>
-    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css" />
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui.css" />
 </head>
 
 <body>
     <div id="swagger-ui"></div>
-    <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js" crossorigin></script>
+    <script src="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-bundle.js" crossorigin></script>
     <script>
         // @see: https://stackoverflow.com/a/68871496
         // Examples map
@@ -46,7 +46,7 @@
         }
 
         // Custom plugin for the logic that happens before the response element is created
-        const CustomPlugin = () => {
+        const ExtrenalSchemaPopulatePlugin = () => {
             return {
                 wrapComponents: {
                     RequestBody: (Original, { React, oas3Actions, oas3Selectors }) => (props) => {
@@ -62,7 +62,8 @@
                             } else {
                                 const resolveData = (data) => {
                                     // Dirtly parse content
-                                    const ref = data.paths[Object.keys(data.paths)[0]].post.requestBody.content[contentType].schema["$ref"];
+                                    const method = "post";
+                                    const ref = data.paths[Object.keys(data.paths)[0]][method].requestBody.content[contentType].schema["$ref"];
                                     const component = ref.split("/").pop();
                                     // Put downloaded file content into the examples map
                                     examples[externalValueUrlKey] = {
@@ -100,7 +101,11 @@
                                 props.response = parseSchemaObject(props.response, examples[externalValueUrlKey].schema, contentType)
                             } else {
                                 const resolveData = (data) => {
-                                    const ref = data.paths[Object.keys(data.paths)[0]][props.method].responses[Number(props.code)].content[contentType].schema["$ref"];
+                                    let method = props.method;
+                                    if (method === "get" && props.path.startsWith("/testbed/productizer")) {
+                                        method = "post";
+                                    }
+                                    const ref = data.paths[Object.keys(data.paths)[0]][method].responses[Number(props.code)].content[contentType].schema["$ref"];
                                     const component = ref.split("/").pop();
                                     // Put downloaded file content into the examples map
                                     examples[externalValueUrlKey] = {
@@ -145,12 +150,18 @@
 
         window.onload = () => {
             window.ui = SwaggerUIBundle({
-                url: '/openapi.yml',
+                url: '/openapi.json',
                 dom_id: '#swagger-ui',
                 plugins: [
                     SwaggerUIBundle.plugins.DownloadUrl,
                     // Add custom plugin
-                    CustomPlugin
+                    ExtrenalSchemaPopulatePlugin
+                ],
+                layout: "BaseLayout",
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIBundle.SwaggerUIStandalonePreset
                 ],
             });
         };
