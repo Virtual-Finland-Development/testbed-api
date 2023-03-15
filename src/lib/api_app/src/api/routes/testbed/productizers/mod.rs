@@ -8,6 +8,7 @@ pub mod figure;
 pub mod job;
 pub mod person;
 pub mod user;
+pub mod non_listed_company;
 
 /**
  * Parses the authorization headers from the input request
