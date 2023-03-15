@@ -12,7 +12,7 @@ use app::{
         examples(( "Success" = (
             summary = "JSON example",
             value = json!("Loading..."),
-            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/NSG/Agent/NonListedCompany/BeneficialOwners.json"
+            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/NSG/Agent/LegalEntity/NonListedCompany/BeneficialOwners.json"
         )))
     ),
     responses((
@@ -22,7 +22,7 @@ use app::{
         examples(( "Success" = (
             summary = "JSON example",
             value = json!("Loading..."),
-            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/NSG/Agent/NonListedCompany/BeneficialOwners.json"
+            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/NSG/Agent/LegalEntity/NonListedCompany/BeneficialOwners.json"
         )))
     )),
     security(( "BearerAuth" = [] ))
