@@ -35,9 +35,10 @@ pub mod testbed;
         testbed::productizers::person::basic_information::write_basic_information,
         testbed::productizers::person::job_applicant_profile::get_job_applicant_profile,
         testbed::productizers::person::job_applicant_profile::write_job_applicant_profile,
-        testbed::productizers::non_listed_company::establishment::write_establishment,
-        testbed::productizers::non_listed_company::beneficial_owners::get_beneficial_owners,
-        testbed::productizers::non_listed_company::signatory_rights::get_signatory_rights
+        testbed::productizers::nsg::non_listed_company::establishment::write_establishment,
+        testbed::productizers::nsg::non_listed_company::beneficial_owners::get_beneficial_owners,
+        testbed::productizers::nsg::non_listed_company::signatory_rights::get_signatory_rights,
+        testbed::productizers::nsg::basic_information::get_basic_information,
     ),
     components(schemas( // @TODO: would be very nice to auto-generate schemas
         testbed::ProxyRequestInput,
@@ -51,6 +52,7 @@ pub mod testbed;
         testbed::productizers::job::job_models::RequestPagingFromFrontend,
         testbed::productizers::job::job_models::BasicInfo,
         testbed::productizers::job::job_models::Location,
+        testbed::productizers::nsg::basic_information::NSGAgentBasicInformationRequest,
         jmf::models::RecommendationsRequest,
         jmf::models::RecommendationsResponse,
         jmf::models::Occupation,

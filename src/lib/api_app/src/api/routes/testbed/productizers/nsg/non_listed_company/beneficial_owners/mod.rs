@@ -1,7 +1,4 @@
-use app::{
-    responses::APIResponse,
-    router::ParsedRequest
-};
+use app::{responses::APIResponse, router::ParsedRequest};
 
 #[utoipa::path(
     post,
