@@ -1,16 +1,12 @@
 use serde_json::{json, Value as JSONValue};
 
-use app::{
-    requests::post_json_request,
-    responses::APIResponse,
-    router::ParsedRequest
-};
+use app::{requests::post_json_request, responses::APIResponse, router::ParsedRequest};
 
 use super::{build_data_product_uri, parse_testbed_request_headers};
 
-pub mod signatory_rights;
-pub mod establishment;
 pub mod beneficial_owners;
+pub mod establishment;
+pub mod signatory_rights;
 
 pub async fn post_data_product(
     data_product: &str,
@@ -25,6 +21,6 @@ pub async fn post_data_product(
         &request_input,
         request_headers,
     )
-        .await?;
+    .await?;
     Ok(response)
 }
