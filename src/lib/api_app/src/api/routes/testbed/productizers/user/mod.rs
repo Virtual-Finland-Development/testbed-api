@@ -6,7 +6,7 @@ use app::{
     responses::APIResponse,
 };
 
-use super::{ parse_testbed_request_headers, build_data_product_uri };
+use crate::api::routes::testbed::testbed_utils::{ parse_testbed_request_headers, build_data_product_uri };
 
 #[utoipa::path(
     post,

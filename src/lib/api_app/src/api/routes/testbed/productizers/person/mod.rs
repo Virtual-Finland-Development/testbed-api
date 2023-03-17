@@ -2,7 +2,9 @@ use serde_json::{json, Value as JSONValue};
 
 use app::{requests::post_json_request, responses::APIResponse, router::ParsedRequest};
 
-use super::{build_data_product_uri, parse_testbed_request_headers};
+use crate::api::routes::testbed::testbed_utils::{
+    build_data_product_uri, parse_testbed_request_headers,
+};
 
 pub mod basic_information;
 pub mod job_applicant_profile;

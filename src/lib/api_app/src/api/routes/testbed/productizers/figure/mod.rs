@@ -1,6 +1,6 @@
 use std::env;
 
-use super::parse_testbed_request_headers;
+use crate::api::routes::testbed::testbed_utils::parse_testbed_request_headers;
 
 use app::{requests::post_json_request, responses::APIResponse, router::ParsedRequest};
 

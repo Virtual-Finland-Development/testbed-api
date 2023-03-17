@@ -1,19 +1,42 @@
-use std::collections::HashMap;
-use utoipa::ToSchema;
-
 use http::HeaderMap;
-use serde::{Deserialize, Serialize};
 use serde_json::Value as JSONValue;
-
-use crate::api::routes::application::get_external_service_bad_response;
 
 use app::{
     responses::{APIResponse, APIRoutingError, APIRoutingResponse},
     router::ParsedRequest,
 };
+
+use crate::api::routes::application::get_external_service_bad_response;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use utils::api::get_cors_response_headers;
+use utoipa::ToSchema;
 
 pub mod productizers;
+pub mod testbed_utils;
+
+use testbed_utils::{access_control_check, post_data_product};
+
+#[utoipa::path(
+    post,
+    path = "/testbed/data-product/{data_product}",
+    request_body(content = Object, description = "Data product request"),
+    responses((status = 200, body = Object, description = "Data product response")),
+    params(
+        ("data_product" = str, Path, description = "Data product name", example = "draft/Weather/Current/Metric"),
+        ("source" = str, Query, description = "Data source name", example = "openweather")
+    ),
+    security(( "BearerAuth" = [] ))
+)]
+pub async fn get_data_product(request: ParsedRequest) -> APIResponse {
+    log::debug!("Path: {:#?}", request.path);
+    log::debug!("Query: {:#?}", request.query);
+
+    let data_product = "draft/Weather/Current/Metric";
+    let data_source = "virtualfinland";
+    let result = post_data_product(data_product, data_source, request).await?;
+    Ok(result)
+}
 
 #[derive(Deserialize, Serialize, Debug, ToSchema)]
 pub struct ProxyRequestInput {
@@ -68,25 +91,4 @@ pub async fn engage_reverse_proxy_request(request: ParsedRequest) -> APIResponse
         &serde_json::to_string(&response_output)?,
         get_cors_response_headers(),
     ))
-}
-
-/**
- * Access control check
- *
- * @param proxy_destination_url
- * @returns {boolean} - true if access is denied
- */
-fn access_control_check(proxy_destination_url: &str) -> bool {
-    // Access control list check
-    let acl = ["https://consent.testbed.fi/", "https://gateway.testbed.fi/"];
-
-    let mut acl_is_satisfied = false;
-    for url in acl {
-        if proxy_destination_url.starts_with(url) {
-            acl_is_satisfied = true;
-            break;
-        }
-    }
-
-    !acl_is_satisfied
 }

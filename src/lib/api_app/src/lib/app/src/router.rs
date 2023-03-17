@@ -61,7 +61,6 @@ pub fn parse_router_request(request: Request) -> ParsedRequest {
     // Body parsing is left to the route handlers, where the models are defined
     let body: String = match request.body() {
         Body::Text(body) => body.clone(),
-        //Body::Binary(body) => serde_json::from_slice(body),
         _ => "".to_string(),
     };
 
@@ -78,16 +77,17 @@ pub mod openapi {
     use utoipa::openapi::{OpenApi, PathItem, PathItemType};
 
     pub fn get_openapi_operation_id(openapi: &OpenApi, method: &str, path: &str) -> String {
-        let path = openapi.paths.get_path_item(path);
-        match path {
-            Some(path) => resolve_operation_id(path, method),
+        let path_item = openapi.paths.get_path_item(path);
+        log::debug!("Path: {:?}", path);
+        match path_item {
+            Some(path_item) => resolve_operation_id(path_item, method),
             None => "".to_string(),
         }
     }
 
-    fn resolve_operation_id(path: &PathItem, method: &str) -> String {
+    fn resolve_operation_id(path_item: &PathItem, method: &str) -> String {
         let path_item_type = get_path_item_type(method);
-        let operationable = path.operations.get(&path_item_type);
+        let operationable = path_item.operations.get(&path_item_type);
         if operationable.is_none() {
             return "".to_string();
         }

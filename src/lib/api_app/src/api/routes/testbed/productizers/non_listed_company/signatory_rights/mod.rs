@@ -1,7 +1,5 @@
-use app::{
-    responses::APIResponse,
-    router::ParsedRequest
-};
+use crate::api::routes::testbed::testbed_utils::post_data_product;
+use app::{responses::APIResponse, router::ParsedRequest};
 
 #[utoipa::path(
     post,
@@ -30,6 +28,6 @@ use app::{
 pub async fn get_signatory_rights(request: ParsedRequest) -> APIResponse {
     let data_product = "draft/NSG/Agent/LegalEntity/NonListedCompany/SignatoryRights";
     let data_source = "virtualfinland";
-    let result = super::post_data_product(data_product, data_source, request).await?;
+    let result = post_data_product(data_product, data_source, request).await?;
     Ok(result)
 }
