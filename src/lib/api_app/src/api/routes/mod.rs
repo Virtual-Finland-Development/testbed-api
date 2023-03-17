@@ -38,7 +38,7 @@ pub mod testbed;
         testbed::productizers::nsg::non_listed_company::establishment::write_establishment,
         testbed::productizers::nsg::non_listed_company::beneficial_owners::get_beneficial_owners,
         testbed::productizers::nsg::non_listed_company::signatory_rights::get_signatory_rights,
-        testbed::productizers::nsg::basic_information::get_basic_information,
+        testbed::productizers::nsg::basic_information::get_nsg_basic_information,
     ),
     components(schemas( // @TODO: would be very nice to auto-generate schemas
         testbed::ProxyRequestInput,

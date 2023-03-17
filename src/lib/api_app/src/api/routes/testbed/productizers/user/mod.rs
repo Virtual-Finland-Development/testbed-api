@@ -2,7 +2,7 @@ use serde_json::{json, Value as JSONValue};
 
 use app::{requests::post_json_request, responses::APIResponse, router::ParsedRequest};
 
-use super::{build_data_product_uri, parse_testbed_request_headers};
+use super::{build_data_product_stage_uri, parse_testbed_request_headers};
 
 #[utoipa::path(
     post,
@@ -30,7 +30,7 @@ use super::{build_data_product_uri, parse_testbed_request_headers};
 )]
 pub async fn fetch_user_profile(request: ParsedRequest) -> APIResponse {
     let endpoint_url =
-        build_data_product_uri("test/lassipatanen/User/Profile", "access_to_finland");
+        build_data_product_stage_uri("test/lassipatanen/User/Profile", "access_to_finland");
     let request_input = json!({}); // Empty body
     let request_headers = parse_testbed_request_headers(request)?;
     let response = post_json_request::<JSONValue, JSONValue>(
@@ -67,7 +67,7 @@ pub async fn fetch_user_profile(request: ParsedRequest) -> APIResponse {
     security(( "BearerAuth" = [] ))
 )]
 pub async fn fetch_user_status_info(request: ParsedRequest) -> APIResponse {
-    let endpoint_url = build_data_product_uri("test/lsipii/User/StatusInfo", "virtual_finland");
+    let endpoint_url = build_data_product_stage_uri("test/lsipii/User/StatusInfo", "virtual_finland");
     let request_input: JSONValue =
         serde_json::from_str(request.body.as_str()).unwrap_or_else(|_| json!({})); // Pass through body
     let request_headers = parse_testbed_request_headers(request)?;
@@ -106,7 +106,7 @@ pub async fn fetch_user_status_info(request: ParsedRequest) -> APIResponse {
 )]
 pub async fn update_user_status_info(request: ParsedRequest) -> APIResponse {
     let endpoint_url =
-        build_data_product_uri("test/lsipii/User/StatusInfo/Write", "virtual_finland");
+        build_data_product_stage_uri("test/lsipii/User/StatusInfo/Write", "virtual_finland");
 
     let request_input: JSONValue =
         serde_json::from_str(request.body.as_str()).unwrap_or_else(|_| json!({})); // Pass through body

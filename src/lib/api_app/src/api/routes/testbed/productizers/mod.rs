@@ -48,11 +48,18 @@ fn parse_testbed_request_headers(request: ParsedRequest) -> Result<HeaderMap, AP
 /**
  * Builds the URI for the testbed data product
  */
+fn build_data_product_stage_uri(data_product: &str, data_source: &str) -> String {
+    let testbed_environment =
+        env::var("TESTBED_ENVIRONMENT").expect("TESTBED_ENVIRONMENT must be set");
+    build_data_product_uri(
+        data_product,
+        format!("{data_source}:{testbed_environment}").as_str(),
+    )
+}
+
 fn build_data_product_uri(data_product: &str, data_source: &str) -> String {
     let mut testbed_base_url =
         env::var("TESTBED_BASE_URL").expect("TESTBED_BASE_URL must be set");
-    let testbed_environment =
-        env::var("TESTBED_ENVIRONMENT").expect("TESTBED_ENVIRONMENT must be set");
 
     if get_stage() == "local" {
         // @TODO: needs a local testbed data product gw simulation
@@ -90,5 +97,5 @@ fn build_data_product_uri(data_product: &str, data_source: &str) -> String {
         testbed_base_url.pop();
     }
 
-    format!("{testbed_base_url}/{data_product}?source={data_source}:{testbed_environment}")
+    format!("{testbed_base_url}/{data_product}?source={data_source}")
 }
