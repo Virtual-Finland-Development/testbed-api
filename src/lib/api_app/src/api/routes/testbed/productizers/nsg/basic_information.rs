@@ -25,7 +25,7 @@ pub struct NSGAgentBasicInformationRequest {
         examples(
             (
                 "Success" = (
-                    summary = "Nationa identifier",
+                    summary = "National identifier",
                     value = json!({
                         "nationalIdentifier": "2464491-9"
                     }),
