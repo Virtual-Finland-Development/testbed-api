@@ -21,7 +21,7 @@ pub async fn post_data_product(
         serde_json::from_str(request.body.as_str()).unwrap_or_else(|_| json!({}));
     let request_headers = parse_testbed_request_headers(request)?;
     let response = post_json_request::<JSONValue, JSONValue>(
-        build_data_product_uri(data_product, data_source),
+        build_data_product_stage_uri(data_product, data_source),
         &request_input,
         request_headers,
     )
@@ -69,11 +69,18 @@ pub fn parse_testbed_request_headers(
 /**
  * Builds the URI for the testbed data product
  */
+pub fn build_data_product_stage_uri(data_product: &str, data_source: &str) -> String {
+    let testbed_environment =
+        env::var("TESTBED_ENVIRONMENT").expect("TESTBED_ENVIRONMENT must be set");
+    build_data_product_uri(
+        data_product,
+        format!("{data_source}:{testbed_environment}").as_str(),
+    )
+}
+
 pub fn build_data_product_uri(data_product: &str, data_source: &str) -> String {
     let mut testbed_base_url =
         env::var("TESTBED_BASE_URL").expect("TESTBED_BASE_URL must be set");
-    let testbed_environment =
-        env::var("TESTBED_ENVIRONMENT").expect("TESTBED_ENVIRONMENT must be set");
 
     if get_stage() == "local" {
         // @TODO: needs a local testbed data product gw simulation
@@ -111,7 +118,7 @@ pub fn build_data_product_uri(data_product: &str, data_source: &str) -> String {
         testbed_base_url.pop();
     }
 
-    format!("{testbed_base_url}/{data_product}?source={data_source}:{testbed_environment}")
+    format!("{testbed_base_url}/{data_product}?source={data_source}")
 }
 
 /**

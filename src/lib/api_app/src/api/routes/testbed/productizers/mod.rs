@@ -1,5 +1,5 @@
 pub mod figure;
 pub mod job;
-pub mod non_listed_company;
+pub mod nsg;
 pub mod person;
 pub mod user;
