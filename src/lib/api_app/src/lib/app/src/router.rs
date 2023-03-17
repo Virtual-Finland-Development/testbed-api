@@ -1,7 +1,7 @@
 use self::openapi::get_openapi_operation_id;
 use futures::Future;
 use http::header::HeaderMap;
-use lambda_http::{aws_lambda_events::query_map::QueryMap, Body, Request, RequestExt};
+use lambda_http::{aws_lambda_events::query_map::QueryMap, Body, Request};
 use utoipa::openapi::OpenApi;
 
 use super::responses::APIResponse;
