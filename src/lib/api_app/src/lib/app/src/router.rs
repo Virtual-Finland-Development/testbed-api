@@ -53,7 +53,6 @@ pub struct ParsedRequest {
  * Convert the lambda_http::Request to a parsed_request.
  */
 pub fn parse_router_request(request: Request) -> ParsedRequest {
-    log::info!("Request: {:?}", request);
     let uri = request.uri();
     let query_string = uri.query().unwrap_or("");
     let query = query_string.parse::<QueryMap>().unwrap();
@@ -64,7 +63,6 @@ pub fn parse_router_request(request: Request) -> ParsedRequest {
     // Body parsing is left to the route handlers, where the models are defined
     let body: String = match request.body() {
         Body::Text(body) => body.clone(),
-        //Body::Binary(body) => serde_json::from_slice(body),
         _ => "".to_string(),
     };
 
