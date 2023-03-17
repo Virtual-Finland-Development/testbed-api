@@ -15,25 +15,43 @@ use utoipa::ToSchema;
 pub mod productizers;
 pub mod testbed_utils;
 
-use testbed_utils::{access_control_check, post_data_product};
+use testbed_utils::{access_control_check, service::post_data_product};
 
 #[utoipa::path(
     post,
     path = "/testbed/data-product/{data_product}",
-    request_body(content = Object, description = "Data product request"),
+    request_body(content = Object, description = "Data product request", example = json!({
+        "lat": 60.192059,
+        "lon": 24.945831
+    })),
     responses((status = 200, body = Object, description = "Data product response")),
     params(
         ("data_product" = str, Path, description = "Data product name", example = "draft/Weather/Current/Metric"),
         ("source" = str, Query, description = "Data source name", example = "openweather")
     ),
-    security(( "BearerAuth" = [] ))
 )]
-pub async fn get_data_product(request: ParsedRequest) -> APIResponse {
+pub async fn get_general_data_product(request: ParsedRequest) -> APIResponse {
     log::debug!("Path: {:#?}", request.path);
     log::debug!("Query: {:#?}", request.query);
+    log::debug!("Path params: {:#?}", request.path_params);
 
-    let data_product = "draft/Weather/Current/Metric";
-    let data_source = "virtualfinland";
+    let path_params = request.path_params.clone();
+    let query = request.query.clone();
+
+    let data_product = path_params
+        .get("data_product")
+        .expect("Missing data product parameter"); // Should be resolved by the router
+
+    let data_source = query.first("source").unwrap_or(""); // @TODO: functionalize
+    if data_source.is_empty() {
+        return Err(APIRoutingError::BadRequest(
+            "Missing source parameter".to_string(),
+        ));
+    }
+
+    log::debug!("Data product: {:#?}", data_product);
+    log::debug!("Data source: {:#?}", data_source);
+
     let result = post_data_product(data_product, data_source, request).await?;
     Ok(result)
 }

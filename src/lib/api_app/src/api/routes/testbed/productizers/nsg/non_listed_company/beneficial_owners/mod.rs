@@ -1,4 +1,4 @@
-use crate::api::routes::testbed::testbed_utils::post_data_product;
+use crate::api::routes::testbed::testbed_utils::service::post_staged_data_product;
 use app::{responses::APIResponse, router::ParsedRequest};
 
 #[utoipa::path(
@@ -28,6 +28,6 @@ use app::{responses::APIResponse, router::ParsedRequest};
 pub async fn get_beneficial_owners(request: ParsedRequest) -> APIResponse {
     let data_product = "draft/NSG/Agent/LegalEntity/NonListedCompany/BeneficialOwners";
     let data_source = "virtualfinland";
-    let result = post_data_product(data_product, data_source, request).await?;
+    let result = post_staged_data_product(data_product, data_source, request).await?;
     Ok(result)
 }

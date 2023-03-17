@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod api_utils_test {
+    use std::collections::HashMap;
+
     use crate::api::routes::testbed::productizers::job::{
         construct_productizer_requests,
         job_models::{JobPosting, JobPostingResponse},
@@ -46,6 +48,7 @@ mod api_utils_test {
 
         let request_input = ParsedRequest {
             path: "/".to_string(),
+            path_params: HashMap::new(),
             method: "POST".to_string(),
             query: QueryMap::default(),
             headers,
