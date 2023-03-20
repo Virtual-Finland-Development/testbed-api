@@ -1,7 +1,7 @@
 use self::openapi::get_openapi_operation_id;
 use futures::Future;
 use http::header::HeaderMap;
-use lambda_http::{aws_lambda_events::query_map::QueryMap, Body, Request, RequestExt};
+use lambda_http::{aws_lambda_events::query_map::QueryMap, Body, Request};
 use utoipa::openapi::OpenApi;
 
 use super::responses::APIResponse;
@@ -53,15 +53,16 @@ pub struct ParsedRequest {
  * Convert the lambda_http::Request to a parsed_request.
  */
 pub fn parse_router_request(request: Request) -> ParsedRequest {
-    let path = format!("/{}", strings::trim_left_slashes(request.uri().path()));
+    let uri = request.uri();
+    let query_string = uri.query().unwrap_or("");
+    let query = query_string.parse::<QueryMap>().unwrap();
+    let path = format!("/{}", strings::trim_left_slashes(uri.path()));
     let method = request.method().as_str().to_string();
-    let query = request.query_string_parameters();
     let headers = request.headers().clone();
 
     // Body parsing is left to the route handlers, where the models are defined
     let body: String = match request.body() {
         Body::Text(body) => body.clone(),
-        //Body::Binary(body) => serde_json::from_slice(body),
         _ => "".to_string(),
     };
 
