@@ -7,7 +7,9 @@ use utils::environment::get_stage;
 /**
  * Parses the authorization headers from the input request
  */
-fn parse_testbed_request_headers(request: ParsedRequest) -> Result<HeaderMap, APIRoutingError> {
+pub fn parse_testbed_request_headers(
+    request: ParsedRequest,
+) -> Result<HeaderMap, APIRoutingError> {
     // Prep auth header forwarding
     let mut request_headers = HeaderMap::new();
     request_headers.insert("Content-Type", HeaderValue::from_static("application/json"));

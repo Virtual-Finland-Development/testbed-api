@@ -2,7 +2,7 @@ use serde_json::{json, Value as JSONValue};
 
 use app::{requests::post_json_request, responses::APIResponse, router::ParsedRequest};
 
-use crate::api::routes::testbed::testbed_utils::{ parse_testbed_request_headers, build_data_product_staged_uri };
+use crate::api::routes::testbed::testbed_utils::{ build_data_product_staged_uri, parse_testbed_request_headers };
 
 #[utoipa::path(
     post,
