@@ -5,11 +5,10 @@ use app::{responses::APIRoutingError, router::ParsedRequest};
 use utils::environment::get_stage;
 
 /**
- * Parses the authorization headers from the input request, if exist
+ * Parses the authorization headers from the input request
  */
-pub fn parse_testbed_request_headers(
-    request: ParsedRequest,
-) -> Result<HeaderMap, APIRoutingError> {
+fn parse_testbed_request_headers(request: ParsedRequest) -> Result<HeaderMap, APIRoutingError> {
+    // Prep auth header forwarding
     let mut request_headers = HeaderMap::new();
     request_headers.insert("Content-Type", HeaderValue::from_static("application/json"));
 
@@ -83,6 +82,10 @@ pub fn build_data_product_uri(data_product: &str, data_source: &str) -> String {
                     .expect("PRH_MOCK_PRODUCTIZER_ENDPOINT must be set");
             }
             "draft/NSG/Agent/LegalEntity/NonListedCompany/SignatoryRights" => {
+                testbed_base_url = env::var("PRH_MOCK_PRODUCTIZER_ENDPOINT")
+                    .expect("PRH_MOCK_PRODUCTIZER_ENDPOINT must be set");
+            }
+            "draft/NSG/Agent/BasicInformation" => {
                 testbed_base_url = env::var("PRH_MOCK_PRODUCTIZER_ENDPOINT")
                     .expect("PRH_MOCK_PRODUCTIZER_ENDPOINT must be set");
             }

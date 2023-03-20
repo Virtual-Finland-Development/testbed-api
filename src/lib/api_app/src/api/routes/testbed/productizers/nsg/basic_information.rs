@@ -1,10 +1,16 @@
-use crate::api::routes::testbed::testbed_utils::service::post_data_product;
 use app::{
+    requests::post_json_request,
     responses::{APIResponse, APIRoutingError},
     router::ParsedRequest,
 };
 use serde::{Deserialize, Serialize};
+use utils::api::get_default_headers;
 use utoipa::ToSchema;
+
+use crate::api::routes::testbed::testbed_utils::{
+    build_data_product_staged_uri, build_data_product_uri,
+};
+use serde_json::Value as JSONValue;
 
 #[derive(Deserialize, Serialize, Debug, PartialEq, Eq, Clone, ToSchema)]
 pub struct NSGAgentBasicInformationRequest {
@@ -44,14 +50,28 @@ pub struct NSGAgentBasicInformationRequest {
     ))
 )]
 pub async fn get_nsg_basic_information(request: ParsedRequest) -> APIResponse {
-    let data_product = "draft/NSG/Agent/BasicInformation";
-    let query = request.query.clone();
-    let data_source = query.first("source").unwrap_or("");
-    if data_source.is_empty() {
-        return Err(APIRoutingError::BadRequest(
-            "Missing source parameter".to_string(),
-        ));
-    }
+    let request_input: NSGAgentBasicInformationRequest =
+        serde_json::from_str(request.body.as_str())?;
 
-    post_data_product(data_product, data_source, request).await
+    let data_product = "draft/NSG/Agent/BasicInformation";
+    let data_source = request.query.first("source").unwrap_or("");
+
+    let resolved_data_source = match data_source {
+        "" => {
+            return Err(APIRoutingError::BadRequest(
+                "Missing source parameter".to_string(),
+            ));
+        }
+        "virtualfinland" => build_data_product_staged_uri(data_product, data_source),
+        _ => build_data_product_uri(data_product, data_source),
+    };
+
+    let response = post_json_request::<NSGAgentBasicInformationRequest, JSONValue>(
+        resolved_data_source,
+        &request_input,
+        get_default_headers(),
+    )
+    .await?;
+
+    Ok(response)
 }
