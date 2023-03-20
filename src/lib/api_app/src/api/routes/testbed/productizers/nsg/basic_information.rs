@@ -8,7 +8,9 @@ use serde_json::Value as JSONValue;
 use utils::api::get_default_headers;
 use utoipa::ToSchema;
 
-use crate::api::routes::testbed::productizers::build_data_product_uri;
+use crate::api::routes::testbed::productizers::{
+    build_data_product_stage_uri, build_data_product_uri,
+};
 
 #[derive(Deserialize, Serialize, Debug, PartialEq, Eq, Clone, ToSchema)]
 pub struct NSGAgentBasicInformationRequest {
@@ -53,14 +55,19 @@ pub async fn get_nsg_basic_information(request: ParsedRequest) -> APIResponse {
 
     let data_product = "draft/NSG/Agent/BasicInformation";
     let data_source = request.query.first("source").unwrap_or("");
-    if data_source.is_empty() {
-        return Err(APIRoutingError::BadRequest(
-            "Missing source parameter".to_string(),
-        ));
-    }
+
+    let resolved_data_source = match data_source {
+        "" => {
+            return Err(APIRoutingError::BadRequest(
+                "Missing source parameter".to_string(),
+            ));
+        }
+        "virtualfinland" => build_data_product_stage_uri(data_product, data_source),
+        _ => build_data_product_uri(data_product, data_source),
+    };
 
     let response = post_json_request::<NSGAgentBasicInformationRequest, JSONValue>(
-        build_data_product_uri(data_product, data_source),
+        resolved_data_source,
         &request_input,
         get_default_headers(),
     )
