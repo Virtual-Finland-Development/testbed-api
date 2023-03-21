@@ -89,7 +89,7 @@ fn build_data_product_uri(data_product: &str, data_source: &str) -> String {
                     .expect("PRH_MOCK_PRODUCTIZER_ENDPOINT must be set");
             }
             "draft/NSG/Agent/BasicInformation" => {
-                if data_source == "virtualfinland" {
+                if data_source.starts_with("virtualfinland") {
                     testbed_base_url = env::var("PRH_MOCK_PRODUCTIZER_ENDPOINT")
                         .expect("PRH_MOCK_PRODUCTIZER_ENDPOINT must be set");
                 }
