@@ -89,7 +89,7 @@ pub fn parse_router_request(request: Request) -> ParsedRequest {
 }
 
 pub mod openapi {
-    use regex::{Captures, Regex};
+    use regex::Regex;
     use std::collections::HashMap;
     use urlencoding::decode as url_decode;
     use utoipa::openapi::{OpenApi, PathItem, PathItemType};
@@ -134,7 +134,7 @@ pub mod openapi {
                             continue;
                         }
 
-                        let map: std::collections::HashMap<_, _> = groups
+                        let map: HashMap<_, _> = groups
                             .iter()
                             .zip(values.iter())
                             .map(|(key, value)| {
