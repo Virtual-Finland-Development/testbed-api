@@ -40,7 +40,9 @@ tmtProductizerLambdaEndpoint = pulumi.StackReference(
 jobsInFinlandProductizerLambdaEndpoint = pulumi.StackReference(
     f"{organization}/jobs-in-finland-productizer/dev"
 ).get_output("ApplicationUrl")
-
+codesetsBaseUrl = pulumi.StackReference(f"{organization}/codesets/{stage}").get_output(
+    "url"
+)
 
 #
 # Lambda function
@@ -87,6 +89,7 @@ testbed_api_function = aws.lambda_.Function(
             "USERS_API_ENDPOINT_ORIGIN": usersApiLambdaEndpoint,
             "TMT_PRODUCTIZER_ENDPOINT_ORIGIN": tmtProductizerLambdaEndpoint,
             "JOBS_IN_FINLAND_PRODUCTIZER_ENDPOINT_ORIGIN": jobsInFinlandProductizerLambdaEndpoint,
+            "CODESETS_BASE_URL": codesetsBaseUrl,
             "STAGE": stage,
         }
     ),

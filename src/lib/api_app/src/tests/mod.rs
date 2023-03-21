@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod api_utils_test {
+    use std::env;
+
     use crate::api::routes::testbed::productizers::job::{
         construct_productizer_requests,
         job_models::{JobPosting, JobPostingResponse},
@@ -34,8 +36,8 @@ mod api_utils_test {
         assert_eq!(transformed_results.len(), 3);
     }
 
-    #[test]
-    fn test_request_parsing() {
+    #[tokio::test]
+    async fn test_request_parsing() {
         let endpoint_urls = vec![String::from("http1"), String::from("http2")];
 
         let mut headers = HeaderMap::new();
@@ -59,7 +61,7 @@ mod api_utils_test {
                     },
                     "requirements": {
                         "occupations": [],
-                        //"skills": [],
+                        "skills": [],
                     },
                     "paging": {
                         "itemsPerPage": 25,
@@ -71,6 +73,7 @@ mod api_utils_test {
         };
 
         let request = construct_productizer_requests(request_input, endpoint_urls)
+            .await
             .expect("Failed to construct the productizer requests");
 
         assert_eq!(request.endpoint_urls.len(), 2);
