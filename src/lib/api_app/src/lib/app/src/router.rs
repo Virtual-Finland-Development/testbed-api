@@ -89,7 +89,7 @@ pub fn parse_router_request(request: Request) -> ParsedRequest {
 }
 
 pub mod openapi {
-    use regex::Regex;
+    use regex::{Captures, Regex};
     use std::collections::HashMap;
     use urlencoding::decode as url_decode;
     use utoipa::openapi::{OpenApi, PathItem, PathItemType};
@@ -123,34 +123,39 @@ pub mod openapi {
 
                 let re_str = re.replace_all(key, "(.+)").to_string();
                 let input_re = Regex::new(&re_str).unwrap();
-                let input_caps = input_re.captures(path).unwrap();
+                let input_caps = input_re.captures(path);
 
-                let values: Vec<_> = groups
-                    .iter()
-                    .map(|_group| input_caps[1].to_string())
-                    .collect();
+                match input_caps {
+                    Some(caps) => {
+                        let values: Vec<_> =
+                            groups.iter().map(|_group| caps[1].to_string()).collect();
 
-                if groups.len() != values.len() {
-                    continue;
+                        if groups.len() != values.len() {
+                            continue;
+                        }
+
+                        let map: std::collections::HashMap<_, _> = groups
+                            .iter()
+                            .zip(values.iter())
+                            .map(|(key, value)| {
+                                (
+                                    key.to_string(),
+                                    url_decode(value.as_str())
+                                        .expect("Failed to url-decode the path param")
+                                        .into_owned(),
+                                )
+                            })
+                            .collect();
+
+                        return OperationResolution {
+                            operation_id: resolve_operation_id(value, method),
+                            path_params: map,
+                        };
+                    }
+                    None => {
+                        continue;
+                    }
                 }
-
-                let map: std::collections::HashMap<_, _> = groups
-                    .iter()
-                    .zip(values.iter())
-                    .map(|(key, value)| {
-                        (
-                            key.to_string(),
-                            url_decode(value.as_str())
-                                .expect("Failed to url-decode the path param")
-                                .into_owned(),
-                        )
-                    })
-                    .collect();
-
-                return OperationResolution {
-                    operation_id: resolve_operation_id(value, method),
-                    path_params: map,
-                };
             }
         }
 
