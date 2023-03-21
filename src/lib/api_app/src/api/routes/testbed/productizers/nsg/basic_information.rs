@@ -66,6 +66,8 @@ pub async fn get_nsg_basic_information(request: ParsedRequest) -> APIResponse {
         _ => build_data_product_uri(data_product, data_source),
     };
 
+    log::debug!("Resolved data source: {}", resolved_data_source);
+
     let response = post_json_request::<NSGAgentBasicInformationRequest, JSONValue>(
         resolved_data_source,
         &request_input,
