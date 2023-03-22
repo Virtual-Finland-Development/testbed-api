@@ -49,6 +49,7 @@ pub trait OpenApiRouter {
 /**
  * Request input for the router
  */
+#[derive(Debug)]
 pub struct ParsedRequest {
     pub path: String,
     pub path_params: HashMap<String, String>,
