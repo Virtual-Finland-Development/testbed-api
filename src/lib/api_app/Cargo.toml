@@ -22,6 +22,7 @@ utoipa = { workspace = true }
 tokio = { workspace = true }
 lazy_static = "1.4.0"
 memory-cache-rs = "0.2.0"
+mockito = "1.0.0"
 
 app = { path = "./src/lib/app" }
 utils = { path = "./src/lib/utils" }

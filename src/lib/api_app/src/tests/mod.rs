@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod api_utils_test {
+    use mockito::Server;
     use std::env;
 
     use crate::api::routes::testbed::productizers::job::{
@@ -72,6 +73,18 @@ mod api_utils_test {
             .to_string(),
         };
 
+        let mut server = Server::new_async().await;
+        server.mock("GET", "/resources/OccupationsEscoURL")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(json!([
+                {
+                    "uri": "http://data.europa.eu/esco/occupation/0c5e3b5a-1b1f-4b0e-8d0c-4c4c4c4c4c4c",
+                }
+            ]).to_string())
+            .create_async().await;
+
+        env::set_var("CODESETS_BASE_URL", server.url());
         let request = construct_productizer_requests(request_input, endpoint_urls)
             .await
             .expect("Failed to construct the productizer requests");
