@@ -44,7 +44,7 @@ pub async fn find_job_postings(request: ParsedRequest) -> APIResponse {
         .expect("JOB_POSTING_PRODUCTIZER_ENDPOINTS must be set");
     let endpoint_urls = parse_comma_separated_list(endpoint_urls_as_text);
 
-    let request = construct_productizer_requests(request, endpoint_urls)?;
+    let request = construct_productizer_requests(request, endpoint_urls).await?;
 
     // Fetch the data
     let (response_status, good_responses, error_response_body) =
@@ -99,13 +99,13 @@ pub async fn find_job_postings(request: ParsedRequest) -> APIResponse {
     }
 }
 
-pub fn construct_productizer_requests(
+pub async fn construct_productizer_requests(
     request: ParsedRequest,
     endpoint_urls: Vec<String>,
 ) -> Result<ProductizerRequest, APIRoutingError> {
     let original_input =
         serde_json::from_str::<JobsRequestFromFrontend>(request.body.as_str())?;
-    let request_input = parse_job_request_input(&original_input);
+    let request_input = parse_job_request_input(&original_input).await;
 
     let request_headers = parse_testbed_request_headers(request)?;
 
@@ -139,7 +139,7 @@ pub fn construct_productizer_requests(
     })
 }
 
-pub fn parse_job_request_input(
+pub async fn parse_job_request_input(
     request_input: &JobsRequestFromFrontend,
 ) -> JobsRequestFromFrontend {
     let mut frontend_input = request_input.clone();
@@ -147,7 +147,7 @@ pub fn parse_job_request_input(
     // Parse the requirements
     if frontend_input.requirements.occupations.is_some() {
         let occupations = frontend_input.requirements.occupations.unwrap();
-        let extended_occupations = extend_job_occupations(occupations);
+        let extended_occupations = extend_job_occupations(occupations).await;
         frontend_input.requirements.occupations = Some(extended_occupations);
     }
 

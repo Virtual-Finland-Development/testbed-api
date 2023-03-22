@@ -1,3 +1,8 @@
+use lazy_static::lazy_static;
+use memory_cache::MemoryCache;
+
+use std::{env, sync::Mutex};
+
 use itertools::Itertools;
 use serde::Deserialize;
 use serde_json::from_str as deserialize_json_from_string;
@@ -5,15 +10,15 @@ use serde_json::from_str as deserialize_json_from_string;
 //
 // Inputs from the frontend
 //
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 struct Occupation {
     pub uri: Option<String>,
     pub broader: Option<Vec<String>>,
 }
 
-pub fn extend_job_occupations(occupations: Vec<String>) -> Vec<String> {
+pub async fn extend_job_occupations(occupations: Vec<String>) -> Vec<String> {
     let mut extended_occupations: Vec<String> = Vec::new();
-    let codesets = get_esco_occupations_codeset();
+    let codesets = get_esco_occupations_codeset().await;
 
     for occupation_uri in occupations {
         if !occupation_uri.contains("://data.europa.eu/esco/occupation/") {
@@ -56,9 +61,35 @@ fn extend_job_occupation_uris(
     extended_occupation_uris
 }
 
-fn get_esco_occupations_codeset() -> Vec<Occupation> {
-    let contents =
-        include_str!("../../../../resources/testbed/jobs/esco-1.1.0-occupations.json");
-    deserialize_json_from_string::<Vec<Occupation>>(contents)
-        .expect("Failed to parse the ESCO occupations codeset")
+async fn get_esco_occupations_codeset() -> Vec<Occupation> {
+    let cache_key = String::from("esco_occupations_codeset");
+
+    lazy_static! {
+        static ref CACHE: Mutex<MemoryCache<String, Vec<Occupation>>> =
+            Mutex::new(MemoryCache::new());
+    }
+
+    if let Some(codesets) = CACHE.lock().unwrap().get(&cache_key) {
+        return codesets.to_vec();
+    }
+
+    let codesets_base_url =
+        env::var("CODESETS_BASE_URL").expect("CODESETS_BASE_URL must be set");
+    let codesets_occupation_url = format!("{}/resources/OccupationsEscoURL", codesets_base_url);
+    let contents = reqwest::get(codesets_occupation_url)
+        .await
+        .expect("Failed to get the ESCO occupations codeset")
+        .text()
+        .await
+        .expect("Failed to parse the ESCO occupations codeset");
+
+    let occupations = deserialize_json_from_string::<Vec<Occupation>>(&contents)
+        .expect("Failed to deserialize the ESCO occupations codeset");
+
+    CACHE
+        .lock()
+        .unwrap()
+        .insert(cache_key, occupations.clone(), None);
+
+    occupations
 }

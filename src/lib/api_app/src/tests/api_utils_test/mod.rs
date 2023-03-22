@@ -1,4 +1,6 @@
+use mockito::Server;
 use std::collections::HashMap;
+use std::env;
 
 use crate::api::routes::testbed::productizers::job::{
     construct_productizer_requests,
@@ -34,8 +36,8 @@ fn test_jobs_response_handlings() {
     assert_eq!(transformed_results.len(), 3);
 }
 
-#[test]
-fn test_request_parsing() {
+#[tokio::test]
+async fn test_request_parsing() {
     let endpoint_urls = vec![String::from("http1"), String::from("http2")];
 
     let mut headers = HeaderMap::new();
@@ -71,7 +73,20 @@ fn test_request_parsing() {
         .to_string(),
     };
 
+    let mut server = Server::new_async().await;
+    server.mock("GET", "/resources/OccupationsEscoURL")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(json!([
+                {
+                    "uri": "http://data.europa.eu/esco/occupation/0c5e3b5a-1b1f-4b0e-8d0c-4c4c4c4c4c4c",
+                }
+            ]).to_string())
+            .create_async().await;
+    env::set_var("CODESETS_BASE_URL", server.url());
+
     let request = construct_productizer_requests(request_input, endpoint_urls)
+        .await
         .expect("Failed to construct the productizer requests");
 
     assert_eq!(request.endpoint_urls.len(), 2);

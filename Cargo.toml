@@ -16,7 +16,7 @@ lambda_http = "^0.7.1"
 futures = "^0.3.18"
 itertools = "^0.10.5"
 libmath = "^0.2.1"
-stopwatch = "^0.0.7"
+stopwatch = { git = "https://github.com/jwpjrdev/rust-stopwatch.git", branch="master" }
 utoipa = "3"
 tokio = { version = "^1.21.2", features = ["full"] }
 
