@@ -18,11 +18,12 @@ itertools = "^0.10.5"
 libmath = "^0.2.1"
 stopwatch = "^0.0.7"
 utoipa = "3"
+tokio = { version = "^1.21.2", features = ["full"] }
 
 [dependencies]
 hot-lib-reloader = { version = "^0.6", optional = true }
-tokio = { version = "^1.21.2", features = ["full"] }
 dotenv = "^0.15.0"
+tokio = { workspace = true }
 log = { workspace = true }
 simple_logger = { workspace = true }
 lambda_http = { workspace = true }

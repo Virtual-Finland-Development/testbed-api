@@ -19,6 +19,7 @@ itertools = { workspace = true }
 libmath = { workspace = true }
 stopwatch = { workspace = true }
 utoipa = { workspace = true }
+tokio = { workspace = true }
 lazy_static = "1.4.0"
 
 app = { path = "./src/lib/app" }

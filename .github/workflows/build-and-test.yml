@@ -19,12 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Build 🔧
-        run: |
-          make build
-      - name: Test 🧪
+      - name: Test & Build 🧪🔧
         run: |
           make test
+          make build
       - name: Archive the build artifacts 🐪
         if: ${{ inputs.wants_artifacts }}
         uses: actions/upload-artifact@v3

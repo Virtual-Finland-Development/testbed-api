@@ -1,7 +1,10 @@
+use std::collections::HashMap;
+
 use http::{
     header::{HeaderMap, HeaderName},
     HeaderValue,
 };
+use lambda_http::aws_lambda_events::query_map::QueryMap;
 
 /**
  * Cors preflight response headers.
@@ -49,4 +52,25 @@ pub fn get_plain_headers() -> HeaderMap {
     );
 
     cors_headers
+}
+
+pub fn parse_query_param(query: QueryMap, query_param_name: &str) -> Result<String, String> {
+    let query_param = query.first(query_param_name);
+    if query_param.is_none() {
+        return Err(format!("Missing {} parameter", query_param_name));
+    }
+
+    Ok(query_param.unwrap().to_string())
+}
+
+pub fn parse_path_param(
+    path_params: HashMap<String, String>,
+    path_param_name: &str,
+) -> Result<String, String> {
+    let path_param = path_params.get(path_param_name);
+    if path_param.is_none() {
+        return Err(format!("Missing {} path parameter", path_param_name));
+    }
+
+    Ok(path_param.unwrap().to_string())
 }
