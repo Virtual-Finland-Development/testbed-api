@@ -25,6 +25,7 @@ pub mod testbed;
         application::health_check,
         application::wake_up_external_services,
         testbed::engage_reverse_proxy_request,
+        testbed::get_general_data_product,
         testbed::productizers::figure::get_population,
         testbed::productizers::job::find_job_postings,
         testbed::productizers::user::fetch_user_profile,

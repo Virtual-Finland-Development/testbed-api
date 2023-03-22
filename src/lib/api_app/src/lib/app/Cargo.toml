@@ -17,3 +17,5 @@ lambda_http = { workspace = true }
 futures = { workspace = true }
 stopwatch = { workspace = true }
 utoipa = { workspace = true }
+regex = "1"
+urlencoding = "2"

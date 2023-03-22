@@ -1,19 +1,55 @@
-use std::collections::HashMap;
-use utoipa::ToSchema;
-
 use http::HeaderMap;
-use serde::{Deserialize, Serialize};
 use serde_json::Value as JSONValue;
-
-use crate::api::routes::application::get_external_service_bad_response;
 
 use app::{
     responses::{APIResponse, APIRoutingError, APIRoutingResponse},
     router::ParsedRequest,
 };
+
+use utils::api::{parse_path_param, parse_query_param};
+
+use crate::api::routes::application::get_external_service_bad_response;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use utils::api::get_cors_response_headers;
+use utoipa::ToSchema;
 
 pub mod productizers;
+pub mod testbed_utils;
+
+use testbed_utils::{access_control_check, service::post_data_product};
+
+#[utoipa::path(
+    post,
+    path = "/testbed/data-product/{data_product}",
+    request_body(content = Object, description = "Data product request", example = json!({
+        "lat": 60.192059,
+        "lon": 24.945831
+    })),
+    responses((status = 200, body = Object, description = "Data product response")),
+    params(
+        ("data_product" = str, Path, description = "Data product name", example = "draft/Weather/Current/Metric"),
+        ("source" = str, Query, description = "Data source name", example = "openweather")
+    ),
+)]
+pub async fn get_general_data_product(request: ParsedRequest) -> APIResponse {
+    log::debug!("Path: {:#?}", request.path);
+    log::debug!("Query: {:#?}", request.query);
+    log::debug!("Path params: {:#?}", request.path_params);
+
+    let path_params = request.path_params.clone();
+    let query = request.query.clone();
+
+    let data_product = parse_path_param(path_params, "data_product")?;
+    let data_source = parse_query_param(query, "source")?;
+
+    log::debug!("Data product: {:#?}", data_product);
+    log::debug!("Data source: {:#?}", data_source);
+
+    let result =
+        post_data_product(data_product.as_str(), data_source.as_str(), request).await?;
+    Ok(result)
+}
 
 #[derive(Deserialize, Serialize, Debug, ToSchema)]
 pub struct ProxyRequestInput {
@@ -68,25 +104,4 @@ pub async fn engage_reverse_proxy_request(request: ParsedRequest) -> APIResponse
         &serde_json::to_string(&response_output)?,
         get_cors_response_headers(),
     ))
-}
-
-/**
- * Access control check
- *
- * @param proxy_destination_url
- * @returns {boolean} - true if access is denied
- */
-fn access_control_check(proxy_destination_url: &str) -> bool {
-    // Access control list check
-    let acl = ["https://consent.testbed.fi/", "https://gateway.testbed.fi/"];
-
-    let mut acl_is_satisfied = false;
-    for url in acl {
-        if proxy_destination_url.starts_with(url) {
-            acl_is_satisfied = true;
-            break;
-        }
-    }
-
-    !acl_is_satisfied
 }

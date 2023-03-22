@@ -4,13 +4,13 @@ use app::{
     router::ParsedRequest,
 };
 use serde::{Deserialize, Serialize};
-use serde_json::Value as JSONValue;
 use utils::api::get_default_headers;
 use utoipa::ToSchema;
 
-use crate::api::routes::testbed::productizers::{
-    build_data_product_stage_uri, build_data_product_uri,
+use crate::api::routes::testbed::testbed_utils::{
+    build_data_product_staged_uri, build_data_product_uri,
 };
+use serde_json::Value as JSONValue;
 
 #[derive(Deserialize, Serialize, Debug, PartialEq, Eq, Clone, ToSchema)]
 pub struct NSGAgentBasicInformationRequest {
@@ -62,7 +62,7 @@ pub async fn get_nsg_basic_information(request: ParsedRequest) -> APIResponse {
                 "Missing source parameter".to_string(),
             ));
         }
-        "virtualfinland" => build_data_product_stage_uri(data_product, data_source),
+        "virtualfinland" => build_data_product_staged_uri(data_product, data_source),
         _ => build_data_product_uri(data_product, data_source),
     };
 
