@@ -6,6 +6,8 @@ use app::{
     router::ParsedRequest,
 };
 
+use utils::api::{parse_path_param, parse_query_param};
+
 use crate::api::routes::application::get_external_service_bad_response;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -38,21 +40,14 @@ pub async fn get_general_data_product(request: ParsedRequest) -> APIResponse {
     let path_params = request.path_params.clone();
     let query = request.query.clone();
 
-    let data_product = path_params
-        .get("data_product")
-        .expect("Missing data product parameter"); // Should be resolved by the router
-
-    let data_source = query.first("source").unwrap_or(""); // @TODO: functionalize
-    if data_source.is_empty() {
-        return Err(APIRoutingError::BadRequest(
-            "Missing source parameter".to_string(),
-        ));
-    }
+    let data_product = parse_path_param(path_params, "data_product")?;
+    let data_source = parse_query_param(query, "source")?;
 
     log::debug!("Data product: {:#?}", data_product);
     log::debug!("Data source: {:#?}", data_source);
 
-    let result = post_data_product(data_product, data_source, request).await?;
+    let result =
+        post_data_product(data_product.as_str(), data_source.as_str(), request).await?;
     Ok(result)
 }
 

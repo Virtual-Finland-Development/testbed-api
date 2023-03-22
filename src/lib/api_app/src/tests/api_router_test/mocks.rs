@@ -4,11 +4,11 @@ use serde_json::json;
 
 use crate::api::routes::application;
 use app::{
-    responses::{APIResponse, APIRoutingError, APIRoutingResponse},
+    responses::{APIResponse, APIRoutingResponse},
     router::{parse_router_request, OpenApiRouter, ParsedRequest},
 };
 use lambda_http::{Body, Request};
-use utils::api::get_default_headers;
+use utils::api::{get_default_headers, parse_path_param, parse_query_param};
 use utoipa::OpenApi;
 
 #[utoipa::path(
@@ -23,16 +23,8 @@ pub async fn get_test_response(request: ParsedRequest) -> APIResponse {
     let path_params = request.path_params.clone();
     let query = request.query;
 
-    let data_product = path_params
-        .get("data_product")
-        .expect("Missing data product parameter"); // Should be resolved by the router
-
-    let data_source = query.first("source").unwrap_or(""); // @TODO: functionalize
-    if data_source.is_empty() {
-        return Err(APIRoutingError::BadRequest(
-            "Missing source parameter".to_string(),
-        ));
-    }
+    let data_product = parse_path_param(path_params, "data_product")?;
+    let data_source = parse_query_param(query, "source")?;
 
     Ok(APIRoutingResponse {
         status_code: StatusCode::OK,
