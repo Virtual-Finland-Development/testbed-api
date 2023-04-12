@@ -87,6 +87,22 @@ pub fn build_data_product_uri(data_product: &str, data_source: &str) -> String {
                 testbed_base_url = env::var("PRH_MOCK_PRODUCTIZER_ENDPOINT")
                     .expect("PRH_MOCK_PRODUCTIZER_ENDPOINT must be set");
             }
+            "draft/Person/BasicInformation" => {
+                testbed_base_url = env::var("USER_PROFILE_PRODUCTIZER_ENDPOINT")
+                    .expect("USER_PROFILE_PRODUCTIZER_ENDPOINT must be set");
+            }
+            "draft/Person/BasicInformation/Write" => {
+                testbed_base_url = env::var("USER_PROFILE_PRODUCTIZER_ENDPOINT")
+                    .expect("USER_PROFILE_PRODUCTIZER_ENDPOINT must be set");
+            }
+            "draft/Person/JobApplicantProfile" => {
+                testbed_base_url = env::var("USER_PROFILE_PRODUCTIZER_ENDPOINT")
+                    .expect("USER_PROFILE_PRODUCTIZER_ENDPOINT must be set");
+            }
+            "draft/Person/JobApplicantProfile/Write" => {
+                testbed_base_url = env::var("USER_PROFILE_PRODUCTIZER_ENDPOINT")
+                    .expect("USER_PROFILE_PRODUCTIZER_ENDPOINT must be set");
+            }
             "draft/NSG/Agent/BasicInformation" => {
                 if data_source.starts_with("virtualfinland") {
                     testbed_base_url = env::var("PRH_MOCK_PRODUCTIZER_ENDPOINT")
