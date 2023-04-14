@@ -19,11 +19,24 @@ pub async fn post_json_request<
     request_input: &I,
     request_headers: HeaderMap,
 ) -> APIResponse {
+    engage_json_request::<I, O>(Method::POST, endpoint_url, request_input, request_headers)
+        .await
+}
+
+pub async fn engage_json_request<
+    I: Debug + Serialize,
+    O: Debug + Serialize + for<'a> Deserialize<'a>,
+>(
+    request_method: Method,
+    endpoint_url: String,
+    request_input: &I,
+    request_headers: HeaderMap,
+) -> APIResponse {
     let client = reqwest::Client::new();
     let response = engage_json_data_request::<I, O>(
         &client,
         endpoint_url,
-        Method::POST,
+        request_method,
         request_input,
         request_headers,
     )
