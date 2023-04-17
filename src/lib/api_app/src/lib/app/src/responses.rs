@@ -48,6 +48,8 @@ pub enum APIRoutingError {
     Forbidden(String),
     // 404
     NotFound(String),
+    // 405
+    MethodNotAllowed(String),
     // 422
     UnprocessableEntity(String),
     // 500
@@ -67,6 +69,7 @@ impl APIRoutingError {
             APIRoutingError::Unauthorized(_) => StatusCode::UNAUTHORIZED,
             APIRoutingError::Forbidden(_) => StatusCode::FORBIDDEN,
             APIRoutingError::NotFound(_) => StatusCode::NOT_FOUND,
+            APIRoutingError::MethodNotAllowed(_) => StatusCode::METHOD_NOT_ALLOWED,
             APIRoutingError::UnprocessableEntity(_) => StatusCode::UNPROCESSABLE_ENTITY,
             APIRoutingError::InternalServerError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             APIRoutingError::BadGateway(_) => StatusCode::BAD_GATEWAY,
@@ -90,6 +93,7 @@ impl APIRoutingError {
             StatusCode::UNAUTHORIZED => APIRoutingError::Unauthorized(message_string),
             StatusCode::FORBIDDEN => APIRoutingError::Forbidden(message_string),
             StatusCode::NOT_FOUND => APIRoutingError::NotFound(message_string),
+            StatusCode::METHOD_NOT_ALLOWED => APIRoutingError::MethodNotAllowed(message_string),
             StatusCode::UNPROCESSABLE_ENTITY => {
                 APIRoutingError::UnprocessableEntity(message_string)
             }
@@ -148,6 +152,11 @@ impl std::fmt::Display for APIRoutingError {
                 "{}",
                 parse_api_routing_error_message(message, "Not found", "")
             ),
+            APIRoutingError::MethodNotAllowed(message) => write!(
+                f,
+                "{}",
+                parse_api_routing_error_message(message, "Method not allowed", "")
+            ),
             APIRoutingError::UnprocessableEntity(message) => write!(
                 f,
                 "{}",
@@ -184,6 +193,7 @@ impl From<reqwest::Error> for APIRoutingError {
             StatusCode::UNAUTHORIZED => APIRoutingError::Unauthorized(e.to_string()),
             StatusCode::FORBIDDEN => APIRoutingError::Forbidden(e.to_string()),
             StatusCode::NOT_FOUND => APIRoutingError::NotFound(e.to_string()),
+            StatusCode::METHOD_NOT_ALLOWED => APIRoutingError::MethodNotAllowed(e.to_string()),
             StatusCode::UNPROCESSABLE_ENTITY => {
                 APIRoutingError::UnprocessableEntity(e.to_string())
             }
