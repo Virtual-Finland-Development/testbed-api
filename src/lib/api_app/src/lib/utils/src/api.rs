@@ -19,7 +19,7 @@ pub fn get_cors_response_headers() -> HeaderMap {
 
     headers.insert(
         HeaderName::from_static("access-control-allow-methods"),
-        HeaderValue::from_static("GET, POST, OPTIONS"),
+        HeaderValue::from_static("GET, POST, DELETE, OPTIONS"),
     );
 
     headers.insert(

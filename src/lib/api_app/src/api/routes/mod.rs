@@ -10,6 +10,7 @@ use app::{
 pub mod application;
 pub mod jmf;
 pub mod testbed;
+pub mod users_api;
 
 #[derive(OpenApi, OpenApiRouter)]
 #[openapi(
@@ -40,6 +41,7 @@ pub mod testbed;
         testbed::productizers::nsg::non_listed_company::beneficial_owners::get_beneficial_owners,
         testbed::productizers::nsg::non_listed_company::signatory_rights::get_signatory_rights,
         testbed::productizers::nsg::basic_information::get_nsg_basic_information,
+        users_api::delete_user
     ),
     components(schemas( // @TODO: would be very nice to auto-generate schemas
         testbed::ProxyRequestInput,
