@@ -115,3 +115,4 @@ add_permissions = local.Command(
 )
 
 pulumi.export("url", lambda_url.function_url)
+pulumi.export("LambdaId", testbed_api_function.name)
