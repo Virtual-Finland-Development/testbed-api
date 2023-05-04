@@ -20,9 +20,8 @@ stage = pulumi.get_stack()
 organization = pulumi.get_organization()
 
 tags = {
-    "Name": name,
-    "Environment": stage,
-    "Project": "Virtual Finland",
+    "vfd:stack": stage,
+    "vfd:project": pulumi.get_project(),
 }
 
 #
