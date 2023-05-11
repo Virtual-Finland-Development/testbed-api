@@ -7,7 +7,6 @@ on:
 jobs:
   deploy:
     uses: Virtual-Finland-Development/testbed-api/.github/workflows/deployment.yml@main
+    secrets: inherit
     with:
       deployment_stage: staging
-    secrets:
-      inherit: true
