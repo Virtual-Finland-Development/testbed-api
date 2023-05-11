@@ -16,7 +16,6 @@ on:
 
 env:
   pulumi_stack_organization: virtualfinland
-  aws_region: eu-north-1
 
 jobs:
   build-and-test:
