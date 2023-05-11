@@ -9,9 +9,7 @@ on:
     secrets:
       PULUMI_ACCESS_TOKEN:
         required: true
-      AWS_ACCESS_KEY_ID:
-        required: true
-      AWS_SECRET_ACCESS_KEY:
+      AWS_REGION:
         required: true
 
 env:
