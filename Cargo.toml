@@ -14,7 +14,7 @@ reqwest = { version = "^0.11.12", features = ["json"] }
 simple_logger = "^4.0.0"
 lambda_http = "^0.8.0"
 futures = "^0.3.18"
-itertools = "^0.10.5"
+itertools = "^0.11.0"
 libmath = "^0.2.1"
 stopwatch = { git = "https://github.com/jwpjrdev/rust-stopwatch.git", branch="master" }
 utoipa = "3"
