@@ -2,3 +2,6 @@ name: testbed-api
 description: Testbed API wrapper
 runtime: python
 main: main.py
+config:
+  aws:region: eu-north-1
+  aws-native:region: eu-north-1

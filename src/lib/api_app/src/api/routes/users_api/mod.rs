@@ -18,9 +18,15 @@ use serde_json::{json, Value as JSONValue};
 pub async fn delete_user(request: ParsedRequest) -> APIResponse {
     let users_api_origin =
         env::var("USERS_API_ENDPOINT_ORIGIN").expect("USERS_API_ENDPOINT_ORIGIN must be set");
+    let users_api_access_key = env::var("USERS_API_ACCESS_KEY").expect("USERS_API_ACCESS_KEY must be set");
+
     let endpoint_url = format!("{}/user", users_api_origin);
     let request_input = json!({});
     let request_headers = parse_request_headers(request)?;
+
+    request_headers.insert(
+        "X-Api-Key", users_api_access_key,
+    );
 
     let response = engage_json_request::<JSONValue, JSONValue>(
         Method::DELETE,

@@ -25,7 +25,7 @@ tags = {
 }
 
 #
-# External API references
+# External references
 #
 authenticationGWLambdaEndpoint = pulumi.StackReference(
     f"{organization}/authentication-gw/{stage}"
@@ -42,6 +42,9 @@ jobsInFinlandProductizerLambdaEndpoint = pulumi.StackReference(
 codesetsBaseUrl = pulumi.StackReference(f"{organization}/codesets/{stage}").get_output(
     "url"
 )
+sharedAccessKey = pulumi.StackReference(
+    f"{organization}/infrastructure/{stage}"
+).get_output("SharedAccessKey")
 
 #
 # Lambda function
@@ -90,6 +93,7 @@ testbed_api_function = aws.lambda_.Function(
             "JOBS_IN_FINLAND_PRODUCTIZER_ENDPOINT_ORIGIN": jobsInFinlandProductizerLambdaEndpoint,
             "CODESETS_BASE_URL": codesetsBaseUrl,
             "STAGE": stage,
+            "USERS_API_ACCESS_KEY": sharedAccessKey,
         }
     ),
 )
