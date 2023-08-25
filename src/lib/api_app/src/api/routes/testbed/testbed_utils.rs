@@ -44,9 +44,6 @@ pub fn parse_testbed_request_headers(
     Ok(request_headers)
 }
 
-/**
- * Builds the URI for the testbed data product
- */
 pub fn build_data_product_staged_uri(data_product: &str, data_source: &str) -> String {
     let testbed_environment =
         env::var("TESTBED_ENVIRONMENT").expect("TESTBED_ENVIRONMENT must be set");
@@ -54,6 +51,13 @@ pub fn build_data_product_staged_uri(data_product: &str, data_source: &str) -> S
         data_product,
         format!("{data_source}:{testbed_environment}").as_str(),
     )
+}
+
+/**
+ * Retrieves the default data product source
+ */
+pub fn get_default_data_product_source() -> String {
+    env::var("TESTBED_DEFAULT_DATASOURCE").expect("TESTBED_DEFAULT_DATASOURCE must be set")
 }
 
 pub fn build_data_product_uri(data_product: &str, data_source: &str) -> String {
