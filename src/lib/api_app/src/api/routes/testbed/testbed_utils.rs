@@ -41,6 +41,10 @@ pub fn parse_testbed_request_headers(
                 .clone(),
         );
     }
+    
+    // Add user-agent header
+    request_headers.insert("user-agent", HeaderValue::from_static("Virtual Finland - Testbed API"));
+
     Ok(request_headers)
 }
 
