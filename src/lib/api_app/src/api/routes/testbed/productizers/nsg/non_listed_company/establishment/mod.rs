@@ -27,7 +27,7 @@ use app::{responses::APIResponse, router::ParsedRequest};
 )]
 pub async fn write_establishment(request: ParsedRequest) -> APIResponse {
     let data_product = "NSG/Agent/LegalEntity/NonListedCompany/Establishment/Write_v1.0";
-    let data_source = "virtualfinland";
+    let data_source = "accessfinland";
     let result = post_staged_data_product(data_product, data_source, request).await?;
     Ok(result)
 }

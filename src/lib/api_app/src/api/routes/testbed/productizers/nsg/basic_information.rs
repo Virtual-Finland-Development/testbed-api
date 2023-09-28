@@ -62,7 +62,7 @@ pub async fn get_nsg_basic_information(request: ParsedRequest) -> APIResponse {
                 "Missing source parameter".to_string(),
             ));
         }
-        "virtualfinland" => build_data_product_staged_uri(data_product, data_source),
+        "accessfinland" => build_data_product_staged_uri(data_product, data_source),
         _ => build_data_product_uri(data_product, data_source),
     };
 
