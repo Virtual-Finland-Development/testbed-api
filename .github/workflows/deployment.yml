@@ -11,7 +11,12 @@ on:
         required: true
       AWS_REGION:
         required: true
-
+  workflow_dispatch:
+    inputs:
+      deployment_stage:
+        description: Environment where to deploy the stack (dev, staging)
+        type: environment
+        required: true
 env:
   pulumi_stack_organization: virtualfinland
 
