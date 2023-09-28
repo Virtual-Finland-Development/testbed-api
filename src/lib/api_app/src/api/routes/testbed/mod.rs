@@ -28,7 +28,7 @@ use testbed_utils::{access_control_check, service::post_data_product};
     })),
     responses((status = 200, body = Object, description = "Data product response")),
     params(
-        ("data_product" = str, Path, description = "Data product name", example = "draft/Weather/Current/Metric"),
+        ("data_product" = str, Path, description = "Data product name", example = "Weather/Current/Metric"),
         ("source" = str, Query, description = "Data source name", example = "openweather")
     ),
 )]

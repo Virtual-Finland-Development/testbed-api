@@ -83,35 +83,35 @@ pub fn build_data_product_uri(data_product: &str, data_source: &str) -> String {
                 testbed_base_url = env::var("USER_STATUS_INFO_PRODUCTIZER_ENDPOINT")
                     .expect("USER_STATUS_INFO_PRODUCTIZER_ENDPOINT must be set");
             }
-            "draft/NSG/Agent/LegalEntity/NonListedCompany/Establishment/Write" => {
+            "NSG/Agent/LegalEntity/NonListedCompany/Establishment/Write_v1.0" => {
                 testbed_base_url = env::var("PRH_MOCK_PRODUCTIZER_ENDPOINT")
                     .expect("PRH_MOCK_PRODUCTIZER_ENDPOINT must be set");
             }
-            "draft/NSG/Agent/LegalEntity/NonListedCompany/BeneficialOwners" => {
+            "NSG/Agent/LegalEntity/NonListedCompany/BeneficialOwners_v1.0" => {
                 testbed_base_url = env::var("PRH_MOCK_PRODUCTIZER_ENDPOINT")
                     .expect("PRH_MOCK_PRODUCTIZER_ENDPOINT must be set");
             }
-            "draft/NSG/Agent/LegalEntity/NonListedCompany/SignatoryRights" => {
+            "NSG/Agent/LegalEntity/NonListedCompany/SignatoryRights_v1.0" => {
                 testbed_base_url = env::var("PRH_MOCK_PRODUCTIZER_ENDPOINT")
                     .expect("PRH_MOCK_PRODUCTIZER_ENDPOINT must be set");
             }
-            "draft/Person/BasicInformation" => {
+            "Person/BasicInformation_v1.0" => {
                 testbed_base_url = env::var("USER_PROFILE_PRODUCTIZER_ENDPOINT")
                     .expect("USER_PROFILE_PRODUCTIZER_ENDPOINT must be set");
             }
-            "draft/Person/BasicInformation/Write" => {
+            "Person/BasicInformation/Write_v1.0" => {
                 testbed_base_url = env::var("USER_PROFILE_PRODUCTIZER_ENDPOINT")
                     .expect("USER_PROFILE_PRODUCTIZER_ENDPOINT must be set");
             }
-            "draft/Person/JobApplicantProfile" => {
+            "Person/JobApplicantProfile_v1.0" => {
                 testbed_base_url = env::var("USER_PROFILE_PRODUCTIZER_ENDPOINT")
                     .expect("USER_PROFILE_PRODUCTIZER_ENDPOINT must be set");
             }
-            "draft/Person/JobApplicantProfile/Write" => {
+            "Person/JobApplicantProfile/Write_v1.0" => {
                 testbed_base_url = env::var("USER_PROFILE_PRODUCTIZER_ENDPOINT")
                     .expect("USER_PROFILE_PRODUCTIZER_ENDPOINT must be set");
             }
-            "draft/NSG/Agent/BasicInformation" => {
+            "NSG/Agent/BasicInformation_v1.0" => {
                 if data_source.starts_with("virtualfinland") {
                     testbed_base_url = env::var("PRH_MOCK_PRODUCTIZER_ENDPOINT")
                         .expect("PRH_MOCK_PRODUCTIZER_ENDPOINT must be set");
