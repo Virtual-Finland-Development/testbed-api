@@ -15,7 +15,7 @@ use utoipa::OpenApi;
     get,
     path = "/test/{data_product}",
     params(
-        ("data_product" = str, Path, description = "Data product name", example = "draft/Weather/Current/Metric"),
+        ("data_product" = str, Path, description = "Data product name", example = "Weather/Current/Metric"),
         ("source" = str, Query, description = "Data source name", example = "openweather")
     ),
 )]

@@ -45,7 +45,7 @@ pub struct NSGAgentBasicInformationRequest {
         examples(( "Success" = (
             summary = "JSON example",
             value = json!("Loading..."),
-            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/NSG/Agent/BasicInformation.json"
+            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/NSG/Agent/BasicInformation_v1.0.json"
         )))
     ))
 )]
@@ -53,7 +53,7 @@ pub async fn get_nsg_basic_information(request: ParsedRequest) -> APIResponse {
     let request_input: NSGAgentBasicInformationRequest =
         serde_json::from_str(request.body.as_str())?;
 
-    let data_product = "draft/NSG/Agent/BasicInformation";
+    let data_product = "NSG/Agent/BasicInformation_v1.0";
     let data_source = request.query.first("source").unwrap_or("");
 
     let resolved_data_source = match data_source {
@@ -62,7 +62,7 @@ pub async fn get_nsg_basic_information(request: ParsedRequest) -> APIResponse {
                 "Missing source parameter".to_string(),
             ));
         }
-        "virtualfinland" => build_data_product_staged_uri(data_product, data_source),
+        "accessfinland" => build_data_product_staged_uri(data_product, data_source),
         _ => build_data_product_uri(data_product, data_source),
     };
 

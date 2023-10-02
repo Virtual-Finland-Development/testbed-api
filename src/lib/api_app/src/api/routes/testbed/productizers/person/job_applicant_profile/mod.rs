@@ -11,7 +11,7 @@ use crate::api::routes::testbed::testbed_utils::get_default_data_product_source;
         examples(( "Success" = (
             summary = "JSON example",
             value = json!("Loading.."),
-            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/JobApplicantProfile.json",
+            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/Person/JobApplicantProfile_v1.0.json",
         )))
     ),
     responses((
@@ -21,13 +21,13 @@ use crate::api::routes::testbed::testbed_utils::get_default_data_product_source;
         examples(( "Success" = (
             summary = "JSON example",
             value = json!("Loading.."),
-            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/JobApplicantProfile.json",
+            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/Person/JobApplicantProfile_v1.0.json",
         )))
     )),
     security(( "BearerAuth" = [] ))
 )]
 pub async fn get_job_applicant_profile(request: ParsedRequest) -> APIResponse {
-    let data_product = "draft/Person/JobApplicantProfile";
+    let data_product = "Person/JobApplicantProfile_v1.0";
     let data_source = &get_default_data_product_source();
     let result = super::get_data_product(data_product, data_source, request).await?;
     Ok(result)
@@ -42,7 +42,7 @@ pub async fn get_job_applicant_profile(request: ParsedRequest) -> APIResponse {
         examples(( "Success" = (
             summary = "JSON example",
             value = json!("Loading.."),
-            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/JobApplicantProfile/Write.json",
+            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/Person/JobApplicantProfile/Write_v1.0.json",
         )))
     ),
     responses((
@@ -52,13 +52,13 @@ pub async fn get_job_applicant_profile(request: ParsedRequest) -> APIResponse {
         examples(( "Success" = (
             summary = "JSON example",
             value = json!("Loading.."),
-            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/draft/Person/JobApplicantProfile/Write.json",
+            external_value = "https://raw.githubusercontent.com/Virtual-Finland/definitions/main/DataProducts/Person/JobApplicantProfile/Write_v1.0.json",
         )))
     )),
     security(( "BearerAuth" = [] ))
 )]
 pub async fn write_job_applicant_profile(request: ParsedRequest) -> APIResponse {
-    let data_product = "draft/Person/JobApplicantProfile/Write";
+    let data_product = "Person/JobApplicantProfile/Write_v1.0";
     let data_source = &get_default_data_product_source();
     let result = super::write_data_product(data_product, data_source, request).await?;
     Ok(result)
