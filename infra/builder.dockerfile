@@ -23,7 +23,7 @@ FROM builder as devenv
 ###
 # Install cargo extensions
 ###
-RUN cargo install --locked cargo-watch 
+RUN cargo install cargo-watch 
 
 ###
 # Cleanup
