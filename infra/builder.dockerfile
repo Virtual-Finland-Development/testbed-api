@@ -9,7 +9,7 @@ FROM amazonlinux:2 as builder
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH \
-    RUST_VERSION=1.68.0
+    RUST_VERSION=1.70.0
 
 RUN yum install -y gcc gcc-c++ openssl-devel zip; \
     curl https://sh.rustup.rs -sSf | sh -s -- --no-modify-path --profile minimal --default-toolchain $RUST_VERSION -y; \
